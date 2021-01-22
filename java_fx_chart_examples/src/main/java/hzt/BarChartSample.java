@@ -13,6 +13,7 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -62,12 +63,18 @@ public class BarChartSample extends Application {
         INIT_VISIBLE_YEARS.forEach(year -> fillVisibleYearListView(barChart, yearMultiListView, year));
         INIT_INVISIBLE_YEARS.forEach(yearMultiListView::addLeftListView);
 
+        sortCountries(barChart);
+
         yearMultiListView.addRightListviewListener(change -> updateByYear(barChart, change));
         countryMultiListView.addRightListviewListener(change -> updateByCountry(barChart, change));
 
-        Scene scene = getScene(barChart, new VBox(countryMultiListView, yearMultiListView));
+        Scene scene = getScene(barChart, populateControlsPane(countryMultiListView, yearMultiListView));
         setStyle(scene.getRoot());
         FxSetup.configureStage(stage, scene, tittle).show();
+    }
+
+    Pane populateControlsPane(Node... controls) {
+        return new VBox(controls);
     }
 
     private XYChart<Number, String> buildBarChart() {
@@ -114,7 +121,12 @@ public class BarChartSample extends Application {
         if (change.next()) {
             addOrRemoveCountry(change);
         }
-        barChart.getData().forEach(series -> series.getData().sort(Comparator.comparing(XYChart.Data::getYValue)));
+        sortCountries(barChart);
+    }
+
+    private void sortCountries(XYChart<Number, String> barChart) {
+        Comparator<XYChart.Data<Number, String>> comparator = Comparator.comparing(XYChart.Data::getYValue);
+        barChart.getData().forEach(series -> series.getData().sort(comparator.reversed()));
     }
 
     private void addOrRemoveCountry(ListChangeListener.Change<? extends String> change) {

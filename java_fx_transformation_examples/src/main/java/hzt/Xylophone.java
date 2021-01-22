@@ -56,16 +56,16 @@ public class Xylophone extends Application {
     private static final double BAR_WIDTH = 22.0;
     private static final double BAR_THICKNESS = 7.0;
 
-    double mousePosX;
-    double mousePosY;
-    double mouseOldX;
-    double mouseOldY;
-    double mouseDeltaX;
-    double mouseDeltaY;
+    private double mousePosX;
+    private double mousePosY;
+    private double mouseOldX;
+    private double mouseOldY;
+    private double mouseDeltaX;
+    private double mouseDeltaY;
 
-    final TransformableGroup root = new TransformableGroup();
-    final TransformableGroup transformableGroup = new TransformableGroup();
-    final Shear shear = new Shear();
+    private final TransformableGroup root = new TransformableGroup();
+    private final TransformableGroup transformableGroup = new TransformableGroup();
+    private final Shear shear = new Shear();
 
     @Override
     public void start(final Stage stage) {
@@ -150,7 +150,8 @@ public class Xylophone extends Application {
         mousePosY = me.getY();
         mouseDeltaX = mousePosX - mouseOldX;
         mouseDeltaY = mousePosY - mouseOldY;
-        if (me.isAltDown() && me.isShiftDown() && me.isPrimaryButtonDown()) rotateAroundAxis(transformableGroup.rotateZ);
+        if (me.isAltDown() && me.isShiftDown() && me.isPrimaryButtonDown())
+            rotateAroundAxis(transformableGroup.rotateZ);
         else if (me.isAltDown() && me.isPrimaryButtonDown()) rotateInXAndYDir();
         else if (me.isShiftDown() && me.isPrimaryButtonDown()) shear();
         else if (me.isAltDown() && me.isSecondaryButtonDown()) scale();

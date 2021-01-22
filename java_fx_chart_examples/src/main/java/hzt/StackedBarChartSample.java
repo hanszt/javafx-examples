@@ -8,6 +8,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class StackedBarChartSample extends BarChartSample {
@@ -31,7 +32,12 @@ public class StackedBarChartSample extends BarChartSample {
     Scene getScene(Node chart, Node... controls) {
         HBox controlsHBox = FxSetup.configuredHBox(controls);
         controlsHBox.setPrefHeight(300);
-        return new Scene(FxSetup.configuredVBox(chart, controlsHBox), 1000, 780);
+        return new Scene(FxSetup.configuredVBox(chart, controlsHBox));
+    }
+
+    @Override
+    Pane populateControlsPane(Node... controls) {
+        return new HBox(controls);
     }
 
 }
