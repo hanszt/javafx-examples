@@ -1,64 +1,180 @@
 package hzt;
 
+import hzt.controls.MultiListView;
+import hzt.utils.FxSetup;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.collections.ListChangeListener;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import static javafx.util.Duration.seconds;
 
 public class BarChartSample extends Application {
 
     private static final int MAX_X_VALUE = 1000;
-    private static final int[] YEARS = {2003, 2004, 2005,2006, 2021};
-    private static final SortedSet<String> COUNTRIES = new TreeSet<>(
-            Set.of("Austria", "Brazil", "France", "Italy", "USA", "Netherlands"));
+
+    private static final int DIVIDE_YEAR = 2008;
+    private static final SortedSet<Integer> ALL_LISTED_YEARS = new TreeSet<>(
+            Set.of(2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, DIVIDE_YEAR, 2009,
+                    2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021));
+
+    private static final SortedSet<Integer> INIT_VISIBLE_YEARS = ALL_LISTED_YEARS.headSet(DIVIDE_YEAR);
+    private static final SortedSet<Integer> INIT_INVISIBLE_YEARS = ALL_LISTED_YEARS.tailSet(DIVIDE_YEAR);
+
+    private static final String DIVIDE_COUNTRY = "Netherlands";
+    private static final SortedSet<String> ALL_LISTED_COUNTRIES = new TreeSet<>(
+            Set.of(DIVIDE_COUNTRY, "Austria", "Brazil", "France", "Italy", "USA",
+                    "Germany", "Denmark", "Spain", "Portugal", "Norway", "Luxembourg"));
+
+    private static final SortedSet<String> INIT_VISIBLE_COUNTRIES = ALL_LISTED_COUNTRIES.tailSet(DIVIDE_COUNTRY);
+    private static final SortedSet<String> INIT_INVISIBLE_COUNTRIES = ALL_LISTED_COUNTRIES.headSet(DIVIDE_COUNTRY);
+
+    private final Map<Integer, XYChart.Series<Number, String>> allYearsToSeriesMap = new HashMap<>();
+    private final Map<XYChart.Series<Number, String>, List<XYChart.Data<Number, String>>> seriesToDataPointListMap = new HashMap<>();
+    private final Map<XYChart.Data<Number, String>, String> dataPointToCountryMap = new HashMap<>();
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("Bar Chart Sample");
-        final NumberAxis xAxis = new NumberAxis();
-        final CategoryAxis yAxis = new CategoryAxis();
-        final BarChart<Number, String> barChart = new BarChart<>(xAxis, yAxis);
+        start(stage, "Bar Chart Sample");
+    }
 
-        barChart.setTitle("Country Summary");
-        xAxis.setLabel("Value");
+    protected void start(Stage stage, String tittle) {
+        populateDataMaps();
+        final XYChart<Number, String> barChart = buildBarChart();
+        animateBarChart(barChart);
+
+        MultiListView<String> countryMultiListView = FxSetup.multiListView("Countries");
+        MultiListView<Integer> yearMultiListView = FxSetup.multiListView("Years");
+
+        INIT_VISIBLE_COUNTRIES.forEach(countryMultiListView::addRightListView);
+        INIT_INVISIBLE_COUNTRIES.forEach(countryMultiListView::addLeftListView);
+        INIT_VISIBLE_YEARS.forEach(year -> fillVisibleYearListView(barChart, yearMultiListView, year));
+        INIT_INVISIBLE_YEARS.forEach(yearMultiListView::addLeftListView);
+
+        yearMultiListView.addRightListviewListener(change -> updateByYear(barChart, change));
+        countryMultiListView.addRightListviewListener(change -> updateByCountry(barChart, change));
+
+        Scene scene = getScene(barChart, new VBox(countryMultiListView, yearMultiListView));
+        setStyle(scene.getRoot());
+        FxSetup.configureStage(stage, scene, tittle).show();
+    }
+
+    private XYChart<Number, String> buildBarChart() {
+        final NumberAxis xAxis = FxSetup.numberAxis("GDP (billions)");
         xAxis.setTickLabelRotation(90);
-        yAxis.setLabel("Country");
 
-        for (int year : YEARS) {
-            XYChart.Series<Number, String> series = new XYChart.Series<>();
-            series.setName(String.valueOf(year));
-            barChart.getData().add(series);
-            for (String country : COUNTRIES) {
-                series.getData().add(new XYChart.Data<>(Math.random() * MAX_X_VALUE, country));
-            }
-        }
+        final XYChart<Number, String> barChart = getBarChart(xAxis, FxSetup.categoryAxis("Country"));
+        barChart.setTitle("Country Summary");
+        return barChart;
+    }
 
+    private void animateBarChart(XYChart<Number, String> barChart) {
         Timeline timeline = new Timeline();
         timeline.getKeyFrames().add(new KeyFrame(seconds(1), e -> updateBarChart(barChart)));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.setAutoReverse(true);
         timeline.play();
-
-        Scene scene = new Scene(barChart, 800, 600);
-
-        stage.setScene(scene);
-        stage.show();
     }
 
-    private void updateBarChart(BarChart<Number, String> numberStringBarChart) {
-        for (XYChart.Series<Number, String> series : numberStringBarChart.getData()) {
+    private void fillVisibleYearListView(XYChart<Number, String> barChart,
+                                         MultiListView<Integer> yearMultiListView, Integer year) {
+        yearMultiListView.addRightListView(year);
+        XYChart.Series<Number, String> series = allYearsToSeriesMap.get(year);
+        barChart.getData().add(series);
+    }
+
+    private void populateDataMaps() {
+        for (Integer year : ALL_LISTED_YEARS) {
+            XYChart.Series<Number, String> yearSeries = new XYChart.Series<>();
+            yearSeries.setName(String.valueOf(year));
+            allYearsToSeriesMap.put(year, yearSeries);
+            List<XYChart.Data<Number, String>> dataList = new ArrayList<>();
+            for (String country : ALL_LISTED_COUNTRIES) {
+                XYChart.Data<Number, String> dataPoint = new XYChart.Data<>(Math.random() * MAX_X_VALUE, country);
+                dataPointToCountryMap.put(dataPoint, country);
+                dataList.add(dataPoint);
+                if (INIT_VISIBLE_COUNTRIES.contains(country)) yearSeries.getData().add(dataPoint);
+            }
+            seriesToDataPointListMap.put(yearSeries, dataList);
+        }
+    }
+
+    private void updateByCountry(XYChart<Number, String> barChart, ListChangeListener.Change<? extends String> change) {
+        if (change.next()) {
+            addOrRemoveCountry(change);
+        }
+        barChart.getData().forEach(series -> series.getData().sort(Comparator.comparing(XYChart.Data::getYValue)));
+    }
+
+    private void addOrRemoveCountry(ListChangeListener.Change<? extends String> change) {
+        for (XYChart.Series<Number, String> serie : allYearsToSeriesMap.values()) {
+            List<XYChart.Data<Number, String>> allCountryDataPoints = seriesToDataPointListMap.get(serie);
+            for (XYChart.Data<Number, String> dataPoint : allCountryDataPoints) {
+                String country = dataPointToCountryMap.get(dataPoint);
+                if (change.getAddedSubList().contains(country)) {
+                    serie.getData().add(dataPoint);
+                } else if (!change.getList().contains(country)) {
+                    serie.getData().remove(dataPoint);
+                }
+            }
+        }
+    }
+
+    private void updateByYear(XYChart<Number, String> barChart, ListChangeListener.Change<? extends Integer> change) {
+        if (change.next()) {
+            if (change.wasAdded()) {
+                addYearToBarChart(barChart, change);
+            } else if (change.wasRemoved()) {
+                removeYearFromBarChart(barChart, change);
+            }
+        }
+        barChart.getData().sort(Comparator.comparing(XYChart.Series::getName));
+    }
+
+    private void addYearToBarChart(XYChart<Number, String> barChart, ListChangeListener.Change<? extends Integer> change) {
+        for (Integer year : change.getAddedSubList()) {
+            XYChart.Series<Number, String> series = allYearsToSeriesMap.get(year);
+            series.getData().forEach(data -> data.setXValue(Math.random() * MAX_X_VALUE));
+            barChart.getData().add(series);
+        }
+    }
+
+    private void removeYearFromBarChart(XYChart<Number, String> barChart, ListChangeListener.Change<? extends Integer> change) {
+        List<XYChart.Series<Number, String>> leftOver = new ArrayList<>();
+        for (Integer year : change.getList()) {
+            XYChart.Series<Number, String> series = allYearsToSeriesMap.get(year);
+            leftOver.add(series);
+        }
+        barChart.getData().retainAll(leftOver);
+    }
+
+    Scene getScene(Node chart, Node... controls) {
+        VBox controlsVBox = FxSetup.configuredVBox(controls);
+        controlsVBox.setPrefWidth(300);
+        return new Scene(FxSetup.configuredHBox(chart, controlsVBox), 1000, 780);
+    }
+
+    protected XYChart<Number, String> getBarChart(NumberAxis xAxis, CategoryAxis yAxis) {
+        return new BarChart<>(xAxis, yAxis);
+    }
+
+    protected void setStyle(Node node) {
+        node.setStyle("");
+    }
+
+    private void updateBarChart(XYChart<Number, String> barChart) {
+        for (XYChart.Series<Number, String> series : barChart.getData()) {
             for (XYChart.Data<Number, String> data : series.getData()) {
                 data.setXValue(Math.random() * MAX_X_VALUE);
             }

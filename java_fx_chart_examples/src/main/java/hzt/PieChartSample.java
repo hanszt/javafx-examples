@@ -1,17 +1,14 @@
 package hzt;
 
+import hzt.utils.FxSetup;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -32,44 +29,31 @@ public class PieChartSample extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("Imported Fruits");
-        stage.setWidth(500);
-        stage.setHeight(500);
-
         final Label captionLabel = new Label("");
         captionLabel.setMouseTransparent(true);
+
         final PieChart chart = new PieChart();
+        chart.setTitle("Imported Fruits");
+        chart.setLabelsVisible(true);
+        chart.setEffect(FxSetup.preparedShadow(Color.GREY));
+
+        Button addButton = FxSetup.configuredButton("Add Fruit", e -> addRandomUniqueFruitData(chart, captionLabel));
+        Button removeButton = FxSetup.configuredButton("Remove fruit", e -> removeRandom(chart));
+        ListChangeListener<PieChart.Data> listener = change -> updateState(chart, addButton, removeButton, captionLabel);
+
+        chart.getData().addListener(listener);
         for (int i = 0; i < INIT_AMOUNT; i++) {
             addRandomUniqueFruitData(chart, captionLabel);
         }
-        chart.setTitle("Imported Fruits");
-        chart.setLabelsVisible(true);
-
-        final Button addButton = new Button("Add Fruit");
-        addButton.setOnAction(e -> addRandomUniqueFruitData(chart, captionLabel));
-
-        final Button removeButton = new Button("Remove fruit");
-        removeButton.setOnAction((ActionEvent e) -> removeRandom(chart));
-
-        final DropShadow shadow = new DropShadow();
-        shadow.setOffsetX(2);
-        shadow.setColor(Color.GREY);
-        chart.setEffect(shadow);
-
-        ListChangeListener<PieChart.Data> listener = change -> updateState(chart, addButton, removeButton, captionLabel);
-        chart.getData().addListener(listener);
-
-        final HBox buttonHBox = new HBox(addButton, removeButton);
-        buttonHBox.setSpacing(10);
-        buttonHBox.setPadding(new Insets(10, 10, 10, 50));
 
         final Pane chartGroup = new Pane(chart, captionLabel);
-        final VBox vbox = new VBox(chartGroup, buttonHBox);
+        final VBox vbox = new VBox(chartGroup, FxSetup.configuredHBox(addButton, removeButton));
         vbox.setStyle("-fx-base: rgb(40, 40, 40);-fx-background: rgb(60, 60, 60);");
 
         Scene scene = new Scene(vbox);
-        stage.setScene(scene);
-        stage.show();
+        stage.setWidth(500);
+        stage.setHeight(500);
+        FxSetup.configureStage(stage, scene, "Imported Fruits").show();
     }
 
     private void updateState(PieChart chart, Button addButton, Button removeButton, Label captionLabel) {

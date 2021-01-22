@@ -1,16 +1,13 @@
 package hzt;
 
+import hzt.utils.FxSetup;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -25,57 +22,28 @@ public class ScatterChartSample extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("Scatter Chart Sample");
-
-        final NumberAxis xAxis = new NumberAxis(0, UPPER_BOUND_X, 1);
-        final NumberAxis yAxis = new NumberAxis(-100, UPPER_BOUND_Y, 100);
-        xAxis.setLabel("Age (years)");
-        yAxis.setLabel("Returns to date");
+        final NumberAxis xAxis = new NumberAxis("Age (years)",0, UPPER_BOUND_X, 1);
+        final NumberAxis yAxis = new NumberAxis("Returns to date",-100, UPPER_BOUND_Y, 100);
 
         final ScatterChart<Number, Number> scatterChart = new ScatterChart<>(xAxis, yAxis);
         scatterChart.setTitle("Investment Overview");
-
         scatterChart.setPrefSize(500, 400);
+        scatterChart.setEffect(FxSetup.preparedShadow(Color.GREY));
         addSeries(scatterChart);
-        final VBox vbox = new VBox();
-        final HBox hbox = new HBox();
 
-        final Button addButton = new Button("Add Series");
-        addButton.setOnAction(e -> addSeries(scatterChart));
-
-        final Button removeFirstButton = new Button("Remove first");
-        removeFirstButton.setOnAction(e -> removeFirstSeries(scatterChart));
-
-        final Button removeButton = new Button("Remove random");
-        removeButton.setOnAction((ActionEvent e) -> removeRandomSeries(scatterChart));
-
-
-        final Button removeLastButton = new Button("Remove last");
-        removeLastButton.setOnAction((ActionEvent e) -> removeLastSeries(scatterChart));
-
-        final DropShadow shadow = new DropShadow();
-        shadow.setOffsetX(2);
-        shadow.setColor(Color.GREY);
-        scatterChart.setEffect(shadow);
-
-        hbox.setSpacing(10);
-        hbox.getChildren().addAll(addButton, removeFirstButton, removeButton, removeLastButton);
-
-        vbox.getChildren().addAll(scatterChart, hbox);
-        hbox.setPadding(new Insets(10, 10, 10, 50));
-
-        Scene scene = new Scene(vbox);
-        stage.setScene(scene);
-        stage.show();
+        final Button addButton = FxSetup.configuredButton("Add Series", e -> addSeries(scatterChart));
+        final Button removeFirstButton = FxSetup.configuredButton("Remove first", e -> removeFirstSeries(scatterChart));
+        final Button removeButton = FxSetup.configuredButton("Remove random", e -> removeRandomSeries(scatterChart));
+        final Button removeLastButton = FxSetup.configuredButton("Remove last", e -> removeLastSeries(scatterChart));
+        final VBox vbox = new VBox(scatterChart, FxSetup.configuredHBox(addButton, removeFirstButton, removeButton, removeLastButton));
+        FxSetup.configureStage(stage, new Scene(vbox), "Scatter Chart Sample").show();
     }
 
     private void addSeries(ScatterChart<Number, Number> scatterChart) {
         if (scatterChart.getData() == null) {
             scatterChart.setData(FXCollections.observableArrayList());
         }
-        Series<Number, Number> series = new Series<>();
-        series.setName("Option " + (scatterChart.getData().size() + 1));
-
+        Series<Number, Number> series = FxSetup.series("Option " + (scatterChart.getData().size() + 1));
         for (int i = 0; i < AMOUNT_DATA_POINTS_SERIES; i++) {
             series.getData().add(new ScatterChart.Data<>(Math.random() * UPPER_BOUND_X, Math.random() * UPPER_BOUND_Y));
         }
