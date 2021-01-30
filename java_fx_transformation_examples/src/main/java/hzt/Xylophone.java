@@ -34,9 +34,11 @@ package hzt;
 import javafx.application.Application;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.media.AudioClip;
 import javafx.scene.paint.*;
@@ -48,86 +50,109 @@ import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Properties;
+
+import static java.lang.System.*;
+
 public class Xylophone extends Application {
 
-    private static final double X_START = 260.0;
-    private static final double X_OFFSET = 30.0;
-    private static final double Y_POS = 300.0;
+    private static final Properties PROPERTIES = configuredProperties();
+
+    private static final double X_POS_LOWEST_BAR = 260.0;
+    private static final double X_OFFSET_BAR = 30.0;
+    private static final double Y_POS_BAR = 300.0;
+
+    private static final int NR_OF_REQUIRED_AUDIOFILES = 8;
+    private static final int NR_OF_BARS = parsedIntAppProp("nr_of_bars", 8);
+
     private static final double BAR_WIDTH = 22.0;
+    private static final double SHORTEST_BAR_LENGTH = 65;
+    private static final double LONGEST_BAR_LENGTH = 100;
     private static final double BAR_THICKNESS = 7.0;
 
     private double mousePosX;
     private double mousePosY;
-    private double mouseOldX;
-    private double mouseOldY;
+    private double prevMouseX;
+    private double prevMouseY;
     private double mouseDeltaX;
     private double mouseDeltaY;
 
-    private final TransformableGroup root = new TransformableGroup();
-    private final TransformableGroup transformableGroup = new TransformableGroup();
+    private final TransformableGroup container = new TransformableGroup();
+    private final TransformableGroup root = new TransformableGroup(container);
     private final Shear shear = new Shear();
 
     @Override
     public void start(final Stage stage) {
         stage.setTitle("Xylophone");
-
-        root.getChildren().add(transformableGroup);
         resetCam();
 
-        final Scene scene = new Scene(root, 800, 600, true);
-        scene.setFill(getSceneFill());
+        Box base1Box = createBaseBox(Y_POS_BAR - 20.0);
+        Box base2Box = createBaseBox(Y_POS_BAR + 20.0);
+        Group xylophoneAssembly = xylophoneAssembly(base1Box, base2Box);
 
-        scene.setCamera(new PerspectiveCamera());
+        for (int barNr = 1; barNr <= NR_OF_BARS; barNr++) {
+            xylophoneAssembly.getChildren().add(configuredBar(barNr));
+        }
 
-        AudioClip bar1Note = new AudioClip(getClass().getResource("/xylophone/Note1.wav").toString());
-        AudioClip bar2Note = new AudioClip(getClass().getResource("/xylophone/Note2.wav").toString());
-        AudioClip bar3Note = new AudioClip(getClass().getResource("/xylophone/Note3.wav").toString());
-        AudioClip bar4Note = new AudioClip(getClass().getResource("/xylophone/Note4.wav").toString());
-        AudioClip bar5Note = new AudioClip(getClass().getResource("/xylophone/Note5.wav").toString());
-        AudioClip bar6Note = new AudioClip(getClass().getResource("/xylophone/Note6.wav").toString());
-        AudioClip bar7Note = new AudioClip(getClass().getResource("/xylophone/Note7.wav").toString());
-        AudioClip bar8Note = new AudioClip(getClass().getResource("/xylophone/Note8.wav").toString());
-
-        Group rectangleGroup = new Group();
-        rectangleGroup.getTransforms().add(shear);
-
-        Box base1Box = createBaseBox(Y_POS - 20.0);
-        Box base2Box = createBaseBox(Y_POS + 20.0);
-
-        Box bar1Box = createBar(1, 100, Color.PURPLE);
-        Box bar2Box = createBar(2, 95, Color.BLUEVIOLET);
-        Box bar3Box = createBar(3, 90, Color.BLUE);
-        Box bar4Box = createBar(4, 85, Color.GREEN);
-        Box bar5Box = createBar(5, 80, Color.GREENYELLOW);
-        Box bar6Box = createBar(6, 75, Color.YELLOW);
-        Box bar7Box = createBar(7, 70, Color.ORANGE);
-        Box bar8Box = createBar(8, 65, Color.RED);
-
-        bar1Box.setOnMousePressed(me -> bar1Note.play());
-        bar2Box.setOnMousePressed(me -> bar2Note.play());
-        bar3Box.setOnMousePressed(me -> bar3Note.play());
-        bar4Box.setOnMousePressed(me -> bar4Note.play());
-        bar5Box.setOnMousePressed(me -> bar5Note.play());
-        bar6Box.setOnMousePressed(me -> bar6Note.play());
-        bar7Box.setOnMousePressed(me -> bar7Note.play());
-        bar8Box.setOnMousePressed(me -> bar8Note.play());
-
-        rectangleGroup.getChildren().addAll(base1Box, base2Box);
-        rectangleGroup.getChildren().addAll(bar1Box, bar2Box, bar3Box, bar4Box, bar5Box, bar6Box, bar7Box, bar8Box);
-
-        rectangleGroup.setScaleX(2.5);
-        rectangleGroup.setScaleY(2.5);
-        rectangleGroup.setScaleZ(2.5);
-        transformableGroup.getChildren().add(rectangleGroup);
-
-        frameCam(scene);
-
-        scene.setOnMousePressed(this::setMouseOld);
-        scene.setOnMouseDragged(this::mouseDraggedAction);
-        scene.setOnKeyPressed(ke -> keyPressedAction(stage, scene, ke));
-
+        container.getChildren().add(xylophoneAssembly);
+        final Scene scene = configuredScene(stage);
         stage.setScene(scene);
         stage.show();
+    }
+
+    @NotNull
+    private static Properties configuredProperties() {
+        Properties properties = new Properties();
+        InputStream fileInputStream = Xylophone.class.getResourceAsStream("/xylofoon.properties");
+        if (fileInputStream != null) {
+            try {
+                properties.load(new BufferedInputStream(fileInputStream));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else err.println("file inputstream was null...");
+        return properties;
+    }
+
+    public static int parsedIntAppProp(String property, int defaultVal) {
+        int value = defaultVal;
+        String propertyVal = PROPERTIES.getProperty(property);
+        if (propertyVal != null) {
+            try {
+                value = Integer.parseInt(propertyVal);
+            } catch (NumberFormatException e) {
+                err.printf("Property '%s' with value '%s' could not be parsed to an int... " +
+                        "Falling back to default: %d...", property, propertyVal, defaultVal);
+            }
+        } else err.printf("Property '%s' not found. Falling back to default: %d",
+                property, defaultVal);
+        return value;
+    }
+
+    @NotNull
+    private Group xylophoneAssembly(Node... nodes) {
+        Group group = new Group(nodes);
+        group.getTransforms().add(shear);
+        group.setScaleX(2.5);
+        group.setScaleY(2.5);
+        group.setScaleZ(2.5);
+        return group;
+    }
+
+    @NotNull
+    private Scene configuredScene(Stage stage) {
+        final Scene scene = new Scene(root, 800, 600, true);
+        scene.setFill(getSceneFill());
+        scene.setCamera(new PerspectiveCamera());
+        scene.setOnMousePressed(this::setMousePositionParams);
+        scene.setOnMouseDragged(this::mouseDraggedAction);
+        scene.setOnKeyPressed(ke -> keyPressedAction(stage, scene, ke));
+        frameCam(scene);
+        return scene;
     }
 
     @NotNull
@@ -136,54 +161,51 @@ public class Xylophone extends Application {
                 CycleMethod.NO_CYCLE, new Stop(0f, Color.BLUE), new Stop(1f, Color.LIGHTBLUE));
     }
 
-    private void setMouseOld(MouseEvent me) {
-        mousePosX = me.getX();
-        mousePosY = me.getY();
-        mouseOldX = me.getX();
-        mouseOldY = me.getY();
+    private void setMousePositionParams(MouseEvent mouseEvent) {
+        mousePosX = mouseEvent.getX();
+        mousePosY = mouseEvent.getY();
+        prevMouseX = mouseEvent.getX();
+        prevMouseY = mouseEvent.getY();
     }
 
-    private void mouseDraggedAction(MouseEvent me) {
-        mouseOldX = mousePosX;
-        mouseOldY = mousePosY;
-        mousePosX = me.getX();
-        mousePosY = me.getY();
-        mouseDeltaX = mousePosX - mouseOldX;
-        mouseDeltaY = mousePosY - mouseOldY;
-        if (me.isAltDown() && me.isShiftDown() && me.isPrimaryButtonDown())
-            rotateAroundAxis(transformableGroup.rotateZ);
-        else if (me.isAltDown() && me.isPrimaryButtonDown()) rotateInXAndYDir();
-        else if (me.isShiftDown() && me.isPrimaryButtonDown()) shear();
-        else if (me.isAltDown() && me.isSecondaryButtonDown()) scale();
-        else if (me.isAltDown() && me.isMiddleButtonDown()) translate();
+    private void mouseDraggedAction(MouseEvent e) {
+        prevMouseX = mousePosX;
+        prevMouseY = mousePosY;
+        mousePosX = e.getX();
+        mousePosY = e.getY();
+        mouseDeltaX = mousePosX - prevMouseX;
+        mouseDeltaY = mousePosY - prevMouseY;
+        if (e.isAltDown() && e.isShiftDown() && e.isPrimaryButtonDown()) rotateAroundAxis(container.rotateZ);
+        else if (e.isAltDown() && e.isPrimaryButtonDown()) rotateInXAndYDir();
+        else if (e.isShiftDown() && e.isPrimaryButtonDown()) shear();
+        else if (e.isAltDown() && e.isSecondaryButtonDown()) scale();
+        else if (e.isAltDown() && e.isMiddleButtonDown()) translate();
     }
 
     private void translate() {
-        double tx = transformableGroup.translate.getX();
-        double ty = transformableGroup.translate.getY();
-        transformableGroup.translate.setX(tx + mouseDeltaX);
-        transformableGroup.translate.setY(ty + mouseDeltaY);
+        double tx = container.translate.getX();
+        double ty = container.translate.getY();
+        container.translate.setX(tx + mouseDeltaX);
+        container.translate.setY(ty + mouseDeltaY);
     }
 
     private void scale() {
-        double scale = transformableGroup.scale.getX();
+        double scale = container.scale.getX();
         double newScale = scale + mouseDeltaX * 0.01;
-        transformableGroup.scale.setX(newScale);
-        transformableGroup.scale.setY(newScale);
-        transformableGroup.scale.setZ(newScale);
+        container.scale.setX(newScale);
+        container.scale.setY(newScale);
+        container.scale.setZ(newScale);
     }
 
     private void shear() {
-        double yShear = shear.getY();
-        shear.setY(yShear + mouseDeltaY / 1000.0);
-        double xShear = shear.getX();
-        shear.setX(xShear + mouseDeltaX / 1000.0);
+        shear.setY(shear.getY() + mouseDeltaY / 1000.0);
+        shear.setX(shear.getX() + mouseDeltaX / 1000.0);
     }
 
     private void rotateInXAndYDir() {
-        rotateAroundAxis(transformableGroup.rotateY);
-        double rxAngle = transformableGroup.rotateX.getAngle();
-        transformableGroup.rotateX.setAngle(rxAngle + mouseDeltaY);
+        rotateAroundAxis(container.rotateY);
+        double rxAngle = container.rotateX.getAngle();
+        container.rotateX.setAngle(rxAngle + mouseDeltaY);
     }
 
     private void rotateAroundAxis(Rotate rotate) {
@@ -191,10 +213,10 @@ public class Xylophone extends Application {
         rotate.setAngle(angle - mouseDeltaX);
     }
 
-    private void keyPressedAction(Stage stage, Scene scene, javafx.scene.input.KeyEvent ke) {
-        if (KeyCode.A.equals(ke.getCode())) resetCamAndShear();
-        if (KeyCode.F.equals(ke.getCode())) resetFrameCamAndShear(scene);
-        if (KeyCode.SPACE.equals(ke.getCode())) setFullScreen(stage, scene);
+    private void keyPressedAction(Stage stage, Scene scene, KeyEvent keyEvent) {
+        if (KeyCode.A.equals(keyEvent.getCode())) resetCamAndShear();
+        if (KeyCode.F.equals(keyEvent.getCode())) resetFrameCamAndShear(scene);
+        if (KeyCode.SPACE.equals(keyEvent.getCode())) setFullScreen(stage, scene);
     }
 
     private void setFullScreen(Stage stage, Scene scene) {
@@ -214,18 +236,46 @@ public class Xylophone extends Application {
         shear.setY(0.0);
     }
 
-    private Box createBar(int barNr, double barLength, Color color) {
-        Box bar1Box = new Box(BAR_WIDTH, BAR_THICKNESS, barLength);
-        bar1Box.setMaterial(new PhongMaterial(color));
-        bar1Box.setTranslateX(X_START + barNr * X_OFFSET);
-        bar1Box.setTranslateZ(Y_POS);
-        return bar1Box;
+    private Box configuredBar(int barNr) {
+        Color color = extractHueColorFromBarNr(barNr);
+        double barLength = calculateBarLengthByNumber(barNr);
+        Box barBox = new Box(BAR_WIDTH, BAR_THICKNESS, barLength);
+        barBox.setMaterial(new PhongMaterial(color));
+        barBox.setTranslateX(X_POS_LOWEST_BAR + barNr * X_OFFSET_BAR);
+        barBox.setTranslateZ(Y_POS_BAR);
+        int audioFileNr = barNr <= NR_OF_REQUIRED_AUDIOFILES ? barNr : ((barNr - 2) % (NR_OF_REQUIRED_AUDIOFILES - 1)) + 2;
+        String audiofileLocation = String.format("/xylophone/Note%d.wav", audioFileNr);
+        URL audioUrl = getClass().getResource(audiofileLocation);
+        if (audioUrl != null) {
+            AudioClip barNote = configuredAudioClip(barNr, audioUrl);
+            barBox.setOnMousePressed(me -> barNote.play());
+        } else err.println("No audiofile found at resource " + audiofileLocation);
+        return barBox;
+    }
+
+    @NotNull
+    private AudioClip configuredAudioClip(int barNr, URL audioUrl) {
+        AudioClip barNote = new AudioClip(audioUrl.toString());
+        int octave = NR_OF_BARS > NR_OF_REQUIRED_AUDIOFILES ? ((barNr - 2) / (NR_OF_REQUIRED_AUDIOFILES - 1)) - 1 : 0;
+        barNote.setRate(Math.pow(2, octave));
+        return barNote;
+    }
+
+    private Color extractHueColorFromBarNr(int barNr) {
+        int maxHueVal = 270;
+        double hueValue = (1 - ((double) (barNr - 1) / (NR_OF_BARS - 1))) * maxHueVal;
+        return Color.hsb(hueValue, 1, 1);
+    }
+
+    private double calculateBarLengthByNumber(int barNr) {
+        double difference = LONGEST_BAR_LENGTH - SHORTEST_BAR_LENGTH;
+        return LONGEST_BAR_LENGTH - (((double) (barNr - 1) / (NR_OF_BARS - 1)) * difference);
     }
 
     private Box createBaseBox(double yPos) {
-        Box baseBox = new Box(253, 14, 10);
+        Box baseBox = new Box(X_OFFSET_BAR * NR_OF_BARS, 14, 10);
         baseBox.setMaterial(new PhongMaterial(new Color(0.2, 0.12, 0.1, 1.0)));
-        baseBox.setTranslateX(395.0);
+        baseBox.setTranslateX(X_POS_LOWEST_BAR + X_OFFSET_BAR * ((NR_OF_BARS + 1) / 2.));
         baseBox.setTranslateZ(yPos);
         baseBox.setTranslateY(11.0);
         return baseBox;
@@ -237,9 +287,9 @@ public class Xylophone extends Application {
 
     public void frameCam(final Scene scene) {
         setCamOffset(root, scene);
-        setCamPivot(transformableGroup);
-        setCamTranslate(transformableGroup);
-        setCamScale(transformableGroup, scene);
+        setCamPivot(container);
+        setCamTranslate(container);
+        setCamScale(container, scene);
     }
     //=========================================================================
     // BoxSystem.setCamOffset
@@ -309,25 +359,25 @@ public class Xylophone extends Application {
     }
 
     public void resetCam() {
-        transformableGroup.translate.setX(0.0);
-        transformableGroup.translate.setY(0.0);
-        transformableGroup.translate.setZ(0.0);
-        transformableGroup.rotateX.setAngle(45.0);
-        transformableGroup.rotateY.setAngle(-7.0);
-        transformableGroup.rotateZ.setAngle(0.0);
-        transformableGroup.scale.setX(1.25);
-        transformableGroup.scale.setY(1.25);
-        transformableGroup.scale.setZ(1.25);
+        container.translate.setX(0.0);
+        container.translate.setY(0.0);
+        container.translate.setZ(0.0);
+        container.rotateX.setAngle(45.0);
+        container.rotateY.setAngle(-7.0);
+        container.rotateZ.setAngle(0.0);
+        container.scale.setX(1.25);
+        container.scale.setY(1.25);
+        container.scale.setZ(1.25);
 
-        transformableGroup.pivot.setX(0.0);
-        transformableGroup.pivot.setY(0.0);
-        transformableGroup.pivot.setZ(0.0);
+        container.pivot.setX(0.0);
+        container.pivot.setY(0.0);
+        container.pivot.setZ(0.0);
 
-        transformableGroup.inversePivot.setX(0.0);
-        transformableGroup.inversePivot.setY(0.0);
-        transformableGroup.inversePivot.setZ(0.0);
+        container.inversePivot.setX(0.0);
+        container.inversePivot.setY(0.0);
+        container.inversePivot.setZ(0.0);
 
-        setPivot(transformableGroup);
+        setPivot(container);
     }
 
     private static class TransformableGroup extends Group {
@@ -342,12 +392,13 @@ public class Xylophone extends Application {
 
         Scale scale = new Scale();
 
-        public TransformableGroup() {
-            super();
+        public TransformableGroup(Node... nodes) {
+            super(nodes);
             rotateX.setAxis(Rotate.X_AXIS);
             rotateY.setAxis(Rotate.Y_AXIS);
             rotateZ.setAxis(Rotate.Z_AXIS);
             getTransforms().addAll(translate, pivot, rotateX, rotateZ, rotateY, scale, inversePivot);
         }
+
     }
 }

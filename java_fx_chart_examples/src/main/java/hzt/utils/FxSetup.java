@@ -39,8 +39,10 @@ public class FxSetup {
     public static Stage configureStage(Stage stage, Scene scene, String title) {
         stage.setScene(scene);
         stage.setTitle(title);
-        InputStream inputStream = FxSetup.class.getResourceAsStream("/icons/fx-icon.png");
+        String location = "/icons/fx-icon.png";
+        InputStream inputStream = FxSetup.class.getResourceAsStream(location);
         if (inputStream != null) stage.getIcons().add(new Image(inputStream));
+        else System.err.println("Resource at " + location + " not found...");
         return stage;
     }
 
