@@ -24,11 +24,11 @@ The following snippet of code creates two triangles—one passes the coordinates
 4
 5
 	
-// Create an empty triangle and add vertices later
+// Create an empty triangle3D and add vertices later
 Polygon triangle1 = new Polygon();
 triangle1.getPoints().addAll(50.0, 0.0,0.0, 100.0,100.0, 100.0);
-// Create a triangle with vertices
-Polygon triangle2 = new Polygon(50.0, 0.0,0.0, 100.0,100.0, 100.0);
+// Create a triangle3D with vertices
+Polygon triangle3D2 = new Polygon(50.0, 0.0,0.0, 100.0,100.0, 100.0);
 
 ### 6 Drawing polyLines
 A Polyline is similar to a Polygon, except that it does not draw a line between the last and first points. That is, a polyline is an open polygon. However, the fill color is used to fill the entire shape as if the shape was closed.
@@ -42,16 +42,16 @@ The Polyline class contains two constructors.
 
 The no-args constructor creates an empty polyline. You need to add (x, y) coordinates of the vertices of the shape. The polygon will draw a line from the first vertex to the second vertex, from the second to the third, and so on. Unlike a Polygon, the shape is not closed automatically. If you want to close the shape, you need to add the coordinates of the first vertex as the last pair of numbers. If you want to add coordinates of vertices later, add them to the ObservableList<Double> returned by the getPoints() method of the Polyline class.
 
-The following snippet of code creates two triangles with the same geometrical properties using different methods. Notice that the first and the last pairs of numbers are the same in order to close the triangle.
+The following snippet of code creates two triangles with the same geometrical properties using different methods. Notice that the first and the last pairs of numbers are the same in order to close the triangle3D.
 1
 2
 3
 4
 	
-Polyline triangle = new Polyline();
-triangle.getPoints().addAll(50.0, 0.0,  0.0, 50.0,100.0, 50.0, 50.0, 0.0);
-triangle.setFill(Color.WHITE);
-triangle.setStroke(Color.BLUE);
+Polyline triangle3D = new Polyline();
+triangle3D.getPoints().addAll(50.0, 0.0,  0.0, 50.0,100.0, 50.0, 50.0, 0.0);
+triangle3D.setFill(Color.WHITE);
+triangle3D.setStroke(Color.BLUE);
 
 ### 7 Drawing Arcs
 An instance of the Arc class represents a sector of an ellipse. The class uses seven properties to define the ellipse.

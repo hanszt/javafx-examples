@@ -6,7 +6,7 @@ JavaFX 8 offers two types of 3D shapes.
     Predefined shapes
     User-defined shapes
 
-Box, Sphere, and Cylinder are three predefined 3D shapes that you can use in your JavaFX applications. You can also create any type of 3D shapes using a triangle mesh. The Box, Sphere, and Cylinder classes represent the three predefined shapes. The MeshView class represents a user-defined 3D shape in a Scene.
+Box, Sphere, and Cylinder are three predefined 3D shapes that you can use in your JavaFX applications. You can also create any type of 3D shapes using a triangle3D mesh. The Box, Sphere, and Cylinder classes represent the three predefined shapes. The MeshView class represents a user-defined 3D shape in a Scene.
 
 ### Pre defined shapes
 JavaFX 8 provides the following three built-in 3D geometric shapes:

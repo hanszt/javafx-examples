@@ -96,7 +96,10 @@ public class Xylophone extends Application {
         root.setBackground(new Background(new BackgroundFill(getSceneFill(), CornerRadii.EMPTY, Insets.EMPTY)));
 
         final Scene scene = configuredScene(root);
-        final SubScene subScene = configuredSubScene(xylophoneAssembly, scene);
+        final SubScene subScene = configuredSubScene(xylophoneAssembly);
+        subScene.widthProperty().bind(scene.widthProperty());
+        subScene.heightProperty().bind(scene.heightProperty().multiply(0.9));
+
         HBox controlsPane = buildControls(xylophoneBars, scene);
         controlsPane.setOpacity(.8);
         root.getChildren().addAll(subScene, controlsPane);
@@ -105,15 +108,6 @@ public class Xylophone extends Application {
         FxSetup.configureStage(stage, scene, "Xylophone").show();
     }
 
-    @NotNull
-    private SubScene configuredSubScene(Group xylophoneAssembly, Scene scene) {
-        final SubScene subScene = configuredSubScene(xylophoneAssembly);
-        subScene.widthProperty().bind(scene.widthProperty());
-        subScene.heightProperty().bind(scene.heightProperty().multiply(0.9));
-        return subScene;
-    }
-
-    @NotNull
     private HBox buildControls(Group xylophoneBars, Scene scene) {
         Button recenterButton = FxSetup.configuredButton("Recenter", e -> recenter());
         recenterButton.setPrefWidth(200);
@@ -129,7 +123,6 @@ public class Xylophone extends Application {
         return FxSetup.configuredHBox(recenterButton, barAmountSlider);
     }
 
-    @NotNull
     private Group buildXylophoneBars() {
         Group xylophoneBars = new Group();
         for (int barNr = 1; barNr <= MAX_NUMBER_OF_BARS; barNr++) {
@@ -155,14 +148,12 @@ public class Xylophone extends Application {
         mcs.resetTranslation();
     }
 
-    @NotNull
     private Scene configuredScene(Parent root) {
         int sceneWidth = parsedIntAppProp("init_scene_width", 800);
         int sceneHeight = parsedIntAppProp("init_scene_height", 600);
         return new Scene(root, sceneWidth, sceneHeight, true);
     }
 
-    @NotNull
     private SubScene configuredSubScene(Parent root) {
         SubScene scene = new SubScene(root, 0, 0, true, SceneAntialiasing.BALANCED);
         PerspectiveCamera camera = new PerspectiveCamera(true);
@@ -172,7 +163,6 @@ public class Xylophone extends Application {
         return scene;
     }
 
-    @NotNull
     private RadialGradient getSceneFill() {
         return new RadialGradient(225, 0.85, 300, 300, 500, false,
                 CycleMethod.NO_CYCLE, new Stop(0f, Color.BLUE), new Stop(1f, Color.LIGHTBLUE));

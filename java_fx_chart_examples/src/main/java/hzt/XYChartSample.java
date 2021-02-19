@@ -1,5 +1,7 @@
 package hzt;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import hzt.controls.MultiListView;
 import hzt.utils.FxSetup;
 import javafx.application.Application;
@@ -16,13 +18,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.time.Month;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class XYChartSample extends Application {
 
-    private final Map<XYChart.Series<Number, Number>, TempData> seriesToTempDataMap = new HashMap<>();
-    private final Map<TempData, XYChart.Series<Number, Number>> tempDataToSeriesMap = new EnumMap<>(TempData.class);
+    private final BiMap<TempData, XYChart.Series<Number, Number>> tempDataSeriesBiMap = HashBiMap.create();
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -68,8 +70,7 @@ public class XYChartSample extends Application {
         for (TempData data : TempData.values()) {
             XYChart.Series<Number, Number> series = new XYChart.Series<>();
             series.setName(data.formattedName());
-            seriesToTempDataMap.put(series, data);
-            tempDataToSeriesMap.put(data, series);
+            tempDataSeriesBiMap.put(data, series);
             if (initData.contains(data)) multiListView.addRightListView(data);
             else multiListView.addLeftListView(data);
             for (int day = 1; day <= data.month.length(false); day++) {
@@ -85,13 +86,13 @@ public class XYChartSample extends Application {
         if (change.next()) {
             if (change.wasAdded()) {
                 change.getAddedSubList().stream()
-                        .map(tempDataToSeriesMap::get)
+                        .map(tempDataSeriesBiMap::get)
                         .filter(s -> !areaChart.getData().contains(s))
                         .forEach(s -> areaChart.getData().add(s));
             }
             if (change.wasRemoved()) {
                 List<XYChart.Series<Number, Number>> leftOver = change.getList().stream()
-                        .map(tempDataToSeriesMap::get)
+                        .map(tempDataSeriesBiMap::get)
                         .collect(Collectors.toList());
                 areaChart.getData().retainAll(leftOver);
             }
@@ -100,7 +101,7 @@ public class XYChartSample extends Application {
 
     private void updateData(XYChart<Number, Number> areaChart) {
         for (XYChart.Series<Number, Number> series : areaChart.getData()) {
-            TempData temperatureData = seriesToTempDataMap.get(series);
+            TempData temperatureData = tempDataSeriesBiMap.inverse().get(series);
             for (XYChart.Data<Number, Number> data : series.getData()) {
                 data.setYValue(temperatureData.getRandomTemperature());
             }

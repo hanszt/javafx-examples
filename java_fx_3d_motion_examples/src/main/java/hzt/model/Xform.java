@@ -6,6 +6,7 @@
 package hzt.model;
 
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
@@ -39,6 +40,11 @@ public class Xform extends Group {
     }
 
     public Scale s = new Scale();
+
+    public Xform(Node... nodes) {
+        super(nodes);
+        getTransforms().addAll(t, rz, ry, rx, s);
+    }
 
     public Xform() {
         super();
