@@ -31,6 +31,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
+import static java.lang.System.*;
+
 public class ParallelNearAndFarClipTest extends Application {
 
     private static final double OFFSET_PERCENT = 0.01; // 1 percent tolerance
@@ -43,7 +45,7 @@ public class ParallelNearAndFarClipTest extends Application {
         stage.setTitle("Parallel Near and Far Clip Test");
 
         final double tanOfHalfFOV = Math.tan(Math.toRadians(15));
-        final double halfHeight = HEIGHT / 2;
+        final double halfHeight = HEIGHT / 2.;
         final double focalLength = halfHeight / tanOfHalfFOV;
         final double eyePositionZ = -1.0 * focalLength;
         final double nearClipDistance = focalLength * NEAR + eyePositionZ;
@@ -51,7 +53,7 @@ public class ParallelNearAndFarClipTest extends Application {
         final double nearClipDistanceOffset = Math.abs(nearClipDistance * OFFSET_PERCENT);
         final double farClipDistanceOffset = Math.abs(farClipDistance * OFFSET_PERCENT);
 
-        System.out.println("In scene coordinate: focalLength = " + focalLength
+        out.println("In scene coordinate: focalLength = " + focalLength
                 + ", nearClipDistance = " + nearClipDistance
                 + ", nearClipDistanceOffset = " + nearClipDistanceOffset
                 + ", farClipDistance = " + farClipDistance
@@ -93,7 +95,7 @@ public class ParallelNearAndFarClipTest extends Application {
 
         // Intentionally set depth buffer to false to reduce test complexity
         Scene scene = new Scene(root, WIDTH, HEIGHT, false);
-        scene.setOnMousePressed(event -> System.out.println("Clicked: " + event.getTarget()));
+        scene.setOnMousePressed(event -> out.println("Clicked: " + event.getTarget()));
 
         return scene;
     }
@@ -105,7 +107,7 @@ public class ParallelNearAndFarClipTest extends Application {
         stage.sizeToScene();
         stage.setResizable(false);
         stage.show();
-        System.out.println("You should expect to see 3 overlapping squares in"
+        out.println("You should expect to see 3 overlapping squares in"
                 + " the order of Blue is on top of Green and Green is on top Red.");
     }
 

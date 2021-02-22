@@ -26,23 +26,22 @@
 package fx_eight_three_d_features;
 
 import javafx.application.Application;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.*;
+import javafx.scene.shape.CullFace;
+import javafx.scene.shape.DrawMode;
+import javafx.scene.shape.MeshView;
+import javafx.scene.shape.TriangleMesh;
 import javafx.stage.Stage;
 import service.IMouseControlService;
 import service.MouseControlService;
 
 public class SimpleMeshTexCoordTest extends Application {
-
-    Group root;
-    PointLight pointLight;
-    MeshView meshView;
-    TriangleMesh triMesh;
-    PhongMaterial material;
-    final Image diffuseMap = new Image(getClass().getResourceAsStream("images/cup_diffuseMap_1024.png"));
 
     static TriangleMesh buildTriangleMesh() {
 
@@ -78,13 +77,12 @@ public class SimpleMeshTexCoordTest extends Application {
         return triangleMesh;
     }
 
-    private Group buildScene() {
-        triMesh = buildTriangleMesh();
-
-        material = new PhongMaterial();
-        material.setDiffuseMap(diffuseMap);
+    private Scene buildScene() {
+        TriangleMesh triMesh = buildTriangleMesh();
+        PhongMaterial material = new PhongMaterial();
+        material.setDiffuseMap(new Image(getClass().getResourceAsStream("images/cup_diffuseMap_1024.png")));
         material.setSpecularColor(Color.rgb(30, 30, 30));
-        meshView = new MeshView(triMesh);
+        MeshView meshView = new MeshView(triMesh);
         meshView.setTranslateX(200);
         meshView.setTranslateY(200);
         meshView.setTranslateZ(20);
@@ -92,28 +90,25 @@ public class SimpleMeshTexCoordTest extends Application {
         meshView.setDrawMode(DrawMode.FILL);
         meshView.setCullFace(CullFace.BACK);
 
-        pointLight = new PointLight(Color.ANTIQUEWHITE);
+        PointLight pointLight = new PointLight(Color.ANTIQUEWHITE);
         pointLight.setTranslateX(150);
         pointLight.setTranslateY(-100);
         pointLight.setTranslateZ(-1000);
 
-        root = new Group(meshView, pointLight);
-        return root;
-    }
-
-    @Override
-    public void start(Stage primaryStage) {
-        Scene scene = new Scene(buildScene(), 800, 800, true);
+        Group root = new Group(meshView, pointLight);
+        Scene scene = new Scene(root, 800, 800, true);
         scene.setFill(Color.GRAY);
         scene.setCamera(new PerspectiveCamera());
         IMouseControlService mouseControlService = new MouseControlService();
         mouseControlService.initMouseControl(meshView, scene);
+        return scene;
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
         primaryStage.setTitle("SimpleMeshTexCoordTest");
-        primaryStage.setScene(scene);
+        primaryStage.setScene(buildScene());
         primaryStage.show();
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
 }

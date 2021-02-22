@@ -24,21 +24,14 @@
  */
 package fx_eight_three_d_features;
 
-import fx_eight_three_d_features.utils3d.CameraController;
 import fx_eight_three_d_features.utils3d.Camera3D;
-import java.util.ArrayList;
-import java.util.List;
+import fx_eight_three_d_features.utils3d.CameraController;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
@@ -53,29 +46,32 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SpecularColorTestApp extends Application {
 
     private ScrollBar specularPowerScroll;
     private ColorPicker specularColorPicker;
-    private CheckBox specularColorCheckBox, specularMapCheckBox;
+    private CheckBox specularColorCheckBox;
+    private CheckBox specularMapCheckBox;
 
-    Image diffuseMap = new Image("resources/cup_diffuseMap_1024.png");
-    Image specularGrayMap = new Image("resources/spec.png");
-    Image specularColorMap = new Image("resources/spec_color.png");
-    //Image bumpMap = new Image("resources/bump.png");
+    Image diffuseMap = new Image(getClass().getResourceAsStream("images/cup_diffuseMap_1024.png"));
+    Image specularGrayMap = new Image(getClass().getResourceAsStream("images/spec.png"));
+    Image specularColorMap = new Image(getClass().getResourceAsStream("images/spec_color.png"));
 
-    private List<PhongMaterial> materials;
+    private final List<PhongMaterial> materials = new ArrayList<>();
 
-    private void addSphere(Group g, int x, int y, PhongMaterial material) {
-        Sphere s = new Sphere(10);
-        s.setMaterial(material);
-        s.setTranslateX(x);
-        s.setTranslateY(y);
-        g.getChildren().add(s);
+    private void addSphere(Group group, int x, int y, PhongMaterial material) {
+        Sphere sphere = new Sphere(10);
+        sphere.setMaterial(material);
+        sphere.setTranslateX(x);
+        sphere.setTranslateY(y);
+        group.getChildren().add(sphere);
     }
 
     interface MaterialModifier {
-        public void modify(PhongMaterial mat);
+        void modify(PhongMaterial mat);
     }
 
     private void addMaterials(MaterialModifier modifier) {
@@ -92,16 +88,9 @@ public class SpecularColorTestApp extends Application {
         mat.setDiffuseMap(diffuseMap);
         modifier.modify(mat);
         materials.add(mat);
-/*
-        mat = new PhongMaterial();
-        mat.setDiffuseMap(diffuseMap);
-        mat.setBumpMap(bumpMap);
-        modifier.modify(mat);
-        materials.add(mat);
-*/
     }
 
-    private void bindMaterial(PhongMaterial m, ObservableValue color, ObservableValue map) {
+    private void bindMaterial(PhongMaterial m, ObservableValue<Color> color, ObservableValue<Image> map) {
         if (color != null) {
             m.specularColorProperty().bind(color);
         }
@@ -112,31 +101,26 @@ public class SpecularColorTestApp extends Application {
     }
 
     private void addSpheres(Group g) {
-        materials = new ArrayList();
-
-        // no specular
-        addMaterials(m -> {});
-
         // specular power with default color (null)
         addMaterials(m -> m.setSpecularPower(100));
 
         // specular color with default power
         addMaterials(m -> m.setSpecularColor(Color.WHITE));
 
-        ObjectBinding specularColorBind = Bindings.createObjectBinding(
+        ObjectBinding<Color> specularColorBind = Bindings.createObjectBinding(
                 () -> specularColorCheckBox.isSelected() ?
                         specularColorPicker.getValue() : null,
                 specularColorPicker.valueProperty(),
                 specularColorCheckBox.selectedProperty()
         );
 
-        ObjectBinding specularGrayMapBind = Bindings.createObjectBinding(
+        ObjectBinding<Image> specularGrayMapBind = Bindings.createObjectBinding(
                 () -> specularMapCheckBox.isSelected() ?
                         specularGrayMap : null,
                 specularMapCheckBox.selectedProperty()
         );
 
-        ObjectBinding specularColorMapBind = Bindings.createObjectBinding(
+        ObjectBinding<Image> specularColorMapBind = Bindings.createObjectBinding(
                 () -> specularMapCheckBox.isSelected() ?
                         specularColorMap : null,
                 specularMapCheckBox.selectedProperty()
@@ -163,7 +147,8 @@ public class SpecularColorTestApp extends Application {
         // color specular map with power and color
         addMaterials(m -> bindMaterial(m, specularColorBind, specularColorMapBind));
 
-        int numX = 6, numY = ( materials.size() + numX - 1 ) / numX;
+        int numX = 6;
+        int numY = (materials.size() + numX - 1) / numX;
         for (int y = 0; y < numY; y++) {
             for (int x = 0; x < numX; x++) {
                 int idx = y * numX + x;
@@ -240,7 +225,6 @@ public class SpecularColorTestApp extends Application {
         cam3d.setPosZ(-200);
         cam3d.setFarClip(10000);
         scene3D.setCamera(cam3d);
-        control = new CameraController(cam3d, scene3D);
         scene3D.setFill(Color.DARKGRAY);
         HBox root = new HBox(scene3D, controls);
         Scene scene = new Scene(root, 1324, 768, true);
@@ -250,7 +234,6 @@ public class SpecularColorTestApp extends Application {
         stage.setScene(scene);
         stage.show();
     }
-    private CameraController control;
 
     public static void main(String[] args) {
         launch(args);

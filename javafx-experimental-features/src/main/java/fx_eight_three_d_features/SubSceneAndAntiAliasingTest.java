@@ -26,25 +26,14 @@
 package fx_eight_three_d_features;
 
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
 import javafx.geometry.Point3D;
-import javafx.scene.AmbientLight;
-import javafx.scene.Camera;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.text.Font;
@@ -56,7 +45,7 @@ public class SubSceneAndAntiAliasingTest extends Application {
     @Override
     public void start(Stage stage) {
         if (!Platform.isSupported(ConditionalFeature.SCENE3D)) {
-            throw new RuntimeException("*** ERROR: common conditional SCENE3D is not supported");
+            throw new UnsupportedScene3DException("*** ERROR: common conditional SCENE3D is not supported");
         }
 
         stage.setTitle("JavaFX SubScene And Scene Anti-aliasing Test");
@@ -73,14 +62,12 @@ public class SubSceneAndAntiAliasingTest extends Application {
         Cylinder cylinder1 = new Cylinder(100, 200);
         cylinder1.setMaterial(phongMaterial);
         SubScene noMsaa = createSubScene("Scene Anti-aliasing = false", cylinder1,
-                Color.TRANSPARENT,
                 new PerspectiveCamera(), false);
         hbox.getChildren().add(noMsaa);
 
         Cylinder cylinder2 = new Cylinder(100, 200);
         cylinder2.setMaterial(phongMaterial);
         SubScene msaa = createSubScene("Scene Anti-aliasing = true", cylinder2,
-                Color.TRANSPARENT,
                 new PerspectiveCamera(), true);
         hbox.getChildren().add(msaa);
 
@@ -105,8 +92,7 @@ public class SubSceneAndAntiAliasingTest extends Application {
         return vbox;
     }
 
-    private static SubScene createSubScene(String title, Node node,
-            Paint fillPaint, Camera camera, boolean msaa) {
+    private static SubScene createSubScene(String title, Node node, Camera camera, boolean msaa) {
         Group root = new Group();
 
         PointLight light = new PointLight(Color.WHITE);
@@ -126,7 +112,7 @@ public class SubSceneAndAntiAliasingTest extends Application {
 
         SubScene subScene = new SubScene(root, 500, 400, true,
                 msaa ? SceneAntialiasing.BALANCED : SceneAntialiasing.DISABLED);
-        subScene.setFill(fillPaint);
+        subScene.setFill(Color.TRANSPARENT);
         subScene.setCamera(camera);
 
         return subScene;

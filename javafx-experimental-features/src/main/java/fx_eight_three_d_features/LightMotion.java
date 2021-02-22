@@ -24,29 +24,15 @@
  */
 package fx_eight_three_d_features;
 
-import java.nio.ByteBuffer;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.RotateTransition;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
@@ -55,19 +41,15 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.nio.ByteBuffer;
+
+import static java.lang.System.err;
+import static javafx.animation.Animation.Status.RUNNING;
+
 public class LightMotion extends Application {
 
-    final Color light1Color = Color.PALEGOLDENROD;
-    final Color light2Color = Color.ORANGERED;
-    Timeline stationLightTL;
-    Timeline movingLightTL;
-    RotateTransition rotTrans;
-    Group sphereGroup;
-    Cylinder cylinder;
-    int light1Count = 0;
-    int light2Count = 0;
-    int counterS = 0;
-    int counterC = 0;
+    private int counterS = 0;
+    private int counterC = 0;
 
     private Scene buildScene() {
         PhongMaterial material = new PhongMaterial();
@@ -76,12 +58,12 @@ public class LightMotion extends Application {
 
         Sphere sphere = new Sphere(100);
         sphere.setMaterial(material);
-        sphereGroup = new Group(sphere);
+        Group sphereGroup = new Group(sphere);
         sphereGroup.setTranslateX(400);
         sphereGroup.setTranslateY(100);
         sphereGroup.setTranslateZ(50);
 
-        cylinder = new Cylinder(200, 400);
+        Cylinder cylinder = new Cylinder(200, 400);
         cylinder.setTranslateX(400);
         cylinder.setTranslateY(500);
         cylinder.setTranslateZ(50);
@@ -89,36 +71,30 @@ public class LightMotion extends Application {
         cylinder.setMaterial(material);
 
         // Create first light group and light
-        final VisibleLight lightGroup1 = new VisibleLight(light1Color);
+        final VisibleLight lightGroup1 = new VisibleLight(Color.PALEGOLDENROD);
         lightGroup1.setTranslateX(700);
         lightGroup1.setTranslateY(200);
         lightGroup1.setTranslateZ(-200);
 
         // Animate the color of the first light
         DoubleProperty t = new SimpleDoubleProperty(0);
-        t.addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable,
-                    Number oldValue, Number newValue) {
-
-                double t = newValue.doubleValue();
-                Color c = Color.WHITE.interpolate(Color.GREEN, t);
-                lightGroup1.setColor(c);
-            }
+        t.addListener((observable, oldValue, newValue) -> {
+            double t1 = newValue.doubleValue();
+            Color c = Color.WHITE.interpolate(Color.GREEN, t1);
+            lightGroup1.setColor(c);
         });
 
-        KeyValue kv1 = new KeyValue(t, 1.0, Interpolator.EASE_BOTH);
-        KeyFrame kf1 = new KeyFrame(Duration.seconds(2), kv1);
-        stationLightTL = new Timeline(kf1);
+        KeyValue keyValue = new KeyValue(t, 1.0, Interpolator.EASE_BOTH);
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(2), keyValue);
+        Timeline stationLightTL = new Timeline(keyFrame);
         stationLightTL.setAutoReverse(true);
-        stationLightTL.setCycleCount(Timeline.INDEFINITE);
+        stationLightTL.setCycleCount(Animation.INDEFINITE);
 
         // Create second light group and light
-        final VisibleLight lightGroup2 = new VisibleLight(light2Color);
+        final VisibleLight lightGroup2 = new VisibleLight(Color.ORANGERED);
         lightGroup2.setTranslateX(-300);
         lightGroup2.setTranslateY(300);
         lightGroup2.setTranslateZ(-100);
-
 
         // Animate the position of the second light
         final Group movingLight = new Group(lightGroup2);
@@ -127,15 +103,15 @@ public class LightMotion extends Application {
         movingLight.getTransforms().add(rot);
         KeyValue kv = new KeyValue(rot.angleProperty(), 360.0);
         KeyFrame kf = new KeyFrame(Duration.seconds(7), kv);
-        movingLightTL = new Timeline(kf);
-        movingLightTL.setCycleCount(Timeline.INDEFINITE);
+        Timeline movingLightTL = new Timeline(kf);
+        movingLightTL.setCycleCount(Animation.INDEFINITE);
 
         // Animate cylinder
-        rotTrans = new RotateTransition(Duration.seconds(35), cylinder);
+        RotateTransition rotTrans = new RotateTransition(Duration.seconds(35), cylinder);
         rotTrans.setAutoReverse(true);
         rotTrans.setAxis(new Point3D(2, 1, 0).normalize());
         rotTrans.setInterpolator(Interpolator.EASE_BOTH);
-        rotTrans.setCycleCount(Timeline.INDEFINITE);
+        rotTrans.setCycleCount(Animation.INDEFINITE);
         rotTrans.setByAngle(360);
 
         Group root = new Group();
@@ -147,52 +123,48 @@ public class LightMotion extends Application {
         scene.setCamera(camera);
         scene.setFill(Color.rgb(10, 10, 40));
 
-        scene.setOnKeyTyped(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent e) {
-                switch (e.getCharacter()) {
-                    case "[":
-                        if (stationLightTL.getStatus() == Timeline.Status.RUNNING) {
-                            stationLightTL.pause();
-                        } else {
-                            stationLightTL.play();
-                        }
-                        break;
-                    case "]":
-                        if (movingLightTL.getStatus() == Timeline.Status.RUNNING) {
-                            movingLightTL.pause();
-                        } else {
-                            movingLightTL.play();
-                        }
-                        break;
-                    case "\\":
-                        if (rotTrans.getStatus() == Timeline.Status.RUNNING) {
-                            rotTrans.pause();
-                        } else {
-                            rotTrans.play();
-                        }
-                        break;
-                    case "c":
-                        lightGroup1.addScope(cylinder);
-                        lightGroup2.addScope(cylinder);
-                        break;
-                    case "C":
-                        System.err.println("C = " + counterC++ + ". Removing cylinder from lights");
-                        lightGroup1.removeScope(cylinder);
-                        lightGroup2.removeScope(cylinder);
-                        break;
-                    case "s":
-                        lightGroup1.addScope(sphereGroup);
-                        lightGroup2.addScope(sphereGroup);
-                        break;
-                    case "S":
-                        System.err.println("S = " + counterS++ + ". Removing sphere from lights");
-                        lightGroup1.removeScope(sphereGroup);
-                        lightGroup2.removeScope(sphereGroup);
-                        break;
-                }
+        scene.setOnKeyTyped(e -> {
+            switch (e.getCharacter()) {
+                case "[":
+                    pausePlayAnimation(stationLightTL);
+                    break;
+                case "]":
+                    pausePlayAnimation(movingLightTL);
+                    break;
+                case "\\":
+                    pausePlayAnimation(rotTrans);
+                    break;
+                case "c":
+                    lightGroup1.addScope(cylinder);
+                    lightGroup2.addScope(cylinder);
+                    break;
+                case "C":
+                    err.println("C = " + counterC++ + ". Removing cylinder from lights");
+                    lightGroup1.removeScope(cylinder);
+                    lightGroup2.removeScope(cylinder);
+                    break;
+                case "s":
+                    lightGroup1.addScope(sphereGroup);
+                    lightGroup2.addScope(sphereGroup);
+                    break;
+                case "S":
+                    err.println("S = " + counterS++ + ". Removing sphere from lights");
+                    lightGroup1.removeScope(sphereGroup);
+                    lightGroup2.removeScope(sphereGroup);
+                    break;
+                default:
+                    break;
             }
         });
         return scene;
+    }
+
+    private void pausePlayAnimation(Animation animation) {
+        if (animation.getStatus() == RUNNING) {
+            animation.pause();
+        } else {
+            animation.play();
+        }
     }
 
     @Override
@@ -201,42 +173,38 @@ public class LightMotion extends Application {
         primaryStage.setTitle("FX8 Light Motion");
         primaryStage.setScene(scene);
         primaryStage.show();
-        System.err.println("Both cylinder and sphere need to be added to lights"
-                +" first before removing them from lights can work.");
+        err.println("Both cylinder and sphere need to be added to lights"
+                + " first before removing them from lights can work.");
     }
 
     public static void main(String[] args) {
         launch(args);
     }
 
-    private class VisibleLight extends Group {
+    private static class VisibleLight extends Group {
 
-        private PhongMaterial material;
-        private PointLight pointLight;
-        private Sphere lightShape;
+        private final PhongMaterial material;
+        private final PointLight pointLight;
+        private final Sphere lightShape;
 
         private void makeConstantImage(WritableImage img, Color color) {
-            int w = (int) img.getWidth();
-            int h = (int) img.getHeight();
-            ByteBuffer scanline = ByteBuffer.allocate(3 * w);
+            int width = (int) img.getWidth();
+            ByteBuffer scanline = ByteBuffer.allocate(3 * width);
             byte r = (byte) ((int) Math.round(color.getRed() * 255.0));
             byte g = (byte) ((int) Math.round(color.getGreen() * 255.0));
             byte b = (byte) ((int) Math.round(color.getBlue() * 255.0));
-            for (int i = 0; i < w; i++) {
+            for (int i = 0; i < width; i++) {
                 scanline.put(r);
                 scanline.put(g);
                 scanline.put(b);
             }
             scanline.rewind();
-            img.getPixelWriter().setPixels(0, 0, w, w, PixelFormat.getByteRgbInstance(), scanline, 0);
+            img.getPixelWriter().setPixels(0, 0, width, width, PixelFormat.getByteRgbInstance(), scanline, 0);
         }
 
         VisibleLight(Color color) {
             pointLight = new PointLight();
             material = new PhongMaterial(Color.BLACK);
-            material.setDiffuseMap(null);
-            material.setBumpMap(null);
-            material.setSpecularMap(null);
             material.setSpecularColor(Color.TRANSPARENT);
             setColor(color);
 
@@ -257,7 +225,7 @@ public class LightMotion extends Application {
         }
 
         final void addScope(Node node) {
-            ObservableList scope = pointLight.getScope();
+            ObservableList<Node> scope = pointLight.getScope();
             if (scope.isEmpty()) {
                 scope.add(lightShape);
             }
@@ -267,7 +235,7 @@ public class LightMotion extends Application {
         }
 
         final void removeScope(Node node) {
-            ObservableList scope = pointLight.getScope();
+            ObservableList<Node> scope = pointLight.getScope();
             if (node != null) {
                 scope.remove(node);
             }

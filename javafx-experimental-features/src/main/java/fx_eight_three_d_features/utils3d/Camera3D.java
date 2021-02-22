@@ -35,9 +35,9 @@ import javafx.scene.transform.Affine;
  * The camera looks into positive Z direction
  */
 public class Camera3D extends PerspectiveCamera {
-    public final Vec3d FORWARD = new Vec3d(0,0,1);
+    public final Vec3d forward = new Vec3d(0,0,1);
     public final Vec3d UP = new Vec3d(0,-1,0);
-    public final Vec3d RIGHT = new Vec3d(1,0,0);
+    public final Vec3d right = new Vec3d(1,0,0);
 
     private final Affine transform = new Affine();
 
@@ -199,7 +199,7 @@ public class Camera3D extends PerspectiveCamera {
     }
 
     public Vec3d getForward() {
-        Vec3d res = localToSceneDirection(FORWARD, new Vec3d());
+        Vec3d res = localToSceneDirection(forward, new Vec3d());
         res.normalize();
         return res;
     }
@@ -211,7 +211,7 @@ public class Camera3D extends PerspectiveCamera {
     }
 
     public Vec3d getRight() {
-        Vec3d res = localToSceneDirection(RIGHT, new Vec3d());
+        Vec3d res = localToSceneDirection(right, new Vec3d());
         res.normalize();
         return res;
     }

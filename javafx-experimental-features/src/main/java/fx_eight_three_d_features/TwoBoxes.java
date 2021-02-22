@@ -41,12 +41,6 @@ public class TwoBoxes extends Application {
     double anchorY;
     double anchorAngle;
 
-    private PerspectiveCamera addCamera(Scene scene) {
-        PerspectiveCamera perspectiveCamera = new PerspectiveCamera(false);
-        scene.setCamera(perspectiveCamera);
-        return perspectiveCamera;
-    }
-
     /**
      * @param args the command line arguments
      */
@@ -100,8 +94,7 @@ public class TwoBoxes extends Application {
         pointLight.setTranslateZ(-100);
 
         root.getChildren().add(pointLight);
-
-        addCamera(scene);
+        scene.setCamera(new PerspectiveCamera(false));
         primaryStage.setScene(scene);
         primaryStage.show();
     }

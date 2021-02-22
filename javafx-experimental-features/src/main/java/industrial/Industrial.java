@@ -62,7 +62,6 @@ public class Industrial extends Application {
     Timeline controllerTimeline;
 
     Pump pump;
-
     Tank tank;
 
     Pipe pipeIn;
@@ -103,9 +102,7 @@ public class Industrial extends Application {
         Group pumpGroup = getPumpGroup();
 
         Label nameP = getLabel("Feed Pump", 22, 120, 450);
-
         Label flowRateP = getLabel(75, 635);
-
         Slider ratePSlider = getRateSlider(10.0, 150);
 
         //****************************
@@ -118,22 +115,16 @@ public class Industrial extends Application {
         configureBPipes();
 
         Group valveAGroup = getValveGroup(520);
-
         Label nameALabel = getLabel("Discharge A", 22, 1030, 500);
-
         Label flowRateALabel = getLabel(950, 635);
-
         Slider rateASlider = getRateSlider(5.0, 1025);
 
         //****************************
         configurePipes();
 
         Group valveBGroup = getValveGroup(320);
-
         Label nameB = getLabel("Discharge B", 22, 1030, 300);
-
         Label flowRateB = getLabel(950, 435);
-
         Slider rateBSlider = getRateBSlider();
 
         //****************************
@@ -187,7 +178,8 @@ public class Industrial extends Application {
         xAxisFill.setUpperBound(HISTORY_POINTS_TO_KEEP * HISTORY_INTERVAL);
 
         //noinspection unchecked,rawtypes
-        model.getFillPercentHistory().getData().addListener((ListChangeListener.Change c) -> onFillPercentHistoryChange(xAxisFlow, xAxisFill));
+        model.getFillPercentHistory().getData()
+                .addListener((ListChangeListener.Change c) -> onFillPercentHistoryChange(xAxisFlow, xAxisFill));
 
         chartFillGroup = new Group(chartFillBG, getFillLineChart(xAxisFill, yAxisFill));
 
@@ -199,13 +191,7 @@ public class Industrial extends Application {
         chartFillButton.setFont(new Font(18));
         chartFillButton.setTranslateX(30.0);
         chartFillButton.setTranslateY(120.0);
-        chartFillButton.setOnAction((ActionEvent event) -> {
-            boolean visible = !chartFillGroup.isVisible();
-            chartFillGroup.setVisible(visible);
-            if (visible) {
-                chartFlowGroup.setVisible(false);
-            }
-        });
+        chartFillButton.setOnAction(this::chartFillButtonAction);
 
         //****************************
 
@@ -280,30 +266,13 @@ public class Industrial extends Application {
             }
         });
 
-        model.getValveFlowRateProperty(Model.VALVE_B).addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            double lowThreshold = 0.5;
-            double oldv = oldValue.doubleValue();
-            double newv = newValue.doubleValue();
-            if (oldv < lowThreshold && newv > lowThreshold) {
-                pipeBOut.setFilled(true);
-                pipeBIn.setFlow(true);
-            } else if (newv <= lowThreshold && oldv > lowThreshold) {
-                pipeBOut.setFilled(false);
-                pipeBIn.setFlow(false);
-            }
-        });
+        model.getValveFlowRateProperty(Model.VALVE_B).addListener(this::valveFlowRatePropertyChnageAction);
 
         lowWaterSlider.valueProperty().bindBidirectional(model.getTankLowWaterPercentProperty());
         highWaterSlider.valueProperty().bindBidirectional(model.getTankHighWaterPercentProperty());
 
-        scene.widthProperty().addListener((ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) -> {
-            double scale = (double) newSceneWidth / LAYOUT_SIZE_X;
-            rootTransform.setX(scale);
-        });
-        scene.heightProperty().addListener((ObservableValue<? extends Number> observableValue, Number oldSceneHeight, Number newSceneHeight) -> {
-            double scale = (double) newSceneHeight / LAYOUT_SIZE_Y;
-            rootTransform.setY(scale);
-        });
+        scene.widthProperty().addListener(this::adaptedScaleXOnWidthChanged);
+        scene.heightProperty().addListener(this::adaptedScaleYOnHeightChanged);
 
         primaryStage.setTitle("Industrial Demo");
         primaryStage.setScene(scene);
@@ -485,6 +454,37 @@ public class Industrial extends Application {
         chartFlowGroup.setVisible(visible);
         if (visible) {
             chartFillGroup.setVisible(false);
+        }
+    }
+
+    private void chartFillButtonAction(ActionEvent event) {
+        boolean visible = !chartFillGroup.isVisible();
+        chartFillGroup.setVisible(visible);
+        if (visible) {
+            chartFlowGroup.setVisible(false);
+        }
+    }
+
+    private void adaptedScaleYOnHeightChanged(ObservableValue<? extends Number> o, Number curVal, Number newVal) {
+        double scale = (double) newVal / LAYOUT_SIZE_Y;
+        rootTransform.setY(scale);
+    }
+
+    private void adaptedScaleXOnWidthChanged(ObservableValue<? extends Number> o, Number curVal, Number newVal) {
+        double scale = (double) newVal / LAYOUT_SIZE_X;
+        rootTransform.setX(scale);
+    }
+
+    private void valveFlowRatePropertyChnageAction(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+        double lowThreshold = 0.5;
+        double oldv = oldValue.doubleValue();
+        double newv = newValue.doubleValue();
+        if (oldv < lowThreshold && newv > lowThreshold) {
+            pipeBOut.setFilled(true);
+            pipeBIn.setFlow(true);
+        } else if (newv <= lowThreshold && oldv > lowThreshold) {
+            pipeBOut.setFilled(false);
+            pipeBIn.setFlow(false);
         }
     }
 }

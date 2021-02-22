@@ -34,8 +34,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 
 /**
- * This is camera controller to use with new 3D API.
- *
+ * This is a camera controller to use with the new 3D API.
  */
 public class CameraController {
 
@@ -90,13 +89,13 @@ public class CameraController {
     }
 
     private void setEventHandlers(Scene scene) {
-        scene.addEventHandler(KeyEvent.ANY, k -> handleKeyEvent(k));
-        scene.addEventHandler(MouseEvent.ANY, m -> handleMouseEvent(m));
+        scene.addEventHandler(KeyEvent.ANY, this::handleKeyEvent);
+        scene.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
     }
 
     private void setEventHandlers(SubScene subScene) {
-        subScene.addEventHandler(KeyEvent.ANY, k -> handleKeyEvent(k));
-        subScene.addEventHandler(MouseEvent.ANY, m -> handleMouseEvent(m));
+        subScene.addEventHandler(KeyEvent.ANY, this::handleKeyEvent);
+        subScene.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
     }
 
     public CameraController(Camera3D camera) {
@@ -116,11 +115,6 @@ public class CameraController {
                 }
             }
         }.start();
-    }
-
-    public CameraController(Camera3D camera, Scene scene) {
-        this(camera);
-        setEventHandlers(scene);
     }
 
     public CameraController(Camera3D camera, SubScene subScene) {
