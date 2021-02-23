@@ -1,24 +1,23 @@
 package hzt.model;
 
-import javafx.fxml.FXMLLoader;
 import javafx.scene.shape.MeshView;
-
-import java.io.IOException;
+import javafx.scene.shape.TriangleMesh;
 
 public class Pyramid extends Model3D {
 
+    private final TriangleMesh mesh = new TriangleMesh();
+
     public Pyramid() {
-        load3DModel();
+        buildMesh();
+        getChildren().add(new MeshView(mesh));
     }
 
-    private void load3DModel() {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(this.getClass().getResource("pyramid/Pyramid.fxml"));
-            MeshView pyramidModel = fxmlLoader.load();
-            getChildren().add(pyramidModel);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void buildMesh() {
+        mesh.getPoints().addAll(0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f);
+        mesh.getTexCoords().addAll(0.0f, 0.0f);
+        mesh.getFaces().addAll(0, 0, 4, 0, 1, 0, 1, 0, 4, 0, 2, 0, 2, 0, 4, 0, 3, 0, 3, 0, 4,
+                0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 2, 0, 3, 0);
+        mesh.getFaceSmoothingGroups().addAll(1, 2, 4, 8, 16, 16);
     }
 }

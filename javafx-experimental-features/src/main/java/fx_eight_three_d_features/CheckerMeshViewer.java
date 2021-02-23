@@ -216,7 +216,7 @@ public class CheckerMeshViewer extends Application {
         pointLight.setTranslateY(-50);
         pointLight.setTranslateZ(-1000);
 
-        // Animate meshview
+        // Animate fx_eight_three_d_features.model.meshview
         rotTrans = new RotateTransition(Duration.seconds(30), meshView);
         rotTrans.setAutoReverse(true);
         rotTrans.setAxis(new Point3D(0, 1, 0).normalize());

@@ -25,7 +25,6 @@
 package fx_eight_three_d_features;
 
 import fx_eight_three_d_features.utils3d.Camera3D;
-import fx_eight_three_d_features.utils3d.CameraController;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;

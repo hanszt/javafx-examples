@@ -25,7 +25,6 @@
 
 package fx_eight_three_d_features;
 
-import fx_eight_three_d_features.model.WaveMesh;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
