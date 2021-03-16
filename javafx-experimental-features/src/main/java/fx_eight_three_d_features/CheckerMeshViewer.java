@@ -226,132 +226,129 @@ public class CheckerMeshViewer extends Application {
         rotTrans.play();
         root = new Group(grp3, pointLight);
         Scene scene = new Scene(root, width, height, depthBuffer);
-        scene.setOnKeyTyped(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent e) {
-                switch (e.getCharacter()) {
-                    case "[":
-                        funcValue -= resolution;
-                        if (funcValue < -20.0f) {
-                            funcValue = -20.0f;
-                        }
-                        computeMesh(divX, divY, meshScale);
-                        break;
-                    case "]":
-                        funcValue += resolution;
-                        if (funcValue > 20.0f) {
-                            funcValue = 20.0f;
-                        }
-                        computeMesh(divX, divY, meshScale);
-                        break;
-                    case "p":
-                        funcValue = 0;
-                        computeMesh(divX, divY, meshScale);
-                        break;
-                    case "i":
-                        System.err.print("i ");
-                        if (!textureSwitch) {
-                            texture = texture ? false : true;
-                        } else {
-                            textureSwitch = false;
-                        }
-                        if (texture) {
-                            material.setDiffuseMap(diffuseMap);
-                            material.setDiffuseColor(Color.WHITE);
-                        } else {
-                            material.setDiffuseMap(null);
-                            material.setBumpMap(null);
-                            material.setDiffuseColor(Color.LIGHTGRAY);
-                        }
-                        break;
-                    case "s":
-                        smooth = !smooth;
-                        if (!smooth) {
-                            Arrays.fill(smoothGroups, 0);
-                        } else {
-                            for (int i = 0; i < smoothGroups.length; i++) {
-                                smoothGroups[i] = i % 32;
+        scene.setOnKeyTyped(e -> {
+            switch (e.getCharacter()) {
+                case "[":
+                    funcValue -= resolution;
+                    if (funcValue < -20.0f) {
+                        funcValue = -20.0f;
+                    }
+                    computeMesh(divX, divY, meshScale);
+                    break;
+                case "]":
+                    funcValue += resolution;
+                    if (funcValue > 20.0f) {
+                        funcValue = 20.0f;
+                    }
+                    computeMesh(divX, divY, meshScale);
+                    break;
+                case "p":
+                    funcValue = 0;
+                    computeMesh(divX, divY, meshScale);
+                    break;
+                case "i":
+                    System.err.print("i ");
+                    if (!textureSwitch) {
+                        texture = texture ? false : true;
+                    } else {
+                        textureSwitch = false;
+                    }
+                    if (texture) {
+                        material.setDiffuseMap(diffuseMap);
+                        material.setDiffuseColor(Color.WHITE);
+                    } else {
+                        material.setDiffuseMap(null);
+                        material.setBumpMap(null);
+                        material.setDiffuseColor(Color.LIGHTGRAY);
+                    }
+                    break;
+                case "s":
+                    smooth = !smooth;
+                    if (!smooth) {
+                        Arrays.fill(smoothGroups, 0);
+                    } else {
+                        for (int i = 0; i < smoothGroups.length; i++) {
+                            smoothGroups[i] = i % 32;
 //                                System.err.println("XXX smoothGroups[" + i + "] = " + smoothGroups[i]);
-                            }
                         }
-                        triMesh.getFaceSmoothingGroups().setAll(smoothGroups);
-                        break;
-                    case "k":
-                         System.err.print("k ");
-                         if ((texture) || (!textureSwitch)) {
-                            material.setDiffuseMap(diffuseMap);
-                            material.setBumpMap(null);
-                            material.setDiffuseColor(Color.WHITE);
-                            texture = true;
-                            textureSwitch = true;
-                        } else {
-                            material.setDiffuseMap(null);
-                            material.setBumpMap(null);
-                            material.setDiffuseColor(Color.LIGHTGRAY);
-                        }
-                        break;
-                    case "l":
-                        System.err.print("l ");
-                        boolean wireframe = meshView.getDrawMode() == DrawMode.LINE;
-                        meshView.setDrawMode(wireframe ? DrawMode.FILL : DrawMode.LINE);
-                        break;
-                    case "<":
-                        grp1.setRotate(rotateAngle -= (resolution * 5));
-                        break;
-                    case ">":
-                        grp1.setRotate(rotateAngle += (resolution * 5));
-                        break;
-                    case "/":
-                        grp3.setTranslateZ(translateValue += 5);
-                        break;
-                    case "?":
-                        grp3.setTranslateZ(translateValue -= 5);
-                        break;
-                    case "X":
-                        grp1.setRotationAxis(Rotate.X_AXIS);
-                        break;
-                    case "Y":
-                        grp1.setRotationAxis(Rotate.Y_AXIS);
-                        break;
-                    case "Z":
-                        grp1.setRotationAxis(Rotate.Z_AXIS);
-                        break;
-                    case "P":
-                        rotateAngle = 0;
-                        grp1.setRotate(rotateAngle);
-                    case "1":
-                        System.err.print("1 ");
-                        divX = 5;
-                        divY = 5;
-                        smooth = true;
-                        smoothGroups = new int[divX * divY * 2];
-                        rotateAngle = 0.0f;
-                        funcValue = 0.0f;
-                        triMesh = buildTriangleMesh(divX, divY, meshScale);
-                        meshView.setMesh(triMesh);
-                        break;
-                    case "2":
-                        System.err.print("2 ");
-                        divX = 70;
-                        divY = 70;
-                        smooth = true;
-                        smoothGroups = new int[divX * divY * 2];
-                        rotateAngle = 0.0f;
-                        funcValue = 0.0f;
-                        triMesh = buildTriangleMesh(divX, divY, meshScale);
-                        meshView.setMesh(triMesh);
-                        break;
-                    case " ":
-                        root.getChildren().add(new Button("Button"));
-                        break;
-                    case "\\":
-                        if (rotTrans.getStatus() == Timeline.Status.RUNNING) {
-                            rotTrans.pause();
-                        } else {
-                            rotTrans.play();
-                        }
-                        break;
-                }
+                    }
+                    triMesh.getFaceSmoothingGroups().setAll(smoothGroups);
+                    break;
+                case "k":
+                     System.err.print("k ");
+                     if ((texture) || (!textureSwitch)) {
+                        material.setDiffuseMap(diffuseMap);
+                        material.setBumpMap(null);
+                        material.setDiffuseColor(Color.WHITE);
+                        texture = true;
+                        textureSwitch = true;
+                    } else {
+                        material.setDiffuseMap(null);
+                        material.setBumpMap(null);
+                        material.setDiffuseColor(Color.LIGHTGRAY);
+                    }
+                    break;
+                case "l":
+                    System.err.print("l ");
+                    boolean wireframe = meshView.getDrawMode() == DrawMode.LINE;
+                    meshView.setDrawMode(wireframe ? DrawMode.FILL : DrawMode.LINE);
+                    break;
+                case "<":
+                    grp1.setRotate(rotateAngle -= (resolution * 5));
+                    break;
+                case ">":
+                    grp1.setRotate(rotateAngle += (resolution * 5));
+                    break;
+                case "/":
+                    grp3.setTranslateZ(translateValue += 5);
+                    break;
+                case "?":
+                    grp3.setTranslateZ(translateValue -= 5);
+                    break;
+                case "X":
+                    grp1.setRotationAxis(Rotate.X_AXIS);
+                    break;
+                case "Y":
+                    grp1.setRotationAxis(Rotate.Y_AXIS);
+                    break;
+                case "Z":
+                    grp1.setRotationAxis(Rotate.Z_AXIS);
+                    break;
+                case "P":
+                    rotateAngle = 0;
+                    grp1.setRotate(rotateAngle);
+                case "1":
+                    System.err.print("1 ");
+                    divX = 5;
+                    divY = 5;
+                    smooth = true;
+                    smoothGroups = new int[divX * divY * 2];
+                    rotateAngle = 0.0f;
+                    funcValue = 0.0f;
+                    triMesh = buildTriangleMesh(divX, divY, meshScale);
+                    meshView.setMesh(triMesh);
+                    break;
+                case "2":
+                    System.err.print("2 ");
+                    divX = 70;
+                    divY = 70;
+                    smooth = true;
+                    smoothGroups = new int[divX * divY * 2];
+                    rotateAngle = 0.0f;
+                    funcValue = 0.0f;
+                    triMesh = buildTriangleMesh(divX, divY, meshScale);
+                    meshView.setMesh(triMesh);
+                    break;
+                case " ":
+                    root.getChildren().add(new Button("Button"));
+                    break;
+                case "\\":
+                    if (rotTrans.getStatus() == Timeline.Status.RUNNING) {
+                        rotTrans.pause();
+                    } else {
+                        rotTrans.play();
+                    }
+                    break;
             }
         });
         return scene;
