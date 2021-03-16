@@ -5,7 +5,7 @@ A simple Hello World application with Java 11+, JavaFX 15+, Gluon Mobile and Gra
 
 ## Documentation
 
-Read about this sample [here](https://docs.gluonhq.com/client/#_hellogluon_sample)
+Read about this hzt.sample [here](https://docs.gluonhq.com/client/#_hellogluon_sample)
 
 ## Quick Instructions
 

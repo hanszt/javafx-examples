@@ -134,7 +134,7 @@
                     <reflectionList>
                         <list>com.gluonhq.samples.pushnotes.model.Model</list>
                         <list>com.gluonhq.samples.pushnotes.model.Note</list>
-                        <list>com.gluonhq.samples.pushnotes.model.Settings</list>
+                        <list>com.gluonhq.samples.pushnotes.model.hzt.Settings</list>
                         <list>com.gluonhq.samples.pushnotes.service.Service</list>
                         <list>com.gluonhq.samples.pushnotes.views.EditionPresenter</list>
                         <list>com.gluonhq.samples.pushnotes.views.FilterPresenter</list>

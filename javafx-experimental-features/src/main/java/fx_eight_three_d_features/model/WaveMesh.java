@@ -6,12 +6,9 @@ public class WaveMesh extends PlaneZMesh {
 
     protected float computeZValue(Point2D point2D) {
         double radius = point2D.magnitude();
-        return (float) (amplitudeProperty().get() * (radius != 0 ? Math.sin(radius * waveFrequencyProperty().get()) * computeDampening(radius) : 1));
+        radius = Math.max(radius, .1);
+        return (float) (amplitudeProperty().get() * (Math.sin(radius * frequencyProperty().get()) * computeDampening(radius)));
     }
 
-
-    private double computeDampening(double radius) {
-        return (dampeningProperty().get() + (1 - dampeningProperty().get()) * radius) / radius;
-    }
 
 }

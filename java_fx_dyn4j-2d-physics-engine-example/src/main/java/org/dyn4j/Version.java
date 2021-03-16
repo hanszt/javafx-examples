@@ -93,7 +93,7 @@ public final class Version {
 	}
 	
 	/**
-	 * Main class to print the version to the console.
+	 * hzt.Main class to print the version to the console.
 	 * @param args command line arguments (none accepted)
 	 */
 	public static final void main(String[] args) {

@@ -16,7 +16,7 @@ Before getting started with these samples, read the Client plugin [documentation
 
 ## Build and run the samples
 
-Visit each sample's README for further instructions.
+Visit each hzt.sample's README for further instructions.
 
 ## Issues and Contributions ##
 

@@ -79,17 +79,17 @@ import javafx.util.Pair;
 
 public class DragDropWithControlsSwing extends Application {
 
-    final static DataFormat customBytes = new DataFormat("dndwithcontrolsswing.custom.bytes");
-    final static DataFormat customString = new DataFormat("dndwithcontrolsswing.custom.string");
+    static final DataFormat customBytes = new DataFormat("dndwithcontrolsswing.custom.bytes");
+    static final DataFormat customString = new DataFormat("dndwithcontrolsswing.custom.string");
 
-    final static String html =
+    static final String html =
         "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" +
         "<html xmlns=\"http://www.w3.org/1999/xhtml\">" +
         "<head></head>" +
         "<body>Hello!</body>" +
         "</html>";
 
-    final static String rtf = "{\\rtf1\\ansi\\uc1{\\colortbl;\\red255\\green0\\blue0;}\\uc1\\b\\i FRED\\par rtf\\par text}";
+    static final String rtf = "{\\rtf1\\ansi\\uc1{\\colortbl;\\red255\\green0\\blue0;}\\uc1\\b\\i FRED\\par rtf\\par text}";
 
     Pane sourceControlPane = new Pane();
     Pane targetControlPane = new Pane();

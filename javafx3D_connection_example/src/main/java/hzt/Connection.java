@@ -35,20 +35,19 @@ public class Connection extends Cylinder {
     }
 
     private void bindRotationAndLengthBasedOnStartAndEnd() {
-        DoubleProperty lengthSquared = new SimpleDoubleProperty();
         DoubleProperty xDistance = bindOperation(startX.subtract(endX));
         DoubleProperty yDistance = bindOperation(startY.subtract(endY));
         DoubleProperty zDistance = bindOperation(startZ.subtract(endZ));
         DoubleProperty xDistanceSquared = bindOperation(xDistance.multiply(xDistance));
         DoubleProperty yDistanceSquared = bindOperation(yDistance.multiply(yDistance));
         DoubleProperty zDistanceSquared = bindOperation(zDistance.multiply(zDistance));
-        lengthSquared.bind(xDistanceSquared.add(yDistanceSquared.add(zDistanceSquared)));
+        DoubleProperty lengthSquared = bindOperation(xDistanceSquared.add(yDistanceSquared.add(zDistanceSquared)));
         lengthSquared.addListener((observableValue, number, t1) -> setHeight(Math.sqrt(lengthSquared.get())));
-        lengthSquared.addListener((observableValue, number, t1) -> {
-            rotate(yDistance, zDistance, rotateX);
-            rotate(xDistance, zDistance, rotateY);
-            rotate(xDistance, yDistance, rotateZ);
-        });
+//        lengthSquared.addListener((observableValue, number, t1) -> {
+//           - rotate(yDistance, zDistance, rotateX);
+//            rotate(xDistance, zDistance, rotateY);
+//            rotate(xDistance, yDistance, rotateZ);
+//        });
     }
 
     @NotNull
@@ -59,11 +58,11 @@ public class Connection extends Cylinder {
     }
 
     private void rotate(DoubleProperty distance1, DoubleProperty distance2, Rotate rotate) {
-        out.println("distance 1: " + distance1);
-        out.println("distance 2: " + distance2);
+//        out.println("distance 1: " + distance1);
+//        out.println("distance 2: " + distance2);
         double angle = Math.toDegrees(Math.tan(distance2.get() / distance1.get()));
-        out.println("angle: " + angle);
-        out.println();
+//        out.println("angle: " + angle);
+//        out.println();
         rotate.setAngle(angle);
     }
 

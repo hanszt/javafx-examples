@@ -89,4 +89,6 @@ public class FxSetup {
         slider.setShowTickLabels(true);
         return slider;
     }
+
+
 }

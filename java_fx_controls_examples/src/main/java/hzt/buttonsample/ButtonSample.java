@@ -1,6 +1,7 @@
 package hzt.buttonsample;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -49,7 +50,6 @@ public class ButtonSample extends Application {
         button1.setStyle("-fx-font: 22 arial; -fx-base: #b6e7c9;");
         button1.setOnAction(e -> label.setText(OK));
 
-
         Button button2 = new Button("Accept");
         button2.setOnAction(e -> label.setText(OK));
 
@@ -58,6 +58,9 @@ public class ButtonSample extends Application {
         button3.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> button3.setEffect(shadow));
 
         button3.addEventHandler(MouseEvent.MOUSE_EXITED, e -> button3.setEffect(null));
+
+        Button button6 = new Button("Launch browser");
+        button6.setOnAction(this::launchBrowser);
 
 
         hbox1.getChildren().add(button2);
@@ -77,6 +80,7 @@ public class ButtonSample extends Application {
 
         hbox2.getChildren().add(button4);
         hbox2.getChildren().add(button5);
+        hbox2.getChildren().add(button6);
         hbox2.setSpacing(25);
 
         vbox.getChildren().add(button1);
@@ -87,5 +91,16 @@ public class ButtonSample extends Application {
 
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void launchBrowser(ActionEvent actionEvent) {
+        Application application = new Application() {
+            @Override
+            public void start(Stage stage) {
+                //This new instance is to refer to the browser
+            }
+        };
+        application.getHostServices().showDocument("https://github.com/edencoding/javafx-ui/");
+        actionEvent.consume();
     }
 }

@@ -1,5 +1,5 @@
 # javafx3d-samples
-A collection of minimal sample code for JavaFX 3D
+A collection of minimal hzt.sample code for JavaFX 3D
 
 ## LoadModelApp
 
@@ -12,7 +12,7 @@ Scooter model used under license: CCA 3.0. Please see [LICENSE-Scooter.txt](LICE
 
 # Setup
 Before you run the program, make sure you modify the following in Intellij:
-- Go to File -->  Settings --> Appearance and Behaviour --> Path Variables
+- Go to File -->  hzt.Settings --> Appearance and Behaviour --> Path Variables
 - Add a new path variable by clicking on the + sign and name it PATH_TO_FX and browse to the lib folder of the JavaFX SDK to set its value, and click apply.
 - Go to Run --> Edit Configurations
 - Type the following in the VM Options section: --module-path ${PATH_TO_FX} --add-modules javafx.controls,javafx.fxml

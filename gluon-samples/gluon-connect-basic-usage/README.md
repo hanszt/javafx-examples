@@ -6,7 +6,7 @@ This application demonstrates how to retrieve data from a resource that is locat
 
 ## Documentation
 
-Read more about this particular sample in the [Creating a View](https://docs.gluonhq.com/charm/latest/#_creating_a_view)
+Read more about this particular hzt.sample in the [Creating a View](https://docs.gluonhq.com/charm/latest/#_creating_a_view)
 section on the Gluon Mobile documentation website.
 
 ## Quick Instructions

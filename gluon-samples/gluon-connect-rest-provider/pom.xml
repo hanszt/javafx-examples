@@ -15,7 +15,7 @@
     <name>Gluon Connect Rest Provider</name>
 
     <properties>
-        <main.class>com.gluonhq.samples.connect.rest.Main</main.class>
+        <main.class>com.gluonhq.samples.connect.rest.hzt.Main</main.class>
     </properties>
 
     <dependencies>

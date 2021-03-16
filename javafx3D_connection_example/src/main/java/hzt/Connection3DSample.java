@@ -7,7 +7,6 @@ import javafx.application.Application;
 import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
@@ -21,23 +20,24 @@ public class Connection3DSample extends Application {
 
     private final Translate pivot = new Translate();
     public final Rotate yRotate = new Rotate(0, Rotate.Y_AXIS);
+    private final Sphere point1 = createAndPositionSphere(2, 10, 10, 6);
+    private final Sphere point2 = createAndPositionSphere(2, -10, -10, 3);
 
     private Parent createContent() {
-        Sphere point1 = createAndPositionSphere(2,10, 10, 6);
-        Sphere point2 = createAndPositionSphere(2, -10, -10, 3);
         Connection connection = new Connection();
         connection.defineStartAndEndpoint(point1, point2);
 
-        Sphere sphere = createAndPositionSphere(2.5, 2, 0, 7);
-        sphere.setMaterial(new PhongMaterial(Color.FORESTGREEN));
+//        Sphere sphere = createAndPositionSphere(2.5, 2, 0, 7);
+//        sphere.setMaterial(new PhongMaterial(Color.FORESTGREEN));
 
-        Box box = new Box(5, 5, 5);
-        box.setMaterial(new PhongMaterial(Color.RED));
+//        Box box = new Box(5, 5, 5);
+//        box.setMaterial(new PhongMaterial(Color.RED));
 
         PerspectiveCamera camera = createAndPositionCamera();
         animateCameraPosition();
-
-        Group root = new Group(box, sphere, point1, point2, connection);
+        point1.setMaterial(new PhongMaterial(Color.GREEN));
+        point2.setMaterial(new PhongMaterial(Color.RED));
+        Group root = new Group(/*box, sphere,*/ point1, point2, connection);
 
         // set the pivot for the camera position animation base upon mouse clicks on objects
         configureRootChildren(root);
@@ -46,7 +46,7 @@ public class Connection3DSample extends Application {
         SubScene subScene = new SubScene(root, 300, 300, true, SceneAntialiasing.BALANCED);
         subScene.setFill(Color.ALICEBLUE);
         subScene.setCamera(camera);
-        new MouseControlService().initMouseControl(point1, subScene);
+        new MouseControlService().initMouseControl(point2, subScene);
         return new Group(subScene);
     }
 
@@ -72,7 +72,7 @@ public class Connection3DSample extends Application {
                 pivot,
                 yRotate,
                 new Rotate(-20, Rotate.X_AXIS),
-                new Translate(0, 0, -100)
+                new Translate(0, 0, -200)
         );
         return camera;
     }
@@ -95,7 +95,7 @@ public class Connection3DSample extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage.setResizable(false);
+//        stage.setResizable(false);
         Scene scene = new Scene(createContent());
         stage.setScene(scene);
         stage.show();

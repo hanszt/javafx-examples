@@ -19,7 +19,7 @@
     <name>HelloTribuo</name>
 
     <properties>
-        <main.class>com.gluonhq.samples.sample.Main</main.class>
+        <main.class>com.gluonhq.samples.hzt.sample.hzt.Main</main.class>
     </properties>
 
     <dependencies>

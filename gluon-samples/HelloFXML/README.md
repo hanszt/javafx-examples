@@ -5,7 +5,7 @@ A simple Hello World application with Java 11+, JavaFX 15+ (with FXML) and Graal
 
 ## Documentation
 
-Read about this sample [here](https://docs.gluonhq.com/client/#_hellofxml_sample)
+Read about this hzt.sample [here](https://docs.gluonhq.com/client/#_hellofxml_sample)
 
 ## Quick Instructions
 

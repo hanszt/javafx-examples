@@ -15,7 +15,7 @@
     <name>Gluon Connect File Provider</name>
 
     <properties>
-        <main.class>com.gluonhq.samples.connect.file.Main</main.class>
+        <main.class>com.gluonhq.samples.connect.file.hzt.Main</main.class>
     </properties>
 
     <dependencies>

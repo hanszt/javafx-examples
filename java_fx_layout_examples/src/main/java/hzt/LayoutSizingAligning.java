@@ -87,7 +87,7 @@ public class LayoutSizingAligning extends Application {
     }
 
     /*
-     * Creates the UI for the sizing sample, which demonstrates ways to manage
+     * Creates the UI for the sizing hzt.sample, which demonstrates ways to manage
      * the size of controls when you don't want the default sizes.
      */
     private Pane sizingSample() {
@@ -112,7 +112,7 @@ public class LayoutSizingAligning extends Application {
     }
 
     /*
-     * Creates the UI for the alignment sample, which demonstrates ways to manage
+     * Creates the UI for the alignment hzt.sample, which demonstrates ways to manage
      * the alignment of controls when you don't want the default alignment.
      */
     private Pane alignmentSample() {

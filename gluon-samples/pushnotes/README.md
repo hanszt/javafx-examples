@@ -14,7 +14,7 @@ Download the file `gluoncloudlink_config.json` and store it in project under the
 
 ## Documentation
 
-Read how to create this sample step by step [here](https://docs.gluonhq.com/samples/pushnotes/)
+Read how to create this hzt.sample step by step [here](https://docs.gluonhq.com/samples/pushnotes/)
 
 ## Quick Instructions
 

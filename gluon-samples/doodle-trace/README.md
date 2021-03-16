@@ -4,7 +4,7 @@ A JavaFX application that traces a user-drawn pattern and draws it back.
 
 ## Documentation
 
-Read how to create this sample step by step here.
+Read how to create this hzt.sample step by step here.
 
 ## Quick Instructions
 

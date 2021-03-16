@@ -102,7 +102,7 @@
                         <list>storage</list>
                     </attachList>
                     <reflectionList>
-                        <list>com.gluonhq.samples.beacons.settings.Settings</list>
+                        <list>com.gluonhq.samples.beacons.settings.hzt.Settings</list>
                         <list>com.gluonhq.samples.beacons.views.BeaconPresenter</list>
                         <list>com.gluonhq.samples.beacons.views.BeaconsPresenter</list>
                         <list>com.gluonhq.samples.beacons.views.BroadcastPresenter</list>

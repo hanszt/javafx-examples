@@ -25,6 +25,7 @@
 
 package fx_eight_three_d_features;
 
+import fx_eight_three_d_features.model.DiscreteWaveMesh;
 import fx_eight_three_d_features.model.ParabolaMesh;
 import fx_eight_three_d_features.model.PlaneZMesh;
 import fx_eight_three_d_features.model.WaveMesh;
@@ -32,6 +33,7 @@ import fx_eight_three_d_features.utils.FxSetup;
 import fx_eight_three_d_features.utils.FxUtils;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.*;
 import javafx.scene.control.ComboBox;
@@ -79,7 +81,8 @@ public class MeshViewer extends Application {
 
         PlaneZMesh waveMesh = new WaveMesh();
         PlaneZMesh parabolaMesh = new ParabolaMesh();
-        HBox controlsPane = buildControls(scene, waveMesh, parabolaMesh);
+        PlaneZMesh mazeMesh = new DiscreteWaveMesh();
+        HBox controlsPane = buildControls(scene, waveMesh, parabolaMesh, mazeMesh);
         controlsPane.setOpacity(.8);
 
         planeMeshContainer.getChildren().add(planeZMeshComboBox.getValue().getPlaneZMesh());
@@ -97,31 +100,34 @@ public class MeshViewer extends Application {
         root.getChildren().addAll(subScene, controlsPane);
 
         scene.setOnKeyTyped(e -> keyTypedAction(e, planeZMeshComboBox.getValue().getPlaneZMesh()));
-        configurePlaneZMeshes(waveMesh, parabolaMesh);
+        configurePlaneZMeshes(planeZMeshComboBox.getItems());
         mouseControlService.setOrientation(INIT_ANGLE_X, 0);
         mouseControlService.initMouseControl(planeMeshContainer, scene);
         return scene;
     }
 
-    private void configurePlaneZMeshes(PlaneZMesh... planeZMeshes) {
-        for (PlaneZMesh zMesh : planeZMeshes) {
-            configureMesh(zMesh);
+    private void configurePlaneZMeshes(ObservableList<PlaneMeshPicker> planeZMeshes) {
+        for (PlaneMeshPicker meshPicker : planeZMeshes) {
+            configureMesh(meshPicker.getPlaneZMesh());
         }
     }
 
-    private HBox buildControls(Scene scene, PlaneZMesh waveMesh, PlaneZMesh parabolaMesh) {
+    private HBox buildControls(Scene scene, PlaneZMesh waveMesh, PlaneZMesh parabolaMesh, PlaneZMesh mazeMesh) {
         PlaneMeshPicker waveMeshPicker = new PlaneMeshPicker("Wave mesh", waveMesh);
-        planeZMeshComboBox.getItems().addAll(waveMeshPicker, new PlaneMeshPicker("Parabola mesh", parabolaMesh));
+        planeZMeshComboBox.getItems().addAll(waveMeshPicker,
+                new PlaneMeshPicker("Parabola mesh", parabolaMesh),
+                new PlaneMeshPicker("Maze mesh", mazeMesh));
         planeZMeshComboBox.setValue(waveMeshPicker);
-        planeZMeshComboBox.valueProperty().addListener(this::planeZComboBoxChangedAction);
-
+        planeZMeshComboBox.valueProperty().addListener(this::updatePlaneZMeshView);
+        planeZMeshComboBox.prefWidthProperty().bind(scene.widthProperty());
         VBox vBox0 = FxSetup.configuredVBox(planeZMeshComboBox);
         VBox vBox1 = FxSetup.configuredVBox(dampeningSlider, amplitudeSlider);
         VBox vBox2 = FxSetup.configuredVBox(resolutionXSlider, resolutionYSlider);
         VBox vBox3 = FxSetup.configuredVBox(meshSizeXSlider, meshSizeYSlider, waveFrequencySlider);
         HBox controlsRoot = FxSetup.configuredHBox(vBox0, vBox1, vBox2, vBox3);
-        FxUtils.getAllNodes(controlsRoot).stream().filter(n -> n instanceof Slider)
-                .map(n -> (Slider) n).forEach(s -> configureSlider(scene, s));
+
+        FxUtils.getAllDescendents(controlsRoot).stream().filter(n -> n instanceof Slider)
+                .map(FxUtils::toSlider).forEach(s -> configureSlider(scene, s));
         return controlsRoot;
     }
 
@@ -146,7 +152,7 @@ public class MeshViewer extends Application {
         meshView.setMeshSizeX(INIT_MESH_SIZE_X);
         meshView.setMeshSizeY(INIT_MES_SIZE_Y);
         meshView.setAmplitude(INIT_AMPLITUDE);
-        meshView.setWaveFrequency(INIT_FREQUENCY);
+        meshView.setFrequency(INIT_FREQUENCY);
         meshView.setResolutionX(INIT_RESOLUTION_X);
         meshView.setResolutionY(INIT_RESOLUTION_Y);
         meshView.setDampening(INIT_DAMPENING_VALUE);
@@ -190,7 +196,7 @@ public class MeshViewer extends Application {
         planeZMesh.resolutionYProperty().bindBidirectional(resolutionYSlider.valueProperty());
         planeZMesh.meshSizeXProperty().bindBidirectional(meshSizeXSlider.valueProperty());
         planeZMesh.meshSizeYProperty().bindBidirectional(meshSizeYSlider.valueProperty());
-        planeZMesh.waveFrequencyProperty().bindBidirectional(waveFrequencySlider.valueProperty());
+        planeZMesh.frequencyProperty().bindBidirectional(waveFrequencySlider.valueProperty());
     }
 
     @Override
@@ -207,8 +213,8 @@ public class MeshViewer extends Application {
         launch(args);
     }
 
-    private void planeZComboBoxChangedAction(ObservableValue<? extends PlaneMeshPicker> o,
-                                             PlaneMeshPicker curVal, PlaneMeshPicker newVal) {
+    private void updatePlaneZMeshView(ObservableValue<? extends PlaneMeshPicker> o,
+                                      PlaneMeshPicker curVal, PlaneMeshPicker newVal) {
         planeMeshContainer.getChildren().remove(curVal.getPlaneZMesh());
         planeMeshContainer.getChildren().add(newVal.getPlaneZMesh());
     }

@@ -133,6 +133,6 @@ Use the following mouse or keyboard strokes to get the different views.
 
 ### Source
 [3d shape examples](https://examples.javacodegeeks.com/desktop-java/javafx/javafx-3d-shapes-example/)
-[Molecule sample app](https://docs.oracle.com/javafx/8/3d_graphics/sampleapp.htm#BABCGEAJ)
+[Molecule hzt.sample app](https://docs.oracle.com/javafx/8/3d_graphics/sampleapp.htm#BABCGEAJ)
 [Picking3D](https://docs.oracle.com/javase/8/javafx/graphics-tutorial/picking.htm)
 

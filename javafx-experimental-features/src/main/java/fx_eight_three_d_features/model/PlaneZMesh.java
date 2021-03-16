@@ -25,7 +25,7 @@ public abstract class PlaneZMesh extends MeshView {
 
     private final DoubleProperty amplitude = new SimpleDoubleProperty();
     private final DoubleProperty dampening = new SimpleDoubleProperty();
-    private final DoubleProperty waveFrequency = new SimpleDoubleProperty();
+    private final DoubleProperty frequency = new SimpleDoubleProperty();
     private final DoubleProperty meshSizeX = new SimpleDoubleProperty();
     private final DoubleProperty meshSizeY = new SimpleDoubleProperty();
 
@@ -39,7 +39,7 @@ public abstract class PlaneZMesh extends MeshView {
         resolutionY.addListener((o, c, n) -> buildTriangleMesh());
         amplitude.addListener((o, c, n) -> buildTriangleMesh());
         dampening.addListener((o, c, n) -> buildTriangleMesh());
-        waveFrequency.addListener((o, c, n) -> buildTriangleMesh());
+        frequency.addListener((o, c, n) -> buildTriangleMesh());
         meshSizeX.addListener((o, c, n) -> buildTriangleMesh());
         meshSizeY.addListener((o, c, n) -> buildTriangleMesh());
     }
@@ -145,6 +145,10 @@ public abstract class PlaneZMesh extends MeshView {
         return triangle3D.computeNormal();
     }
 
+    protected double computeDampening(double radius) {
+        return (dampeningProperty().get() + (1 - dampeningProperty().get()) * radius) / radius;
+    }
+
     public void setDiffuseAndBumpMapMaterial() {
         PhongMaterial material = (PhongMaterial) getMaterial();
         if (material.getDiffuseMap() == null && material.getBumpMap() == null) {
@@ -196,12 +200,12 @@ public abstract class PlaneZMesh extends MeshView {
         this.dampening.set(dampening);
     }
 
-    public DoubleProperty waveFrequencyProperty() {
-        return waveFrequency;
+    public DoubleProperty frequencyProperty() {
+        return frequency;
     }
 
-    public void setWaveFrequency(double waveFrequency) {
-        this.waveFrequency.set(waveFrequency);
+    public void setFrequency(double frequency) {
+        this.frequency.set(frequency);
     }
 
     public DoubleProperty meshSizeXProperty() {

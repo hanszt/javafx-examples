@@ -6,7 +6,7 @@ public class ParabolaMesh extends PlaneZMesh {
 
     protected float computeZValue(Point2D point2D) {
         double radius = point2D.magnitude();
-        return (float) (.1 * dampeningProperty().get() * radius * radius);
+        return (float) (.01 * amplitudeProperty().get() * radius * radius);
     }
 
 }

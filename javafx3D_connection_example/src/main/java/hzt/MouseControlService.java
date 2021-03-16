@@ -47,7 +47,6 @@ public class MouseControlService {
 
         reference.setOnMousePressed(this::mousePressedEvent);
         reference.setOnMouseDragged(this::mouseDraggedEvent);
-        reference.setOnMouseReleased(event -> target.setMouseTransparent(false));
         reference.addEventHandler(ScrollEvent.SCROLL, this::mouseScrollEvent);
     }
 

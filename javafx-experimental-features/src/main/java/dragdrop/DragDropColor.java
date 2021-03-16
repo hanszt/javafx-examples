@@ -25,16 +25,10 @@
 package dragdrop;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -45,10 +39,23 @@ import javafx.stage.Stage;
 
 public class DragDropColor extends Application {
 
-    private static final DataFormat DATA_FORMAT_COLOR =
-            new DataFormat("javafx.scene.color");
+    private static final DataFormat DATA_FORMAT_COLOR = new DataFormat("javafx.scene.color");
+    public static final String INFO = "Drag the color boxes onto the circles";
 
-    @Override public void start(final Stage stage) {
+    private static void onDragOver(DragEvent event) {
+        if (event.getDragboard().hasContent(DATA_FORMAT_COLOR)) {
+            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+        }
+    }
+
+    private static void toCopyOrMove(DragEvent event) {
+        if (event.getDragboard().hasString()) {
+            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+        }
+    }
+
+    @Override
+    public void start(final Stage stage) {
 
         Rectangle red = new Rectangle(25, 25, 50, 50);
         red.setFill(Color.RED);
@@ -95,93 +102,63 @@ public class DragDropColor extends Application {
     }
 
 
-    private static void makeSource(final Shape shape,
-            final TransferMode... transferModes) {
+    private static void makeSource(final Shape shape, final TransferMode... transferModes) {
+        shape.setOnDragDetected(event -> onDragDetected(shape, event, transferModes));
+        shape.setOnDragDone(event -> onDragDone(shape, event));
+    }
 
-        shape.setOnDragDetected(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent event) {
-                if (shape.getFill().equals(Color.GRAY)) {
-                    return;
-                }
-                Dragboard db = shape.startDragAndDrop(transferModes);
-                ClipboardContent content = new ClipboardContent();
-                content.putString(shape.getFill().toString());
+    private static void onDragDone(Shape shape, DragEvent event) {
+        System.out.println("DONE, " + event.getTransferMode());
+        if (event.getTransferMode() == TransferMode.MOVE) {
+            shape.setFill(Color.GRAY);
+        }
+    }
 
-                if (shape.getFill() instanceof Color) {
-                    Color c = (Color) shape.getFill();
+    private static void onDragDetected(Shape shape, MouseEvent event, TransferMode[] transferModes) {
+        if (shape.getFill().equals(Color.GRAY)) return;
 
-                    // Color is not Serializable, have to make something
-                    // we can transfer
-                    double[] arr = new double[] {
-                        c.getRed(), c.getGreen(), c.getBlue(),
-                        c.getOpacity() };
+        Dragboard db = shape.startDragAndDrop(transferModes);
+        ClipboardContent content = new ClipboardContent();
+        content.putString(shape.getFill().toString());
 
-                    content.put(DATA_FORMAT_COLOR, arr);
-                }
-                db.setContent(content);
+        if (shape.getFill() instanceof Color) {
+            Color c = (Color) shape.getFill();
 
-                event.consume();
-            }
-        });
+            // Color is not Serializable, have to make something
+            // we can transfer
+            double[] arr = {c.getRed(), c.getGreen(), c.getBlue(), c.getOpacity()};
+            content.put(DATA_FORMAT_COLOR, arr);
+        }
+        db.setContent(content);
 
-        shape.setOnDragDone(new EventHandler<DragEvent>() {
-            @Override public void handle(DragEvent event) {
-                System.out.println("DONE, " + event.getTransferMode());
-                if (event.getTransferMode() == TransferMode.MOVE) {
-                    shape.setFill(Color.GRAY);
-                }
-            }
-        });
-
+        event.consume();
     }
 
     private static void makeTarget(final Shape shape) {
+        shape.setOnDragOver(DragDropColor::onDragOver);
+        shape.setOnDragDropped(event -> onDragDropped(shape, event));
+    }
 
-        shape.setOnDragOver(new EventHandler<DragEvent>() {
-            @Override public void handle(DragEvent event) {
-                if (event.getDragboard().hasContent(DATA_FORMAT_COLOR)) {
-                    event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-                }
-            }
-        });
-
-        shape.setOnDragDropped(new EventHandler<DragEvent>() {
-            @Override public void handle(DragEvent event) {
-                Dragboard db = event.getDragboard();
-                if (db.hasContent(DATA_FORMAT_COLOR)) {
-                    double[] arr = (double[]) db.getContent(DATA_FORMAT_COLOR);
-                    shape.setFill(
-                            new Color(arr[0], arr[1], arr[2], arr[3]));
-                }
-                event.setDropCompleted(true);
-            }
-        });
+    private static void onDragDropped(Shape shape, DragEvent event) {
+        Dragboard db = event.getDragboard();
+        if (db.hasContent(DATA_FORMAT_COLOR)) {
+            double[] arr = (double[]) db.getContent(DATA_FORMAT_COLOR);
+            shape.setFill(new Color(arr[0], arr[1], arr[2], arr[3]));
+        }
+        event.setDropCompleted(true);
     }
 
     private static void makeTarget(final Text text) {
-
-        text.setOnDragOver(new EventHandler<DragEvent>() {
-            @Override public void handle(DragEvent event) {
-                if (event.getDragboard().hasString()) {
-                    event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-                }
-            }
-        });
-
-        text.setOnDragDropped(new EventHandler<DragEvent>() {
-            @Override public void handle(DragEvent event) {
-                Dragboard db = event.getDragboard();
-                if (db.hasString()) {
-                    text.setText(db.getString());
-                }
-                event.setDropCompleted(true);
-            }
-        });
+        text.setOnDragOver(DragDropColor::toCopyOrMove);
+        text.setOnDragDropped(event -> targetSetOnDragDropped(text, event));
     }
 
-    public static String info() {
-        return
-                "Drag the color boxes onto the circles";
+    private static void targetSetOnDragDropped(Text text, DragEvent event) {
+        Dragboard db = event.getDragboard();
+        if (db.hasString()) {
+            text.setText(db.getString());
+        }
+        event.setDropCompleted(true);
     }
 
     public static void main(String[] args) {

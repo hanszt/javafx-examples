@@ -64,7 +64,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>hzt.Main</mainClass>
+                            <mainClass>hzt.hzt.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

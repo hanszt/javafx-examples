@@ -25,12 +25,10 @@
 package dragdrop;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -58,7 +56,7 @@ public class Main extends Application {
         root.getChildren().add(launcher);
         root.getChildren().add(info);
 
-        register("Color", DragDropColor.class, DragDropColor.info());
+        register("Color", DragDropColor.class, DragDropColor.INFO);
         register("Text", DragDropText.class, DragDropText.info());
         register("Controls", DragDropWithControls.class, DragDropWithControls.info());
 
@@ -66,29 +64,27 @@ public class Main extends Application {
         stage.show();
     }
 
-    private Node createLauncher(final String name, final Class app) {
-        Text t = new Text(name);
-        t.setFont(new Font(25));
-        t.setFill(Color.DARKBLUE);
-        t.setUnderline(true);
-        t.setTranslateX(40);
-        t.setTextOrigin(VPos.TOP);
-
-        t.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent event) {
-                Stage stage = new Stage();
-                try {
-                    ((Application) app.newInstance()).start(stage);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        return t;
+    private Node createLauncher(final String name, final Class<?> app) {
+        Text text = new Text(name);
+        text.setFont(new Font(25));
+        text.setFill(Color.DARKBLUE);
+        text.setUnderline(true);
+        text.setTranslateX(40);
+        text.setTextOrigin(VPos.TOP);
+        text.setOnMouseClicked(event -> textOnMouseClicked(app));
+        return text;
     }
 
-    private void register(final String name, final Class app, final String description) {
+    private void textOnMouseClicked(Class<?> app) {
+        Stage stage = new Stage();
+        try {
+            ((Application) app.getDeclaredConstructor().newInstance()).start(stage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void register(final String name, final Class<?> app, final String description) {
         HBox g = new HBox();
 
         Circle bullet = new Circle(5);
@@ -108,11 +104,7 @@ public class Main extends Application {
         i.setTranslateX(50);
         i.setFont(new Font(25));
         i.setUnderline(true);
-        i.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent event) {
-                info.show(name, app, description);
-            }
-        });
+        i.setOnMouseClicked(event -> info.show(name, app, description));
 
         g.getChildren().add(bullet);
         g.getChildren().add(createLauncher(name, app));
@@ -121,14 +113,16 @@ public class Main extends Application {
         launcher.getChildren().add(g);
     }
 
-    private class Info extends Group {
-        Rectangle bg;
-        Text n, t, run, close;
+    private static class Info extends Group {
+
+        private final Text n;
+        private final Text t;
+        private final Text runText;
 
         public Info() {
             VBox vb = new VBox(10);
 
-            bg = new Rectangle(WIDTH, HEIGHT);
+            Rectangle bg = new Rectangle(WIDTH, HEIGHT);
             bg.setFill(Color.LIGHTBLUE);
 
             n = new Text();
@@ -140,45 +134,41 @@ public class Main extends Application {
             t.setFont(new Font(15));
             t.setTextOrigin(VPos.TOP);
             t.setTranslateX(10);
-            t.setWrappingWidth(WIDTH - 20);
+            t.setWrappingWidth(WIDTH - 20.);
 
-            run = new Text("Start application");
-            run.setFont(new Font(25));
-            run.setTranslateX(10);
-            run.setTextOrigin(VPos.TOP);
+            runText = new Text("Start application");
+            runText.setFont(new Font(25));
+            runText.setTranslateX(10);
+            runText.setTextOrigin(VPos.TOP);
 
-            close = new Text("Close info");
+            Text close = new Text("Close info");
             close.setFont(new Font(25));
             close.setTranslateX(10);
             close.setTextOrigin(VPos.TOP);
 
             setVisible(false);
 
-            close.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override public void handle(MouseEvent event) {
-                    Info.this.setVisible(false);
-                }
-            });
+            close.setOnMouseClicked(event -> Info.this.setVisible(false));
 
-            vb.getChildren().addAll(n, t, run, close);
+            vb.getChildren().addAll(n, t, runText, close);
             getChildren().addAll(bg, vb);
         }
 
-        public void show(final String name, final Class app, final String info) {
+        public void show(final String name, final Class<?> app, final String info) {
             n.setText(name);
             t.setText(info);
-            run.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override public void handle(MouseEvent event) {
-                    Info.this.setVisible(false);
-                    Stage stage = new Stage();
-                    try {
-                        ((Application) app.newInstance()).start(stage);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            runText.setOnMouseClicked(event -> runOnMouseClicked(app));
             setVisible(true);
+        }
+
+        private void runOnMouseClicked(Class<?> app) {
+            Info.this.setVisible(false);
+            Stage stage = new Stage();
+            try {
+                ((Application) app.getDeclaredConstructor().newInstance()).start(stage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
     }

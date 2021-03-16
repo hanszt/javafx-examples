@@ -5,6 +5,10 @@ A Shape has a size and a position, which are defined by their properties. For ex
 
 Shapes are not resized by their parents during layout. The size of a shape changes only when its size-related properties are changed. Shapes have an interior and a stroke. The properties for defining the interior and stroke of a shape are declared in the Shape class.
 
+### Setup
+--module-path ${PATH_TO_FX} --add-modules javafx.controls,javafx.fxml
+
+
 ### 5 Drawing polygons
 An instance of the Polygon class represents a polygon node. The class does not define any public properties. It lets you draw a polygon using an array of (x, y) coordinates defining the vertices of the polygon. Using the Polygon class, you can draw any type of geometric shape that is created using connected lines (triangles, pentagons, hexagons, parallelograms, etc.).
 

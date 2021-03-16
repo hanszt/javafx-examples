@@ -17,32 +17,17 @@ public class Icosahedron extends MeshView {
         // create 12 vertices of a icosahedron
         // 3 point indices, 3 normal indices and 3 texCoord indices per triangle
         final int numberOfVertices = 12;
-        final int pointSize = 3; // x, y, z
-        final int normalSize = 3; // nx, ny, nz
-        final int texCoordsSize = 2; // u, v
+        final int pointsPerVertex = 3; // x, y, z
+        final int normalsPerVertex = 3; // nx, ny, nz
+        final int texCoordsPerVertex = 2; // u, v
 
-        float[] points = new float[numberOfVertices * pointSize];
-        float[] normals = new float[numberOfVertices * normalSize];
-        float[] texCoords = new float[numberOfVertices * texCoordsSize];
+        float[] points = new float[numberOfVertices * pointsPerVertex];
+        float[] normals = new float[numberOfVertices * normalsPerVertex];
+        float[] texCoords = new float[numberOfVertices * texCoordsPerVertex];
 
-        List<FloatPoint3D> dVectorList = get3DVectorList();
+        fillThePointsAndNormalsArrays(scale, points, normals);
 
-        int i = 0;
-        for (FloatPoint3D vector : dVectorList) {
-            int pointIndex = i * pointSize;
-            points[pointIndex] = scale * vector.x;
-            points[pointIndex + 1] = scale * vector.y;
-            points[pointIndex + 2] = scale * vector.z;
-
-            int normalIndex = i * normalSize;
-            vector = vector.normalize();
-            normals[normalIndex] = vector.x;
-            normals[normalIndex + 1] = vector.y;
-            normals[normalIndex + 2] = vector.z;
-            i++;
-        }
-
-        // create 20 triangles of the icosahedron
+        // create the 20 triangles of the icosahedron
         int[] faces = buildFaces();
 
         TriangleMesh triangleMesh = new TriangleMesh(VertexFormat.POINT_NORMAL_TEXCOORD);
@@ -53,7 +38,21 @@ public class Icosahedron extends MeshView {
         setMesh(triangleMesh);
     }
 
-    private List<FloatPoint3D> get3DVectorList() {
+    private void fillThePointsAndNormalsArrays(float scale, float[] points, float[] normals) {
+        List<FloatPoint3D> dVectorList = getVector3DList();
+        int index = 0;
+        for (FloatPoint3D vector : dVectorList) {
+            FloatPoint3D normalizeVector = vector.normalize();
+            points[index] = scale * vector.x;
+            normals[index++] = normalizeVector.x;
+            points[index] = scale * vector.y;
+            normals[index++] = normalizeVector.y;
+            points[index] = scale * vector.z;
+            normals[index++] = normalizeVector.z;
+        }
+    }
+
+    private List<FloatPoint3D> getVector3DList() {
         List<FloatPoint3D> pointsList = new ArrayList<>();
         float goldenRatio = (float) getGoldenRatio();
         pointsList.add(new FloatPoint3D(-1, goldenRatio, 0));

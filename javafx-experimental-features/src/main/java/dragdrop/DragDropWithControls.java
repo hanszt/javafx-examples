@@ -33,11 +33,7 @@ import java.util.List;
 import java.util.Set;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -72,28 +68,29 @@ import javafx.util.Pair;
 
 public class DragDropWithControls extends Application {
 
-    final static DataFormat customBytes = new DataFormat("dndwithcontrols.custom.bytes");
-    final static DataFormat customString = new DataFormat("dndwithcontrols.custom.string");
+    static final DataFormat CUSTOM_BYTES = new DataFormat("dndwithcontrols.custom.bytes");
+    static final DataFormat CUSTOM_STRING = new DataFormat("dndwithcontrols.custom.string");
 
-    final static String html =
+    static final String HTML =
         "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" +
         "<html xmlns=\"http://www.w3.org/1999/xhtml\">" +
         "<head></head>" +
         "<body>Hello!</body>" +
         "</html>";
 
-    final static String rtf = "{\\rtf1\\ansi\\uc1{\\colortbl;\\red255\\green0\\blue0;}\\uc1\\b\\i FRED\\par rtf\\par text}";
+    static final String RTF = "{\\rtf1\\ansi\\uc1{\\colortbl;\\red255\\green0\\blue0;}\\uc1\\b\\i FRED\\par rtf\\par text}";
 
-    Pane sourceControlPane = new Pane();
-    Pane targetControlPane = new Pane();
-    Set<TransferMode> sourceModes = EnumSet.noneOf(TransferMode.class);
-    Set<TransferMode> targetModes = EnumSet.noneOf(TransferMode.class);
-    Set<DataFormat> sourceFormats = new HashSet<DataFormat>();
-    Set<DataFormat> targetFormats = new HashSet<DataFormat>();
+    final Pane sourceControlPane = new Pane();
+    final Pane targetControlPane = new Pane();
+    final Set<TransferMode> sourceModes = EnumSet.noneOf(TransferMode.class);
+    final Set<TransferMode> targetModes = EnumSet.noneOf(TransferMode.class);
+    final Set<DataFormat> sourceFormats = new HashSet<>();
+    final Set<DataFormat> targetFormats = new HashSet<>();
+    final Text log = new Text();
+    final List<String> messages = new LinkedList<>();
+    final List<File> files = new LinkedList<>();
+
     Image image;
-    Text log = new Text();
-    List<String> messages = new LinkedList<String>();
-    List<File> files = new LinkedList<File>();
 
     @Override public void start(final Stage stage) {
         final Group root = new Group();
@@ -107,14 +104,7 @@ public class DragDropWithControls extends Application {
         stage.setScene(scene);
         stage.show();
 
-        new Thread(new Runnable() {
-            @Override public void run() {
-                log("Loading image..");
-                image = new Image("http://openjdk.java.net/images/duke-thinking.png");
-                log("Ready.");
-                log("");
-            }
-        }).start();
+        new Thread(this::run).start();
     }
 
     private Node createMainPane() {
@@ -168,29 +158,11 @@ public class DragDropWithControls extends Application {
         hbox.getChildren().add(rbox);
 
         final Text fileHdr = new Text("Files to drag (0):");
-        final TextField tb = new TextField("Put full path here");
+        final TextField textField = new TextField("Put full path here");
         final Button add = new Button("Add");
-        add.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent event) {
-                File f = new File(tb.getText());
-                if (f.exists()) {
-                    files.add(f);
-                    tb.setText("");
-                    fileHdr.setText("Files to drag (" + files.size() + ")");
-                    log("Added file " + f.getPath());
-                } else {
-                    log("File doesn't exist: " + f.getPath());
-                }
-            }
-        });
+        add.setOnAction(event -> addFile(fileHdr, textField));
         final Button clear = new Button("Clear");
-        clear.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent event) {
-                files.clear();
-                fileHdr.setText("Files to drag (0)");
-                log("File list cleared");
-            }
-        });
+        clear.setOnAction(event -> clear(fileHdr));
 
         HBox btns = new HBox();
         btns.getChildren().add(add);
@@ -199,10 +171,26 @@ public class DragDropWithControls extends Application {
         box.getChildren().add(hbox);
         box.getChildren().add(new Separator());
         box.getChildren().add(fileHdr);
-        box.getChildren().add(tb);
+        box.getChildren().add(textField);
         box.getChildren().add(btns);
 
         return box;
+    }
+
+    private void clear(Text fileHdr) {
+        files.clear();
+        fileHdr.setText("Files to drag (0)");
+        log("File list cleared");
+    }
+
+    private void addFile(Text fileHdr, TextField textField) {
+        File file = new File(textField.getText());
+        if (file.exists()) {
+            files.add(file);
+            textField.setText("");
+            fileHdr.setText("Files to drag (" + files.size() + ")");
+            log("Added file " + file.getPath());
+        } else log("File doesn't exist: " + file.getPath());
     }
 
     private Node createRightPane() {
@@ -227,173 +215,138 @@ public class DragDropWithControls extends Application {
     }
 
     private Node createControlCombo(final Pane sourceControlPane, final boolean source) {
-        ChoiceBox<String> cb = new ChoiceBox<String>();
-        cb.getItems().addAll("Rectangle", "Button", "Checkbox", "ChoiceBox", "Hyperlink",
+        ChoiceBox<String> choiceBox = new ChoiceBox<>();
+        choiceBox.getItems().addAll("Rectangle", "Button", "Checkbox", "ChoiceBox", "Hyperlink",
                 "Label", "List", "RadioButton", "Tree");
 
-        cb.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
-                Node ctrl = null;
-                String text = source ? "This is source" : "This is target";
-                if (t1.equals("Rectangle")) {
+        choiceBox.getSelectionModel().selectedItemProperty().addListener((ov, t, newVal) -> {
+            Node ctrl = null;
+            String text = source ? "This is source" : "This is target";
+            switch (newVal) {
+                case "Rectangle":
                     ctrl = new Rectangle(50, 25, Color.DARKGRAY);
-                } else if (t1.equals("Button")) {
+                    break;
+                case "Button":
                     ctrl = new Button(text);
-                } else if (t1.equals("List")) {
-                    ListView<String> list = new ListView<String>(FXCollections.observableArrayList(
-                            text, "Foo", "Bar", "More", "Enough"));
-                    list.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-                    list.setPrefSize(list.getPrefWidth(), 80);
-                    ctrl = list;
-                } else if (t1.equals("Tree")) {
-                    TreeItem<String> ti = new TreeItem(text);
-                    ti.getChildren().add(new TreeItem<String>("Foo"));
-                    ti.getChildren().add(new TreeItem<String>("Bar"));
-                    ti.getChildren().add(new TreeItem<String>("More"));
-                    ti.getChildren().add(new TreeItem<String>("Enough"));
-                    TreeView tree = new TreeView<String>(ti);
-                    tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-                    tree.setPrefSize(tree.getPrefWidth(), 80);
-                    ctrl = tree;
-                } else if (t1.equals("Checkbox")) {
+                    break;
+                case "List":
+                    ctrl = createListView(text);
+                    break;
+                case "Tree":
+                    ctrl = getTreeView(text);
+                    break;
+                case "Checkbox":
                     ctrl = new CheckBox(text);
-                } else if (t1.equals("Hyperlink")) {
+                    break;
+                case "Hyperlink":
                     ctrl = new Hyperlink(text);
-                } else if (t1.equals("Label")) {
+                    break;
+                case "Label":
                     ctrl = new Label(text);
-                } else if (t1.equals("RadioButton")) {
+                    break;
+                case "RadioButton":
                     ctrl = new RadioButton(text);
-                } else if (t1.equals("ChoiceBox")) {
-                    ChoiceBox c = new ChoiceBox();
-                    c.getItems().addAll(text, "More");
-                    c.getSelectionModel().select(0);
-                    ctrl = c;
-                }
-                sourceControlPane.getChildren().clear();
-                sourceControlPane.getChildren().add(ctrl);
+                    break;
+                case "ChoiceBox":
+                    ctrl = createChoiceBox(text);
+                    break;
+                default:
+                    break;
+            }
+            sourceControlPane.getChildren().clear();
+            sourceControlPane.getChildren().add(ctrl);
 
-                final Node control = ctrl;
+            final Node control = ctrl;
 
-                if (source) {
-                    control.setOnDragDetected(new EventHandler<MouseEvent>() {
-                        @Override public void handle(MouseEvent event) {
-                            Dragboard db = control.startDragAndDrop(
-                                    sourceModes.toArray(new TransferMode[sourceModes.size()]));
-                            if (db == null) {
-                                log("Cannot start drag and drop.");
-                                return;
-                            }
-                            ClipboardContent content = new ClipboardContent();
-                            if (sourceFormats.contains(DataFormat.PLAIN_TEXT)) {
-                                log("Source is putting string on dragboard");
-                                content.putString("Hello!");
-                            }
-                            if (sourceFormats.contains(DataFormat.URL)) {
-                                log("Source is putting URL on dragboard");
-                                content.putUrl("http://www.oracle.com");
-                            }
-                            if (sourceFormats.contains(DataFormat.IMAGE)) {
-                                log("Source is putting image on dragboard");
-                                content.putImage(image);
-                            }
-                            if (sourceFormats.contains(DataFormat.HTML)) {
-                                log("Source is putting HTML on dragboard");
-                                content.putHtml(html);
-                            }
-                            if (sourceFormats.contains(DataFormat.RTF)) {
-                                log("Source is putting RTF on dragboard");
-                                content.putRtf(rtf);
-                            }
-                            if (sourceFormats.contains(customBytes)) {
-                                log("Source is putting custom four bytes on dragboard");
-                                content.put(customBytes, new byte[] { 1, 2, 3, 4 });
-                            }
-                            if (sourceFormats.contains(customString)) {
-                                log("Source is putting custom four bytes on dragboard");
-                                content.put(customString, "Hello Custom String!");
-                            }
-                            if (sourceFormats.contains(DataFormat.FILES)) {
-                                log("Source is putting two files on dragboard");
-                                content.putFiles(files);
-                            }
-                            db.setContent(content);
-                            event.consume();
-                        }
-                    });
-
-                    control.setOnDragDone(new EventHandler<DragEvent>() {
-                        @Override public void handle(DragEvent event) {
-                            log("Transfer done: " + event.getTransferMode());
-                            log("");
-                        }
-                    });
-                } else {
-                    control.setOnDragOver(new EventHandler<DragEvent>() {
-                        @Override public void handle(DragEvent event) {
-                            Dragboard db = event.getDragboard();
-                            for (DataFormat df : targetFormats) {
-                                if (db.hasContent(df)) {
-                                    event.acceptTransferModes(
-                                            targetModes.toArray(new TransferMode[targetModes.size()]));
-                                    return;
-                                }
-                            }
-                        }
-                    });
-
-                    control.setOnDragDropped(new EventHandler<DragEvent>() {
-                        @Override public void handle(DragEvent event) {
-                            Dragboard db = event.getDragboard();
-                            boolean gotData = false;
-                            if (targetFormats.contains(DataFormat.PLAIN_TEXT) && db.hasString()) {
-                                log("Dropped string: " + db.getString());
-                                gotData = true;
-                            }
-                            if (targetFormats.contains(DataFormat.HTML) && db.hasHtml()) {
-                                log("Dropped HTML: " + db.getHtml());
-                                gotData = true;
-                            }
-                            if (targetFormats.contains(DataFormat.RTF) && db.hasRtf()) {
-                                log("Dropped RTF: " + db.getRtf());
-                                gotData = true;
-                            }
-                            if (targetFormats.contains(DataFormat.URL) && db.hasUrl()) {
-                                log("Dropped URL: " + db.getUrl());
-                                gotData = true;
-                            }
-                            if (targetFormats.contains(DataFormat.IMAGE) && db.hasImage()) {
-                                log("Dropped image: " + db.getImage());
-                                gotData = true;
-                            }
-                            if (targetFormats.contains(DataFormat.FILES) && db.hasFiles()) {
-                                log("Dropped files:");
-                                for (File f : db.getFiles()) {
-                                    log("   " + f.getPath());
-                                }
-                                gotData = true;
-                            }
-                            if (targetFormats.contains(customBytes) && db.hasContent(customBytes)) {
-                                byte[] b = (byte[]) db.getContent(customBytes);
-                                log("Dropped custom bytes: " + b[0] + ", " + b[1] + ", " + b[2] + ", " + b[3]);
-                                gotData = true;
-                            }
-                            if (targetFormats.contains(customString) && db.hasContent(customString)) {
-                                String s = (String) db.getContent(customString);
-                                log("Dropped custom string: " + s);
-                                gotData = true;
-                            }
-                            event.setDropCompleted(gotData);
-                        }
-                    });
-                }
-
+            if (source) {
+                control.setOnDragDetected(event -> onDragDetected(control, event));
+                control.setOnDragDone(this::onDragDone);
+            } else {
+                control.setOnDragOver(this::onDragOver);
+                control.setOnDragDropped(this::onDragDropped);
             }
 
         });
 
-        cb.getSelectionModel().select(0);
-        return cb;
+        choiceBox.getSelectionModel().select(0);
+        return choiceBox;
+    }
+
+    private void onDragDetected(Node control, MouseEvent event) {
+        Dragboard db = control.startDragAndDrop(
+                sourceModes.toArray(new TransferMode[0]));
+        if (db == null) {
+            log("Cannot start drag and drop.");
+            return;
+        }
+        ClipboardContent content = new ClipboardContent();
+        if (sourceFormats.contains(DataFormat.PLAIN_TEXT)) {
+            log("Source is putting string on dragboard");
+            content.putString("Hello!");
+        }
+        if (sourceFormats.contains(DataFormat.URL)) {
+            log("Source is putting URL on dragboard");
+            content.putUrl("http://www.oracle.com");
+        }
+        if (sourceFormats.contains(DataFormat.IMAGE)) {
+            log("Source is putting image on dragboard");
+            content.putImage(image);
+        }
+        if (sourceFormats.contains(DataFormat.HTML)) {
+            log("Source is putting HTML on dragboard");
+            content.putHtml(HTML);
+        }
+        if (sourceFormats.contains(DataFormat.RTF)) {
+            log("Source is putting RTF on dragboard");
+            content.putRtf(RTF);
+        }
+        if (sourceFormats.contains(CUSTOM_BYTES)) {
+            log("Source is putting custom four bytes on dragboard");
+            content.put(CUSTOM_BYTES, new byte[] { 1, 2, 3, 4 });
+        }
+        if (sourceFormats.contains(CUSTOM_STRING)) {
+            log("Source is putting custom four bytes on dragboard");
+            content.put(CUSTOM_STRING, "Hello Custom String!");
+        }
+        if (sourceFormats.contains(DataFormat.FILES)) {
+            log("Source is putting two files on dragboard");
+            content.putFiles(files);
+        }
+        db.setContent(content);
+        event.consume();
+    }
+
+    private Node createChoiceBox(String text) {
+        Node ctrl;
+        ChoiceBox<String> c = new ChoiceBox<>();
+        c.getItems().addAll(text, "More");
+        c.getSelectionModel().select(0);
+        ctrl = c;
+        return ctrl;
+    }
+
+    private Node getTreeView(String text) {
+        Node ctrl;
+        TreeItem<String> rootTreeItem = new TreeItem<>(text);
+        rootTreeItem.getChildren().add(new TreeItem<>("Foo"));
+        rootTreeItem.getChildren().add(new TreeItem<>("Bar"));
+        rootTreeItem.getChildren().add(new TreeItem<>("More"));
+        rootTreeItem.getChildren().add(new TreeItem<>("Enough"));
+        TreeView<String> tree = new TreeView<>(rootTreeItem);
+        tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        tree.setPrefSize(tree.getPrefWidth(), 80);
+        ctrl = tree;
+        return ctrl;
+    }
+
+    private Node createListView(String text) {
+        Node ctrl;
+        ListView<String> listView = new ListView<>(FXCollections.observableArrayList(
+                text, "Foo", "Bar", "More", "Enough"));
+        listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        listView.setPrefSize(listView.getPrefWidth(), 80);
+        ctrl = listView;
+        return ctrl;
     }
 
     private Node createTMSelect(final Set<TransferMode> tms) {
@@ -401,50 +354,35 @@ public class DragDropWithControls extends Application {
 
         for (final TransferMode tm : TransferMode.values()) {
             CheckBox cb = new CheckBox(tm.toString());
-            cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
-                    if (t1) {
-                        tms.add(tm);
-                    } else {
-                        tms.remove(tm);
-                    }
-                }
-            });
-            if (tm == TransferMode.COPY) {
-                cb.selectedProperty().set(true);
-            }
+            cb.selectedProperty().addListener((ov, t, t1) -> onCheckboxChanged(tms, tm, t1));
+            if (tm == TransferMode.COPY) cb.selectedProperty().set(true);
             box.getChildren().add(cb);
         }
 
         return box;
     }
 
+    private void onCheckboxChanged(Set<TransferMode> tms, TransferMode tm, Boolean t1) {
+        if (Boolean.TRUE.equals(t1)) tms.add(tm);
+        else tms.remove(tm);
+    }
+
     private Node createFormatSelect(final Set<DataFormat> dataFormats) {
         VBox box = new VBox();
 
-        List<Pair<DataFormat, String>> list = new ArrayList<Pair<DataFormat, String>>(10);
-        list.add(new Pair<DataFormat, String>(DataFormat.PLAIN_TEXT, "PLAIN_TEXT"));
-        list.add(new Pair<DataFormat, String>(DataFormat.HTML, "HTML"));
-        list.add(new Pair<DataFormat, String>(DataFormat.RTF, "RTF"));
-        list.add(new Pair<DataFormat, String>(DataFormat.URL, "URL"));
-        list.add(new Pair<DataFormat, String>(DataFormat.IMAGE, "IMAGE"));
-        list.add(new Pair<DataFormat, String>(DataFormat.FILES, "FILES"));
-        list.add(new Pair<DataFormat, String>(customBytes, "Custom (bytes)"));
-        list.add(new Pair<DataFormat, String>(customString, "Custom (String)"));
+        List<Pair<DataFormat, String>> list = new ArrayList<>(10);
+        list.add(new Pair<>(DataFormat.PLAIN_TEXT, "PLAIN_TEXT"));
+        list.add(new Pair<>(DataFormat.HTML, "HTML"));
+        list.add(new Pair<>(DataFormat.RTF, "RTF"));
+        list.add(new Pair<>(DataFormat.URL, "URL"));
+        list.add(new Pair<>(DataFormat.IMAGE, "IMAGE"));
+        list.add(new Pair<>(DataFormat.FILES, "FILES"));
+        list.add(new Pair<>(CUSTOM_BYTES, "Custom (bytes)"));
+        list.add(new Pair<>(CUSTOM_STRING, "Custom (String)"));
 
         for (final Pair<DataFormat, String> df : list) {
             CheckBox cb = new CheckBox(df.getValue());
-            cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
-                    if (t1) {
-                        dataFormats.add(df.getKey());
-                    } else {
-                        dataFormats.remove(df.getKey());
-                    }
-                }
-            });
+            cb.selectedProperty().addListener((ov, t, t1) -> adaptDataFormats(dataFormats, df, t1));
             box.getChildren().add(cb);
         }
 
@@ -453,19 +391,22 @@ public class DragDropWithControls extends Application {
         return box;
     }
 
+    private void adaptDataFormats(Set<DataFormat> dataFormats, Pair<DataFormat, String> df, Boolean t1) {
+        if (Boolean.TRUE.equals(t1)) dataFormats.add(df.getKey());
+        else dataFormats.remove(df.getKey());
+    }
+
     private void log(String text) {
         System.out.println(text);
 
         messages.add(text);
-        if (messages.size() > 15) {
-            messages.remove(0);
-        }
+        if (messages.size() > 15) messages.remove(0);
 
         StringBuilder sb = new StringBuilder();
         for (String msg : messages) {
             sb.append(msg).append("\n");
         }
-        Platform.runLater(() -> { log.setText(sb.toString()); });
+        Platform.runLater(() -> log.setText(sb.toString()));
     }
 
     public static String info() {
@@ -477,5 +418,71 @@ public class DragDropWithControls extends Application {
 
     public static void main(String[] args) {
         Application.launch(args);
+    }
+
+    private void run() {
+        log("Loading image..");
+        image = new Image("http://openjdk.java.net/images/duke-thinking.png");
+        log("Ready.");
+        log("");
+    }
+
+    private void onDragDone(DragEvent event) {
+        log("Transfer done: " + event.getTransferMode());
+        log("");
+    }
+
+    private void onDragOver(DragEvent event) {
+        Dragboard db = event.getDragboard();
+        for (DataFormat df : targetFormats) {
+            if (db.hasContent(df)) {
+                event.acceptTransferModes(
+                        targetModes.toArray(new TransferMode[0]));
+                return;
+            }
+        }
+    }
+
+    private void onDragDropped(DragEvent event) {
+        Dragboard db = event.getDragboard();
+        boolean gotData = false;
+        if (targetFormats.contains(DataFormat.PLAIN_TEXT) && db.hasString()) {
+            log("Dropped string: " + db.getString());
+            gotData = true;
+        }
+        if (targetFormats.contains(DataFormat.HTML) && db.hasHtml()) {
+            log("Dropped HTML: " + db.getHtml());
+            gotData = true;
+        }
+        if (targetFormats.contains(DataFormat.RTF) && db.hasRtf()) {
+            log("Dropped RTF: " + db.getRtf());
+            gotData = true;
+        }
+        if (targetFormats.contains(DataFormat.URL) && db.hasUrl()) {
+            log("Dropped URL: " + db.getUrl());
+            gotData = true;
+        }
+        if (targetFormats.contains(DataFormat.IMAGE) && db.hasImage()) {
+            log("Dropped image: " + db.getImage());
+            gotData = true;
+        }
+        if (targetFormats.contains(DataFormat.FILES) && db.hasFiles()) {
+            log("Dropped files:");
+            for (File f : db.getFiles()) {
+                log("   " + f.getPath());
+            }
+            gotData = true;
+        }
+        if (targetFormats.contains(CUSTOM_BYTES) && db.hasContent(CUSTOM_BYTES)) {
+            byte[] b = (byte[]) db.getContent(CUSTOM_BYTES);
+            log("Dropped custom bytes: " + b[0] + ", " + b[1] + ", " + b[2] + ", " + b[3]);
+            gotData = true;
+        }
+        if (targetFormats.contains(CUSTOM_STRING) && db.hasContent(CUSTOM_STRING)) {
+            String s = (String) db.getContent(CUSTOM_STRING);
+            log("Dropped custom string: " + s);
+            gotData = true;
+        }
+        event.setDropCompleted(gotData);
     }
 }

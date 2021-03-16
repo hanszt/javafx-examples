@@ -1,17 +1,15 @@
 package hzt.checkboxsample;
 
 import javafx.application.Application;
-import javafx.scene.layout.StackPane;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.CheckBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -19,8 +17,10 @@ import javafx.stage.Stage;
 
 public class CheckboxSample extends Application {
 
-    Rectangle rect = new Rectangle(90, 30);
-    final String[] names = new String[]{"Security", "Project", "Chart"};
+    private static final String RELATIVE_RESOURCES_DIR = "/checkboxsample/";
+
+    final Rectangle rect = new Rectangle(90, 30);
+    final String[] names = {"Security", "Project", "Chart"};
     final Image[] images = new Image[names.length];
     final ImageView[] icons = new ImageView[names.length];
     final CheckBox[] cbs = new CheckBox[names.length];
@@ -42,15 +42,10 @@ public class CheckboxSample extends Application {
 
         for (int i = 0; i < names.length; i++) {
             final Image image = images[i] =
-                new Image(getClass().getResourceAsStream(names[i] + ".png"));
+                new Image(getClass().getResourceAsStream(RELATIVE_RESOURCES_DIR + names[i] + ".png"));
             final ImageView icon = icons[i] = new ImageView();
-            final CheckBox cb = cbs[i] = new CheckBox(names[i]);
-            cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                public void changed(ObservableValue ov,
-                    Boolean old_val, Boolean new_val) {
-                        icon.setImage(new_val ? image : null);
-                }
-            });
+            final CheckBox checkBox = cbs[i] = new CheckBox(names[i]);
+            checkBox.selectedProperty().addListener((o, c, n) -> icon.setImage(Boolean.TRUE.equals(n) ? image : null));
         }
 
         VBox vbox = new VBox();

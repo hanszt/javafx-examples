@@ -15,7 +15,7 @@
     <name>Gluon Connect Basic Usage</name>
 
     <properties>
-        <main.class>com.gluonhq.samples.connect.basic.Main</main.class>
+        <main.class>com.gluonhq.samples.connect.basic.hzt.Main</main.class>
     </properties>
 
     <dependencies>

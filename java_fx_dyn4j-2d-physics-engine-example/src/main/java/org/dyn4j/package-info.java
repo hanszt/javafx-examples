@@ -24,7 +24,7 @@
  */
 
 /**
- * Main package containing general classes used by the library.
+ * hzt.Main package containing general classes used by the library.
  * <p>
  * The {@link org.dyn4j.Version} class can be used to retrieve the version of the library that is
  * currently running.

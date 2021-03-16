@@ -1,3 +1,5 @@
+package hzt;
+
 public class Settings {
 
     public static double SCENE_WIDTH = 800;
