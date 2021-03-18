@@ -1,5 +1,5 @@
 # Java fx examples
-This is a JavaFX examples package. It's intended to get familiar with the different compenents of javaFX.
+This is a JavaFX examples package. It's intended to get familiar with the different components of javaFX.
 
 ## Setup
 Before you run the program, make sure you modify the following in Intellij:
