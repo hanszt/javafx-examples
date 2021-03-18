@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 
 public class SearchBarTableViewController implements Initializable {
 
-    public static final String NEW_YORK = "New York";
     @FXML
     private TableView<Order> exampleTable;
     @FXML
@@ -37,7 +36,6 @@ public class SearchBarTableViewController implements Initializable {
     private TableColumn<Order, String> cityColumn;
     @FXML
     private TextField searchBox;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         orderIdColumn.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
@@ -52,6 +50,8 @@ public class SearchBarTableViewController implements Initializable {
         searchBox.textProperty().addListener((observable, oldValue, newValue) ->
                 exampleTable.setItems(filterList(orders, newValue.toLowerCase())));
     }
+
+    private static final String NEW_YORK = "New York";
 
     private List<Order> getOrders() {
         return List.of(

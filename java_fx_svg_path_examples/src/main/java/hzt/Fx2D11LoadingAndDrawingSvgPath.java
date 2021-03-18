@@ -20,10 +20,6 @@ import java.io.InputStream;
 
 public class Fx2D11LoadingAndDrawingSvgPath extends Application {
 
-    public static void main(String[] args) {
-        Application.launch(args);
-    }
-
     @Override
     public void start(Stage stage) {
         ImageView arrow = new ImageView();

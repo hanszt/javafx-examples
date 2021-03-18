@@ -8,9 +8,6 @@ import javafx.scene.shape.CubicCurve;
 import javafx.stage.Stage;
 
 public class Fx2D9DrawingCubicCurves extends Application {
-    public static void main(String[] args) {
-        Application.launch(args);
-    }
 
     @Override
     public void start(Stage stage) {

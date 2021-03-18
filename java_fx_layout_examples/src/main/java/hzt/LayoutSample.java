@@ -71,31 +71,29 @@ public class LayoutSample extends Application {
     @Override
     public void start(Stage stage) {
 
-// Use a border pane as the root for scene
-        BorderPane border = new BorderPane();
+        BorderPane root = new BorderPane();
 
         HBox hbox = addHBox();
-        border.setTop(hbox);
-        border.setLeft(addVBox());
+        root.setTop(hbox);
+        root.setLeft(addVBox());
 
-// Add a stack to the HBox in the top region
-        addStackPane(hbox);
+        addStackPaneInTopRegion(hbox);
 
 // To see only the grid in the center, uncomment the following statement
 // comment out the setCenter() call farther down        
-//        border.setCenter(addGridPane());
+//        root.setCenter(addGridPane());
 
 // Choose either a TilePane or FlowPane for right region and comment out the
 // one you aren't using        
-        border.setRight(addFlowPane());
+        root.setRight(addFlowPane());
 //        border.setRight(addTilePane());
 
 // To see only the grid in the center, comment out the following statement
 // If both setCenter() calls are executed, the anchor pane from the second
 // call replaces the grid from the first call        
-        border.setCenter(addAnchorPane(addGridPane()));
+        root.setCenter(addAnchorPane(addGridPane()));
 
-        Scene scene = new Scene(border);
+        Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Layout Sample");
         stage.show();
@@ -156,7 +154,7 @@ public class LayoutSample extends Application {
      *
      * @param hb HBox to add the stack to
      */
-    private void addStackPane(HBox hb) {
+    private void addStackPaneInTopRegion(HBox hb) {
 
         StackPane stack = new StackPane();
         Rectangle helpIcon = new Rectangle(30.0, 25.0);
@@ -244,7 +242,7 @@ public class LayoutSample extends Application {
         flow.setPrefWrapLength(170); // preferred width allows for two columns
         flow.setStyle("-fx-background-color: DAE6F3;");
 
-        ImageView pages[] = new ImageView[8];
+        ImageView[] pages = new ImageView[8];
         for (int i = 0; i < 8; i++) {
             pages[i] = new ImageView(
                     new Image(getClass().getResourceAsStream(
