@@ -11,7 +11,6 @@ module Main.app {
     exports hzt.htmleditorsample;
 
     opens hzt to javafx.graphics;
-
     opens hzt.togglebuttonsample to javafx.graphics;
     opens hzt.textfieldsample to javafx.graphics;
     opens hzt.tooltipsample to javafx.graphics;
@@ -35,4 +34,5 @@ module Main.app {
     opens hzt.listviewsample to javafx.graphics;
     opens hzt.labelsample to javafx.graphics;
     opens hzt.slidersample to javafx.graphics;
+    opens hzt.fxwebbrowser to javafx.graphics, javafx.fxml;
 }

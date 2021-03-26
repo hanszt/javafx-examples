@@ -31,9 +31,12 @@ public class PaginationSample extends Application {
         return box;
     }
 
+    private static final int INIT_PAGE_INDEX = 0;
+    private static final int NUMBER_OF_PAGES = 28;
+
     @Override
     public void start(final Stage stage) throws Exception {
-        Pagination pagination = new Pagination(28, 0);
+        Pagination pagination = new Pagination(NUMBER_OF_PAGES, INIT_PAGE_INDEX);
         pagination.setStyle("-fx-border-color:red;");
         pagination.setPageFactory(this::createPage);
 

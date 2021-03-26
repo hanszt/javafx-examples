@@ -31,6 +31,23 @@ public class ComboBoxSample extends Application {
         stage.setTitle("ComboBoxSample");
         Scene scene = new Scene(new Group(), 500, 300);
 
+        final ComboBox<String> emailComboBox = buildEmailComboBox();
+
+        final ComboBox<String> priorityComboBox = buildPriorityBox();
+
+        sendButton.setOnAction(e -> sendButtonAction(emailComboBox, priorityComboBox));
+
+        GridPane grid = buildGrid(emailComboBox, priorityComboBox);
+
+        Group root = (Group) scene.getRoot();
+        root.getChildren().add(grid);
+        stage.setScene(scene);
+        stage.show();
+
+    }
+
+    @NotNull
+    private ComboBox<String> buildEmailComboBox() {
         final ComboBox<String> emailComboBox = new ComboBox<>();
         emailComboBox.getItems().addAll(
                 "jacob.smith@example.com",
@@ -42,14 +59,11 @@ public class ComboBoxSample extends Application {
         emailComboBox.setPromptText("Email address");
         emailComboBox.setEditable(true);
         emailComboBox.valueProperty().addListener((oldVal, curVal, newVal) -> address = newVal);
+        return emailComboBox;
+    }
 
-        final ComboBox<String> priorityComboBox = new ComboBox<>();
-        priorityComboBox.getItems().addAll(HIGHEST,HIGH, NORMAL, LOW, LOWEST);
-        priorityComboBox.setValue(NORMAL);
-        priorityComboBox.setCellFactory(getCallback());
-
-        sendButton.setOnAction(e -> sendButtonAction(emailComboBox, priorityComboBox));
-
+    @NotNull
+    private GridPane buildGrid(ComboBox<String> emailComboBox, ComboBox<String> priorityComboBox) {
         GridPane grid = new GridPane();
         grid.setVgap(4);
         grid.setHgap(10);
@@ -63,12 +77,16 @@ public class ComboBoxSample extends Application {
         grid.add(text, 0, 2, 4, 1);
         grid.add(sendButton, 0, 3);
         grid.add(notification, 1, 3, 3, 1);
+        return grid;
+    }
 
-        Group root = (Group) scene.getRoot();
-        root.getChildren().add(grid);
-        stage.setScene(scene);
-        stage.show();
-
+    @NotNull
+    private ComboBox<String> buildPriorityBox() {
+        final ComboBox<String> priorityComboBox = new ComboBox<>();
+        priorityComboBox.getItems().addAll(HIGHEST,HIGH, NORMAL, LOW, LOWEST);
+        priorityComboBox.setValue(NORMAL);
+        priorityComboBox.setCellFactory(getCallback());
+        return priorityComboBox;
     }
 
     private void sendButtonAction(ComboBox<String> emailComboBox, ComboBox<String> priorityComboBox) {
@@ -101,7 +119,7 @@ public class ComboBoxSample extends Application {
 
             @NotNull
             private ListCell<String> getListCell() {
-                ListCell<String> listCell = new ListCell<String>() {
+                ListCell<String> listCell = new ListCell<>() {
 
                     @Override
                     public void updateItem(String item, boolean empty) {

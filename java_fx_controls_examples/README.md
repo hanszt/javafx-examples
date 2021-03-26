@@ -15,5 +15,6 @@ source: [openjfx-docs IDE Intellij](https://openjfx.io/openjfx-docs/#IDE-Intelli
 
 
 ## Source
-[File chooser tutorial oracle docs](https://docs.oracle.com/javafx/2/ui_controls/file-chooser.htm)
-[Pagination control](https://docs.oracle.com/javafx/2/ui_controls/pagination.htm)
+- [File chooser tutorial oracle docs](https://docs.oracle.com/javafx/2/ui_controls/file-chooser.htm)
+- [Pagination control](https://docs.oracle.com/javafx/2/ui_controls/pagination.htm)
+- [JavaFX GUI](https://www.youtube.com/watch?v=9XJicRt_FaI&t=13149s)
