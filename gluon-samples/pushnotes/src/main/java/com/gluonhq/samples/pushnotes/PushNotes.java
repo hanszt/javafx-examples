@@ -51,11 +51,9 @@ public class PushNotes extends MobileApplication {
         scene.getStylesheets().add(PushNotes.class.getResource("style.css").toExternalForm());
         ((Stage) scene.getWindow()).getIcons().add(new Image(PushNotes.class.getResourceAsStream("/icon.png")));
 
-        RuntimeArgsService.create().ifPresent(ras -> {
-            ras.addListener(RuntimeArgsService.LAUNCH_PUSH_NOTIFICATION_KEY, f -> {
-                System.out.println("Received a push notification with contents: " + f);
-            });
-        });
+        RuntimeArgsService.create().ifPresent(ras ->
+                ras.addListener(RuntimeArgsService.LAUNCH_PUSH_NOTIFICATION_KEY, f ->
+                System.out.println("Received a push notification with contents: " + f)));
 
         PushClient pushClient = new PushClient();
         pushClient.enable();

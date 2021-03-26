@@ -42,8 +42,8 @@ public class Main extends MobileApplication {
 
     @Override
     public void init() {
-        addViewFactory(RESTLIST_VIEW, () -> new RestListView());
-        addViewFactory(RESTOBJECT_VIEW, () -> new RestObjectView());
+        addViewFactory(RESTLIST_VIEW, RestListView::new);
+        addViewFactory(RESTOBJECT_VIEW, RestObjectView::new);
 
         updateDrawer();
     }

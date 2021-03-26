@@ -1,3 +1,15 @@
+package com.gluonhq.samples.connect.rest;
+
+import com.gluonhq.connect.converter.InputStreamIterableInputConverter;
+import com.gluonhq.connect.converter.JsonConverter;
+
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 /**
  * Copyright (c) 2016, Gluon
  * All rights reserved.
@@ -24,17 +36,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.samples.connect.rest;
-
-import com.gluonhq.connect.converter.InputStreamIterableInputConverter;
-import com.gluonhq.connect.converter.JsonConverter;
-
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import java.util.Iterator;
-
 public class ItemsIterableInputConverter<E> extends InputStreamIterableInputConverter<E> implements Iterator<E> {
 
     private JsonArray jsonArray;
@@ -51,9 +52,13 @@ public class ItemsIterableInputConverter<E> extends InputStreamIterableInputConv
     }
 
     @Override
-    public E next() {
-        JsonObject jsonObject = jsonArray.getJsonObject(index++);
-        return converter.readFromJson(jsonObject);
+    public E next() throws NoSuchElementException {
+        try {
+            JsonObject jsonObject = jsonArray.getJsonObject(index++);
+            return converter.readFromJson(jsonObject);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new NoSuchElementException();
+        }
     }
 
     @Override
