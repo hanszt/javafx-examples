@@ -43,11 +43,10 @@ public class Connection extends Cylinder {
         DoubleProperty zDistanceSquared = bindOperation(zDistance.multiply(zDistance));
         DoubleProperty lengthSquared = bindOperation(xDistanceSquared.add(yDistanceSquared.add(zDistanceSquared)));
         lengthSquared.addListener((observableValue, number, t1) -> setHeight(Math.sqrt(lengthSquared.get())));
-//        lengthSquared.addListener((observableValue, number, t1) -> {
-//           - rotate(yDistance, zDistance, rotateX);
-//            rotate(xDistance, zDistance, rotateY);
-//            rotate(xDistance, yDistance, rotateZ);
-//        });
+        endX.addListener((o, c, n) -> rotate(xDistance, yDistance, rotateZ));
+        endY.addListener((o, c, n) -> rotate(xDistance, yDistance, rotateZ));
+        endX.addListener((o, c, n) -> rotate(xDistance, zDistance, rotateY));
+        endZ.addListener((o, c, n) -> rotate(xDistance, zDistance, rotateY));
     }
 
     @NotNull
@@ -57,13 +56,15 @@ public class Connection extends Cylinder {
         return doubleProperty;
     }
 
+    private static final int RIGHT_ANGLE = 90;
+
     private void rotate(DoubleProperty distance1, DoubleProperty distance2, Rotate rotate) {
 //        out.println("distance 1: " + distance1);
 //        out.println("distance 2: " + distance2);
-        double angle = Math.toDegrees(Math.tan(distance2.get() / distance1.get()));
+        double angle = Math.toDegrees(Math.atan(distance2.get() / distance1.get()));
 //        out.println("angle: " + angle);
 //        out.println();
-        rotate.setAngle(angle);
+        rotate.setAngle(angle + RIGHT_ANGLE);
     }
 
     private void bindPositionBasedOnStartAndEnd() {
