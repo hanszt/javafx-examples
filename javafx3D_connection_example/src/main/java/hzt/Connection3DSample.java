@@ -1,66 +1,89 @@
 package hzt;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.geometry.Point3D;
 import javafx.scene.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import org.jetbrains.annotations.NotNull;
-
-import static javafx.animation.Animation.INDEFINITE;
 
 public class Connection3DSample extends Application {
 
-    private final Translate pivot = new Translate();
-    public final Rotate yRotate = new Rotate(0, Rotate.Y_AXIS);
-    private final Sphere point1 = createAndPositionSphere(2, 10, 10, 6);
-    private final Sphere point2 = createAndPositionSphere(2, -10, -10, 3);
+    private static final Point3D INIT_RED_POINT_POSITION = new Point3D(10, 0, 0);
+
+    private final Sphere greenSphere = createAndPositionSphere(2, Point3D.ZERO);
+    private final Sphere redSphere = createAndPositionSphere(2, INIT_RED_POINT_POSITION);
+    private final MouseControlService mouseControlService = new MouseControlService();
 
     private Parent createContent() {
         Connection connection = new Connection();
-        connection.defineStartAndEndpoint(point1, point2);
+        connection.defineStartAndEndpoint(greenSphere, redSphere);
 
-//        Sphere sphere = createAndPositionSphere(2.5, 2, 0, 7);
-//        sphere.setMaterial(new PhongMaterial(Color.FORESTGREEN));
+        greenSphere.setMaterial(new PhongMaterial(Color.GREEN));
+        redSphere.setMaterial(new PhongMaterial(Color.RED));
+        Group root = new Group(/*box, sphere,*/ greenSphere, redSphere, connection);
 
-//        Box box = new Box(5, 5, 5);
-//        box.setMaterial(new PhongMaterial(Color.RED));
-
-        PerspectiveCamera camera = createAndPositionCamera();
-        animateCameraPosition();
-        point1.setMaterial(new PhongMaterial(Color.GREEN));
-        point2.setMaterial(new PhongMaterial(Color.RED));
-        Group root = new Group(/*box, sphere,*/ point1, point2, connection);
-
-        // set the pivot for the camera position animation base upon mouse clicks on objects
-        configureRootChildren(root);
-
-        // Use a SubScene
-        SubScene subScene = new SubScene(root, 300, 300, true, SceneAntialiasing.BALANCED);
-        subScene.setFill(Color.ALICEBLUE);
-        subScene.setCamera(camera);
-        new MouseControlService().initMouseControl(point2, subScene);
+        SubScene subScene = createSubScene(root);
+        mouseControlService.initMouseControl(root, subScene);
         return new Group(subScene);
     }
 
-    @NotNull
-    private Sphere createAndPositionSphere(double radius, double xPos, double yPos, double zPos) {
-        Sphere sphere = new Sphere(radius);
-        sphere.setTranslateX(xPos);
-        sphere.setTranslateY(yPos);
-        sphere.setTranslateZ(zPos);
-        return sphere;
+    private void addKeyControl(Scene scene) {
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, this::keyPressed);
     }
 
-    private void configureRootChildren(Group root) {
-        root.getChildren().forEach(node -> node.setOnMouseClicked(event -> updatePivot(node)));
+    private static final double DELTA = 1;
+
+    private void keyPressed(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.A)) {
+            redSphere.setTranslateX(redSphere.getTranslateX() + DELTA);
+        }
+        if (keyEvent.getCode().equals(KeyCode.D)) {
+            redSphere.setTranslateX(redSphere.getTranslateX() - DELTA);
+        }
+        if (keyEvent.getCode().equals(KeyCode.W)) {
+            redSphere.setTranslateY(redSphere.getTranslateY() + DELTA);
+        }
+        if (keyEvent.getCode().equals(KeyCode.S)) {
+            redSphere.setTranslateY(redSphere.getTranslateY() - DELTA);
+        }
+        if (keyEvent.getCode().equals(KeyCode.F)) {
+            redSphere.setTranslateZ(redSphere.getTranslateZ() + DELTA);
+        }
+        if (keyEvent.getCode().equals(KeyCode.R)) {
+            redSphere.setTranslateZ(redSphere.getTranslateZ() - DELTA);
+        }
+        if (keyEvent.getCode().equals(KeyCode.C)) {
+            mouseControlService.setOrientation(0 ,0);
+            mouseControlService.setTargetTranslation(Point3D.ZERO);
+        }
+        if (keyEvent.getCode().equals(KeyCode.V)) {
+            redSphere.setTranslateX(INIT_RED_POINT_POSITION.getX());
+            redSphere.setTranslateY(INIT_RED_POINT_POSITION.getY());
+            redSphere.setTranslateZ(INIT_RED_POINT_POSITION.getZ());
+        }
+    }
+
+    @NotNull
+    private SubScene createSubScene(Group root) {
+        SubScene subScene = new SubScene(root, 600, 600, true, SceneAntialiasing.BALANCED);
+        subScene.setFill(Color.ALICEBLUE);
+        PerspectiveCamera camera = createAndPositionCamera();
+        subScene.setCamera(camera);
+        return subScene;
+    }
+
+    @NotNull
+    private Sphere createAndPositionSphere(double radius, Point3D position) {
+        Sphere sphere = new Sphere(radius);
+        sphere.setTranslateX(position.getX());
+        sphere.setTranslateY(position.getY());
+        sphere.setTranslateZ(position.getZ());
+        return sphere;
     }
 
     @NotNull
@@ -68,35 +91,14 @@ public class Connection3DSample extends Application {
         PerspectiveCamera camera = new PerspectiveCamera(true);
         camera.setNearClip(.01);
         camera.setFarClip(1000);
-        camera.getTransforms().addAll(
-                pivot,
-                yRotate,
-                new Rotate(-20, Rotate.X_AXIS),
-                new Translate(0, 0, -200)
-        );
+        camera.setTranslateZ(-200);
         return camera;
-    }
-
-    private void animateCameraPosition() {
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(0), new KeyValue(yRotate.angleProperty(), 0)),
-                new KeyFrame(Duration.seconds(15), new KeyValue(yRotate.angleProperty(), 360))
-        );
-        timeline.setAutoReverse(true);
-        timeline.setCycleCount(INDEFINITE);
-        timeline.play();
-    }
-
-    private void updatePivot(Node node) {
-        pivot.setX(node.getTranslateX());
-        pivot.setY(node.getTranslateY());
-        pivot.setZ(node.getTranslateZ());
     }
 
     @Override
     public void start(Stage stage) {
-//        stage.setResizable(false);
         Scene scene = new Scene(createContent());
+        addKeyControl(scene);
         stage.setScene(scene);
         stage.show();
     }

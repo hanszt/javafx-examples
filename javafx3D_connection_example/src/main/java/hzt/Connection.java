@@ -3,17 +3,16 @@ package hzt;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.transform.Rotate;
 import org.jetbrains.annotations.NotNull;
 
-import static java.lang.System.*;
+public class Connection extends Group {
 
-public class Connection extends Cylinder {
-
-    private final Rotate rotateX = new Rotate();
-    private final Rotate rotateY = new Rotate();
+    private final Cylinder cylinder = new Cylinder();
+    private final Rotate cylinderRotateX = new Rotate();
     private final Rotate rotateZ = new Rotate();
 
     private final DoubleProperty startX = new SimpleDoubleProperty();
@@ -26,12 +25,13 @@ public class Connection extends Cylinder {
 
     public Connection() {
         super();
-        rotateX.setAxis(Rotate.X_AXIS);
-        rotateY.setAxis(Rotate.Y_AXIS);
+        cylinderRotateX.setAxis(Rotate.X_AXIS);
         rotateZ.setAxis(Rotate.Z_AXIS);
-        getTransforms().addAll(rotateZ, rotateY, rotateX);
+        getTransforms().add(rotateZ);
+        cylinder.getTransforms().add(cylinderRotateX);
         bindPositionBasedOnStartAndEnd();
         bindRotationAndLengthBasedOnStartAndEnd();
+        getChildren().add(cylinder);
     }
 
     private void bindRotationAndLengthBasedOnStartAndEnd() {
@@ -41,12 +41,17 @@ public class Connection extends Cylinder {
         DoubleProperty xDistanceSquared = bindOperation(xDistance.multiply(xDistance));
         DoubleProperty yDistanceSquared = bindOperation(yDistance.multiply(yDistance));
         DoubleProperty zDistanceSquared = bindOperation(zDistance.multiply(zDistance));
+        DoubleProperty xDistance1Squared = bindOperation(xDistanceSquared.add(yDistanceSquared));
         DoubleProperty lengthSquared = bindOperation(xDistanceSquared.add(yDistanceSquared.add(zDistanceSquared)));
-        lengthSquared.addListener((observableValue, number, t1) -> setHeight(Math.sqrt(lengthSquared.get())));
-        endX.addListener((o, c, n) -> rotate(xDistance, yDistance, rotateZ));
-        endY.addListener((o, c, n) -> rotate(xDistance, yDistance, rotateZ));
-        endX.addListener((o, c, n) -> rotate(xDistance, zDistance, rotateY));
-        endZ.addListener((o, c, n) -> rotate(xDistance, zDistance, rotateY));
+        lengthSquared.addListener((observableValue, number, t1) -> cylinder.setHeight(Math.sqrt(lengthSquared.get())));
+        xDistance.addListener((o, c, n) -> rotate(xDistance, yDistance, zDistance, xDistance1Squared));
+        yDistance.addListener((o, c, n) -> rotate(xDistance, yDistance, zDistance, xDistance1Squared));
+        zDistance.addListener((o, c, n) -> rotateCylinderX(zDistance, xDistance1Squared));
+    }
+
+    private void rotateCylinderX(DoubleProperty zDistance, DoubleProperty xDistance1Squared) {
+        double xDistance1 = Math.sqrt(xDistance1Squared.get());
+        rotate(zDistance.get(), endX.get() > 0 ? -xDistance1 : xDistance1, cylinderRotateX);
     }
 
     @NotNull
@@ -58,12 +63,14 @@ public class Connection extends Cylinder {
 
     private static final int RIGHT_ANGLE = 90;
 
-    private void rotate(DoubleProperty distance1, DoubleProperty distance2, Rotate rotate) {
-//        out.println("distance 1: " + distance1);
-//        out.println("distance 2: " + distance2);
-        double angle = Math.toDegrees(Math.atan(distance2.get() / distance1.get()));
-//        out.println("angle: " + angle);
-//        out.println();
+    private void rotate(DoubleProperty xDistance, DoubleProperty yDistance, DoubleProperty zDistance, DoubleProperty xDistance1Squared) {
+        double angle = Math.toDegrees(Math.atan(yDistance.get() / xDistance.get()));
+        rotateZ.setAngle(angle + RIGHT_ANGLE);
+        rotateCylinderX(zDistance, xDistance1Squared);
+    }
+
+    private void rotate(double distance1, double distance2, Rotate rotate) {
+        double angle = Math.toDegrees(Math.atan(distance2 / distance1));
         rotate.setAngle(angle + RIGHT_ANGLE);
     }
 
