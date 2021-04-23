@@ -51,7 +51,7 @@ public class Connection extends Group {
 
     private void rotateCylinderX(DoubleProperty zDistance, DoubleProperty xDistance1Squared) {
         double xDistance1 = Math.sqrt(xDistance1Squared.get());
-        rotate(zDistance.get(), endX.get() > 0 ? -xDistance1 : xDistance1, cylinderRotateX);
+        rotate(zDistance.get(), endX.get() - startX.get() > 0 ? -xDistance1 : xDistance1, cylinderRotateX);
     }
 
     @NotNull

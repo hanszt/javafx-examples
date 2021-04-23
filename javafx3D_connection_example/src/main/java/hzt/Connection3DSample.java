@@ -15,17 +15,35 @@ public class Connection3DSample extends Application {
 
     private static final Point3D INIT_RED_POINT_POSITION = new Point3D(10, 0, 0);
 
-    private final Sphere greenSphere = createAndPositionSphere(2, Point3D.ZERO);
+    private final Sphere greenSphere = createAndPositionSphere(2, new Point3D(10, 30, 50));
     private final Sphere redSphere = createAndPositionSphere(2, INIT_RED_POINT_POSITION);
+    private final Sphere blueSphere = createAndPositionSphere(2, new Point3D(-10, 0, 0));
+    private final Sphere yellowSphere = createAndPositionSphere(2, new Point3D(0, 10,0));
     private final MouseControlService mouseControlService = new MouseControlService();
 
-    private Parent createContent() {
-        Connection connection = new Connection();
-        connection.defineStartAndEndpoint(greenSphere, redSphere);
+    @NotNull
+    private Line3D createLine3D(Node begin, Node end) {
+        Line3D line3D = new Line3D();
+        line3D.widthProperty().set(.5);
+        line3D.defineStartAndEndpoint(begin, end);
+        return line3D;
+    }
 
+    private Parent createContent() {
+        Line3D gRLine3D = createLine3D(greenSphere, redSphere);
+        Line3D gBLine3D = createLine3D(greenSphere, blueSphere);
+        Line3D bRLine3D = createLine3D(blueSphere, redSphere);
+        Line3D gYLine3D = createLine3D(greenSphere, yellowSphere);
+        Line3D bYLine3D = createLine3D(blueSphere, yellowSphere);
+        Line3D rYLine3D = createLine3D(redSphere, yellowSphere);
+
+        Group connectionGroup = new Group(gRLine3D, gBLine3D, bRLine3D, gYLine3D, bYLine3D, rYLine3D);
         greenSphere.setMaterial(new PhongMaterial(Color.GREEN));
         redSphere.setMaterial(new PhongMaterial(Color.RED));
-        Group root = new Group(/*box, sphere,*/ greenSphere, redSphere, connection);
+        blueSphere.setMaterial(new PhongMaterial(Color.BLUE));
+        yellowSphere.setMaterial(new PhongMaterial(Color.YELLOW));
+
+        Group root = new Group(greenSphere, redSphere, blueSphere, yellowSphere, connectionGroup);
 
         SubScene subScene = createSubScene(root);
         mouseControlService.initMouseControl(root, subScene);
@@ -40,22 +58,22 @@ public class Connection3DSample extends Application {
 
     private void keyPressed(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.A)) {
-            redSphere.setTranslateX(redSphere.getTranslateX() + DELTA);
-        }
-        if (keyEvent.getCode().equals(KeyCode.D)) {
             redSphere.setTranslateX(redSphere.getTranslateX() - DELTA);
         }
-        if (keyEvent.getCode().equals(KeyCode.W)) {
-            redSphere.setTranslateY(redSphere.getTranslateY() + DELTA);
+        if (keyEvent.getCode().equals(KeyCode.D)) {
+            redSphere.setTranslateX(redSphere.getTranslateX() + DELTA);
         }
-        if (keyEvent.getCode().equals(KeyCode.S)) {
+        if (keyEvent.getCode().equals(KeyCode.W)) {
             redSphere.setTranslateY(redSphere.getTranslateY() - DELTA);
         }
+        if (keyEvent.getCode().equals(KeyCode.S)) {
+            redSphere.setTranslateY(redSphere.getTranslateY() + DELTA);
+        }
         if (keyEvent.getCode().equals(KeyCode.F)) {
-            redSphere.setTranslateZ(redSphere.getTranslateZ() + DELTA);
+            redSphere.setTranslateZ(redSphere.getTranslateZ() - DELTA);
         }
         if (keyEvent.getCode().equals(KeyCode.R)) {
-            redSphere.setTranslateZ(redSphere.getTranslateZ() - DELTA);
+            redSphere.setTranslateZ(redSphere.getTranslateZ() + DELTA);
         }
         if (keyEvent.getCode().equals(KeyCode.C)) {
             mouseControlService.setOrientation(0 ,0);
