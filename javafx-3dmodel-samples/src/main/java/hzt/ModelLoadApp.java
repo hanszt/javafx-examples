@@ -1,14 +1,18 @@
 package hzt;
 
 import hzt.model.*;
+import hzt.service.IMouseControlService;
+import hzt.service.MouseControlService;
 import hzt.utils.FxUtils;
 import javafx.application.Application;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +26,6 @@ public class ModelLoadApp extends Application {
     }
 
     private Scene createScene() {
-
         Scooter scooter = getScooter();
         Plane plane = getPlane();
         LunarLander lunarLander = new LunarLander();
@@ -31,8 +34,9 @@ public class ModelLoadApp extends Application {
         Duck duck = getDuck();
         Pyramid pyramid = getPyramid();
         TuxRotation tuxRotation = getTuxRotation();
-
-        Group root = new Group(scooter, plane, lunarLander, cylinderHead, propellerAssembly, duck, pyramid, tuxRotation);
+        var toroid = getToroid();
+        Group root = new Group(scooter, plane, lunarLander, cylinderHead,
+                propellerAssembly, duck, pyramid, tuxRotation, toroid);
         return buildScene(root);
     }
 
@@ -40,14 +44,17 @@ public class ModelLoadApp extends Application {
     private Scene buildScene(Group root) {
         Scene scene = new Scene(root, 1280, 720, true);
         scene.setOnKeyTyped(keyEvent -> keyTypedAction(keyEvent, root));
-        root.getChildren().stream()
-                .filter(Model3D::nodeIsModel3D)
-                .map(Model3D::nodeToModel3D)
-                .forEach(model -> model.addMouseControl(scene));
+        root.getChildren().forEach(model -> addMouseControl(model, scene));
 
         PerspectiveCamera camera = getPerspectiveCamera();
         scene.setCamera(camera);
         return scene;
+    }
+
+    private void addMouseControl(Node model3D, Scene scene) {
+        IMouseControlService planeMouseControlService = new MouseControlService();
+        planeMouseControlService.initMouseControl(model3D, scene);
+        planeMouseControlService.setOrientation(20, 20);
     }
 
     private void keyTypedAction(KeyEvent keyEvent, Group root) {
@@ -64,6 +71,15 @@ public class ModelLoadApp extends Application {
         tuxRotation.setTranslateX(20);
         tuxRotation.setTranslateY(20);
         return tuxRotation;
+    }
+
+    private Group getToroid() {
+        var toroid = new Toroid(10, 2, 2, 90);
+        toroid.setRotationAxis(Rotate.Z_AXIS);
+        toroid.setRotate(90);
+        toroid.setDrawMode(DrawMode.LINE);
+        toroid.setScaleX(1);
+        return new Group(toroid);
     }
 
     @NotNull

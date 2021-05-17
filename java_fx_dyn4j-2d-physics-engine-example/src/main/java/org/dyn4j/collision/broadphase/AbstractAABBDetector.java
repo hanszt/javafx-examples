@@ -50,10 +50,7 @@ public abstract class AbstractAABBDetector<E extends Collidable> implements Broa
 		AABB aAABB = a.createAABB();
 		AABB bAABB = b.createAABB();
 		// perform the test
-		if (aAABB.overlaps(bAABB)) {
-			return true;
-		}
-		return false;
+		return aAABB.overlaps(bAABB);
 	}
 	
 	/* (non-Javadoc)
@@ -66,11 +63,8 @@ public abstract class AbstractAABBDetector<E extends Collidable> implements Broa
 		AABB b = convex2.createAABB(transform2);
 		
 		// if both sets of intervals overlap then we have a possible intersection
-		if (a.overlaps(b)) {
-			return true;
-		}
+		return a.overlaps(b);
 		// otherwise they definitely do not intersect
-		return false;
 	}
 	
 	/* (non-Javadoc)

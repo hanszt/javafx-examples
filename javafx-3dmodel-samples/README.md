@@ -21,4 +21,5 @@ Before you run the program, make sure you modify the following in Intellij:
 [Source](https://openjfx.io/openjfx-docs/#IDE-Intellij)
 
 ## Sources
-[Interactive mesh](http://www.interactivemesh.com/)
+- [Interactive mesh](http://www.interactivemesh.com/)
+- [Toroid class](http://www.lagers.org.uk/javafx/toroidclass.html)

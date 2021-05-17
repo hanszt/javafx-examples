@@ -239,7 +239,7 @@ public class Xylophone extends Application {
             }
             size = children.size();
         }
-        children.stream().map(node -> (Box) node).forEach(this::adaptProperties);
+        children.stream().map(Box.class::cast).forEach(this::adaptProperties);
     }
 
     private void adaptProperties(Box bar) {
