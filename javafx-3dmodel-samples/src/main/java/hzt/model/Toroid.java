@@ -22,14 +22,18 @@
  */
 package hzt.model;
 
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point3D;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.CullFace;
-import javafx.scene.shape.DrawMode;
-import javafx.scene.shape.MeshView;
-import javafx.scene.shape.TriangleMesh;
+import javafx.scene.shape.*;
+
+import static java.lang.Math.*;
 
 /**
  * Simple class to create a Toroid shape, it extends MeshView class so it
@@ -56,26 +60,48 @@ public class Toroid extends MeshView {
     private static final int NBR_TUBE_SEGMENTS = 32;
 
     // Stores the number of segments which controls the surface 'smoothness'
-    private final int nbrRingSegments;
-    private final int nbrTubeSegments;
-    private final int nbrRingSteps;
-    private final int nbrTubeSteps;
+    private final IntegerProperty nbrRingSegments = new SimpleIntegerProperty();
+    private final IntegerProperty nbrTubeSegments = new SimpleIntegerProperty();
+    private final IntegerProperty nbrRingSteps = new SimpleIntegerProperty();
+    private final IntegerProperty nbrTubeSteps = new SimpleIntegerProperty();
     // The dimensions of the toroid
-    protected float ringRad;
-    protected float tubeRadX;
-    protected float tubeRadY;
-    protected float tubeZeroPos; // radians
-    private final TriangleMesh mesh;
+    private final DoubleProperty ringRad = new SimpleDoubleProperty();
+    private final DoubleProperty tubeRadX = new SimpleDoubleProperty();
+    private final DoubleProperty tubeRadY = new SimpleDoubleProperty();
+    private final DoubleProperty tubeZeroPos = new SimpleDoubleProperty(); // radians
+
+    private final PhongMaterial material;
+    private final TriangleMesh mesh = new TriangleMesh();
+
+    /**
+     * Create a default Toroid using default dimensions
+     */
+    public Toroid() {
+        this(1);
+    }
+
+    public Toroid(double radius) {
+        this(radius, radius / 2);
+    }
+
+    /**
+     * Create a Toroid using the default number of segments and zero angle = 0
+     */
+    public Toroid(double ringRad, double tubeRad) {
+        this(ringRad, tubeRad, tubeRad);
+    }
+
+    /**
+     * Create a Toroid using the default number of segments and zero angle = 0
+     */
+    public Toroid(double ringRad, double tubeRadX, double tubeRadY) {
+        this(ringRad, tubeRadX, tubeRadY, 0);
+    }
 
     /**
      * Create a Toroid using the default number of segments.
-     *
-     * @param ringRad   the radius of the ring
-     * @param tubeRadX  the radius of the tube along the X axis
-     * @param tubeRadY  the radius of the tube along the Y axis
-     * @param zeroAngle rotates the zero-position round the tube (degrees)
      */
-    public Toroid(float ringRad, float tubeRadX, float tubeRadY, float zeroAngle) {
+    public Toroid(double ringRad, double tubeRadX, double tubeRadY, double zeroAngle) {
         this(NBR_RING_SEGMENTS, NBR_TUBE_SEGMENTS, // default 64 x 32
                 ringRad, tubeRadX, tubeRadY, zeroAngle
         );
@@ -92,32 +118,38 @@ public class Toroid extends MeshView {
      * @param tubeRadY        the radius of the tube along the Y axis
      * @param zeroAngle       rotates the zero-position round the tube (degrees)
      */
-    public Toroid(int nbrRingSegments, int nbrTubeSegments, float ringRad, float tubeRadX, float tubeRadY, float zeroAngle) {
-        this.nbrRingSegments = nbrRingSegments;
-        this.nbrTubeSegments = nbrTubeSegments;
-        this.ringRad = ringRad;
-        this.tubeRadX = tubeRadX;
-        this.tubeRadY = tubeRadY;
-        this.tubeZeroPos = (float) Math.toRadians(zeroAngle);
-        this.nbrRingSteps = nbrRingSegments + 1;
-        this.nbrTubeSteps = nbrTubeSegments + 1;
-
-        mesh = new TriangleMesh();
-        setMesh(mesh);
-        buildToroid(mesh);
+    public Toroid(int nbrRingSegments, int nbrTubeSegments, double ringRad, double tubeRadX, double tubeRadY, double zeroAngle) {
+        this.nbrRingSegments.set(nbrRingSegments);
+        this.nbrRingSteps.bind(this.nbrRingSegments.add(1));
+        this.nbrTubeSegments.set(nbrTubeSegments);
+        this.nbrTubeSteps.bind(this.nbrTubeSegments.add(1));
+        this.ringRad.set(ringRad);
+        this.tubeRadX.set(tubeRadX);
+        this.tubeRadY.set(tubeRadY);
+        this.tubeZeroPos.set(toRadians(zeroAngle));
+        this.material = new PhongMaterial(Color.BURLYWOOD);
+        addListeners();
+        setMesh(buildToroidMesh());
     }
 
-    private void buildToroid(TriangleMesh mesh) {
-        mesh.getPoints().setAll(calcPoints());
-        mesh.getTexCoords().setAll(calcTexturePoints(1, 1));
-        mesh.getFaces().setAll(calcFacesPT());
+    private void addListeners() {
+        nbrRingSegments.addListener((o,c, n) -> calculatePointsTexCoordsAndFaces(mesh));
+        nbrTubeSegments.addListener((o, c, n) -> calculatePointsTexCoordsAndFaces(mesh));
+        ringRad.addListener((o, c, n) -> calculatePointsTexCoordsAndFaces(mesh));
+        tubeRadX.addListener((o, c, n) -> calculatePointsTexCoordsAndFaces(mesh));
+        tubeRadY.addListener((o, c, n) -> calculatePointsTexCoordsAndFaces(mesh));
+        tubeZeroPos.addListener((o, c, n) -> calculatePointsTexCoordsAndFaces(mesh));
+    }
+
+    private Mesh buildToroidMesh() {
+        calculatePointsTexCoordsAndFaces(mesh);
         // Create the default texture
-        var material = new PhongMaterial(Color.BURLYWOOD);
         setMaterial(material);
         // Start with filled shape
         setDrawMode(DrawMode.FILL);
         // Makes it easier to see the wireframe
         setCullFace(CullFace.BACK);
+        return mesh;
     }
 
     /**
@@ -128,8 +160,7 @@ public class Toroid extends MeshView {
      */
     public void setTexture(Color color) {
         if (color != null) {
-            var material = new PhongMaterial(color);
-            setMaterial(material);
+            material.setDiffuseColor(color);
         }
     }
 
@@ -137,32 +168,26 @@ public class Toroid extends MeshView {
      * Change the image to be used to texture the surface using the current
      * number of ring and tube repeats.
      *
-     * @param image the image to be used as a texture
+     * @param diffuseMap the image to be used as a texture
+     * @param bumpMap the bumpMap to be used
      */
-    public void setTexture(Image image) {
-        if (image != null) {
-            var material = new PhongMaterial();
-            material.setDiffuseMap(image);
-            setMaterial(material);
-        }
+    public void setTexture(Image diffuseMap, Image bumpMap) {
+        if (diffuseMap != null) material.setDiffuseMap(diffuseMap);
+        if (bumpMap != null) material.setBumpMap(bumpMap);
     }
 
     /**
      * Change the image to be used to texture the surface using the specified
      * number of ring and tube repeats.
      *
-     * @param image          the image to be used as a texture
+     * @param diffuseMap     the image to be used as a texture
      * @param nbrRingRepeats number of texture repeats round the ring
      * @param nbrTubeRepeats number of texture repeats round the tube
      */
-    public void setTexture(Image image, float nbrRingRepeats, float nbrTubeRepeats) {
-        if (image != null) {
-            var material = new PhongMaterial();
-            material.setDiffuseMap(image);
-            setMaterial(material);
-        }
+    public void setTexture(Image diffuseMap, Image bumpMap, float nbrRingRepeats, float nbrTubeRepeats) {
+        setTexture(diffuseMap, bumpMap);
         if (nbrRingRepeats > 0 && nbrTubeRepeats > 0) {
-            mesh.getTexCoords().setAll(calcTexturePoints(nbrRingRepeats, nbrTubeRepeats));
+            ((TriangleMesh) getMesh()).getTexCoords().setAll(calcTexturePoints(nbrRingRepeats, nbrTubeRepeats));
         }
     }
 
@@ -170,51 +195,123 @@ public class Toroid extends MeshView {
      * Calculate the vertex points based on toroid dimensions and the tube zero
      * start angle.
      */
-    private float[] calcPoints() {
-        Point3D[][] coord = new Point3D[nbrRingSteps][nbrTubeSteps];
-        double ringDeltaAng = (2 * Math.PI / nbrRingSegments);
-        double tubeDeltaAng = (2 * Math.PI / nbrTubeSegments);
-
-        calculateXYCoordinatesTubeInZ0Plane(coord, tubeDeltaAng);
-        calculateThePointsForAllOtherRingSegments(coord, ringDeltaAng);
-        return transferToFloatArray(coord);
+    private void calculatePointsTexCoordsAndFaces(TriangleMesh mesh) {
+        double ringDeltaAng = (2 * PI / nbrRingSegments.get());
+        double tubeDeltaAng = (2 * PI / nbrTubeSegments.get());
+        calculatePointsTexCoordsAndFaces(mesh, ringDeltaAng, tubeDeltaAng);
     }
 
-    private float[] transferToFloatArray(Point3D[][] coord) {
-        var points = new float[nbrRingSteps * nbrTubeSteps * 3];
-        int index = 0;
-        for (int t = 0; t < nbrTubeSteps; t++) {
-            for (int r = 0; r < nbrRingSteps; r++) {
-                points[index++] = (float) coord[r][t].getX();
-                points[index++] = (float) coord[r][t].getY();
-                points[index++] = (float) coord[r][t].getZ();
+    private void calculatePointsTexCoordsAndFaces(TriangleMesh mesh, double ringDeltaAng, double tubeDeltaAng) {
+        MeshData meshData = new MeshData();
+        for (int t = 0; t < nbrTubeSteps.get(); t++) {
+            var point0 = calculateXYCoordinateTubeInZ0Plane(tubeDeltaAng, t);
+            for (int r = 0; r < nbrRingSteps.get(); r++) {
+                double angle = r * ringDeltaAng;
+                meshData.calculateAndAddPoint(point0, angle);
+                meshData.calculateAndAddTextureCoord(r, t);
+                meshData.calculateAndAddFace(t, r);
             }
         }
-        return points;
+        meshData.setPointsTexCoordsAndFaces(mesh);
     }
 
-    private void calculateThePointsForAllOtherRingSegments(Point3D[][] coord, double ringDeltaAng) {
-        for (int r = 1; r < nbrRingSteps; r++) {
-            double angle = r * ringDeltaAng;
-            for (int t = 0; t < nbrTubeSteps; t++) {
-                Point3D point0 = coord[0][t];
-                coord[r][t] = new Point3D(
-                        point0.getX() * Math.cos(angle),
-                        point0.getY(),
-                        point0.getX() * Math.sin(angle)
-                );
+    private Point3D calculateXYCoordinateTubeInZ0Plane(double tubeDeltaAng, int t) {
+        double angle0 = tubeZeroPos.get() + t * tubeDeltaAng;
+        double x = ringRad.get() + tubeRadX.get() * cos(angle0);
+        double y = tubeRadY.get() * sin(angle0);
+        return new Point3D(x, y, 0);
+    }
+
+    private static final int TWO_PER_TEXTURE_POINT = 2;
+
+    private class MeshData {
+
+        private static final int NR_OF_POINTS_PER_FACE_PT = 12;
+        private static final int NR_OF_DIMENSIONS = 3;
+
+        private final float[] textureCoords = new float[nbrRingSteps.get() * nbrTubeSteps.get() * TWO_PER_TEXTURE_POINT];
+        private final float[] points = new float[nbrRingSteps.get() * nbrTubeSteps.get() * NR_OF_DIMENSIONS];
+        private final int[] faces = new int[nbrRingSegments.get() * nbrTubeSegments.get() * NR_OF_POINTS_PER_FACE_PT];
+
+        private final float defaultDeltaU = 1f / nbrRingSegments.get();
+        private final float defaultDeltaV = 1f / nbrTubeSegments.get();
+
+        private int coordsIndex = 0;
+        private int pointsIndex = 0;
+        private int facesIndex = 0;
+
+        private void calculateAndAddPoint(Point3D point0, double angle) {
+            var x = point0.getX() * cos(angle);
+            var y = point0.getY();
+            var z = point0.getX() * sin(angle);
+            points[pointsIndex++] = (float) x;
+            points[pointsIndex++] = (float) y;
+            points[pointsIndex++] = (float) z;
+        }
+
+        private void calculateAndAddTextureCoord(float x, float y) {
+            textureCoords[coordsIndex++] = x * defaultDeltaU;
+            textureCoords[coordsIndex++] = y * defaultDeltaV;
+        }
+
+        /**
+         * Calculate the triangle data using vertex and texture coordinate array
+         * data. This code avoids a visual artefact by using 'shared' points
+         * where the mesh edges meet.
+         */
+        private void calculateAndAddFace(int t, int r) {
+            if (t < nbrTubeSegments.get() && r < nbrRingSegments.get()) {
+                int r1 = r + 1;
+                int t1 = t + 1;
+                Indices textureIndices = calculateIndices(t, r, t1, r1);
+                r1 %= nbrRingSegments.get();
+                t1 %= nbrTubeSegments.get();
+                Indices pointIndices = calculateIndices(t, r, t1, r1);
+                setTopLeftTriangleFace(textureIndices, pointIndices);
+                setBottomRightTriangleFace(textureIndices, pointIndices);
             }
         }
-    }
 
-    private void calculateXYCoordinatesTubeInZ0Plane(Point3D[][] coord, double tubeDeltaAng) {
-        for (int t = 0; t < nbrTubeSteps; t++) {
-            double angle = tubeZeroPos + t * tubeDeltaAng;
-            coord[0][t] = new Point3D(
-                    ringRad + tubeRadX * Math.cos(angle),
-                    tubeRadY * Math.sin(angle),
-                    0
-            );
+        private void setTopLeftTriangleFace(Indices textureIndices, Indices pointIndices) {
+            faces[facesIndex++] = pointIndices.topLeft;
+            faces[facesIndex++] = textureIndices.topLeft;
+            faces[facesIndex++] = pointIndices.bottomLeft;
+            faces[facesIndex++] = textureIndices.bottomLeft;
+            faces[facesIndex++] = pointIndices.topRight;
+            faces[facesIndex++] = textureIndices.topRight;
+        }
+
+        private void setBottomRightTriangleFace(Indices textureIndices, Indices pointIndices) {
+            faces[facesIndex++] = pointIndices.bottomLeft;
+            faces[facesIndex++] = textureIndices.bottomLeft;
+            faces[facesIndex++] = pointIndices.bottomRight;
+            faces[facesIndex++] = textureIndices.bottomRight;
+            faces[facesIndex++] = pointIndices.topRight;
+            faces[facesIndex++] = textureIndices.topRight;
+        }
+
+        private Indices calculateIndices(int t, int r, int t1, int r1) {
+            Indices indices = new Indices();
+            indices.topLeft = r + t * nbrRingSteps.get();
+            indices.bottomLeft = r + t1 * nbrRingSteps.get();
+            indices.topRight = r1 + t * nbrRingSteps.get();
+            indices.bottomRight = r1 + t1 * nbrRingSteps.get();
+            return indices;
+        }
+
+        public void setPointsTexCoordsAndFaces(TriangleMesh mesh) {
+            mesh.getPoints().setAll(points);
+            mesh.getTexCoords().setAll(textureCoords);
+            mesh.getFaces().setAll(faces);
+        }
+
+        private class Indices {
+
+            private int topLeft;
+            private int topRight;
+            private int bottomLeft;
+            private int bottomRight;
+
         }
     }
 
@@ -225,12 +322,12 @@ public class Toroid extends MeshView {
      * @param nbrTubeRepeats number of texture repeats round the tube
      */
     private float[] calcTexturePoints(float nbrRingRepeats, float nbrTubeRepeats) {
-        float deltaU = nbrRingRepeats / nbrRingSegments;
-        float deltaV = nbrTubeRepeats / nbrTubeSegments;
-        var texturePoints = new float[nbrRingSteps * nbrTubeSteps * 2];
+        float deltaU = nbrRingRepeats / nbrRingSegments.get();
+        float deltaV = nbrTubeRepeats / nbrTubeSegments.get();
+        var texturePoints = new float[nbrRingSteps.get() * nbrTubeSteps.get() * TWO_PER_TEXTURE_POINT];
         int index = 0;
-        for (int t = 0; t < nbrTubeSteps; t++) {
-            for (int r = 0; r < nbrRingSteps; r++) {
+        for (int t = 0; t < nbrTubeSteps.get(); t++) {
+            for (int r = 0; r < nbrRingSteps.get(); r++) {
                 texturePoints[index++] = r * deltaU;
                 texturePoints[index++] = t * deltaV;
             }
@@ -238,79 +335,43 @@ public class Toroid extends MeshView {
         return texturePoints;
     }
 
-    private static final int NR_OF_POINTS_PER_FACE_PT = 12;
-
-    /**
-     * Calculate the triangle data using vertex and texture coordinate array
-     * data. This code avoids a visual artefact by using 'shared' points
-     * where the mesh edges meet.
-     */
-    private int[] calcFacesPT() {
-        int index = 0;
-        var faces = new int[nbrRingSegments * nbrTubeSegments * NR_OF_POINTS_PER_FACE_PT];
-        for (int t = 0; t < nbrTubeSegments; t++) {
-            for (int r = 0; r < nbrRingSegments; r++) {
-                Indices textureIndices = calculateIndicesForTextureCoordinates(t, r);
-                Indices pointIndices = calculateIndicesForControlPoints(t, r);
-
-                index = setTopLeftTriangleFaces(index, faces, textureIndices, pointIndices);
-                index = setBottomRightTriangleFaces(index, faces, textureIndices, pointIndices);
-            }
-        }
-        return faces;
+    public DoubleBinding getVolume() {
+        return surfaceAreaIntersection().multiply(circumference());
     }
 
-    private int setBottomRightTriangleFaces(int index, int[] faces, Indices textureIndices, Indices pointIndices) {
-        faces[index++] = pointIndices.bottomLeft;
-        faces[index++] = textureIndices.bottomLeft;
-        faces[index++] = pointIndices.bottomRight;
-        faces[index++] = textureIndices.bottomRight;
-        faces[index++] = pointIndices.topRight;
-        faces[index++] = textureIndices.topRight;
-        return index;
+    private DoubleBinding circumference() {
+        return ringRad.multiply(2 * PI);
     }
 
-    private int setTopLeftTriangleFaces(int index, int[] faces, Indices textureIndices, Indices pointIndices) {
-        faces[index++] = pointIndices.topLeft;
-        faces[index++] = textureIndices.topLeft;
-        faces[index++] = pointIndices.bottomLeft;
-        faces[index++] = textureIndices.bottomLeft;
-        faces[index++] = pointIndices.topRight;
-        faces[index++] = textureIndices.topRight;
-        return index;
+    private DoubleBinding surfaceAreaIntersection() {
+        return tubeRadX.multiply(tubeRadY).multiply(PI);
     }
 
-    private Indices calculateIndicesForTextureCoordinates(int t, int r) {
-        int r1 = r + 1;
-        int t1 = t + 1;
-        Indices textureIndices = new Indices();
-        textureIndices.topLeft = r + t * nbrRingSteps;
-        textureIndices.bottomLeft = r + t1 * nbrRingSteps;
-        textureIndices.topRight = r1 + t * nbrRingSteps;
-        textureIndices.bottomRight = r1 + t1 * nbrRingSteps;
-        return textureIndices;
+    public PhongMaterial getPhongMaterial() {
+        return material;
     }
 
-    private Indices calculateIndicesForControlPoints(int t, int r) {
-        Indices pointIndices = new Indices();
-        int r1 = r + 1;
-        int t1 = t + 1;
-        r1 %= nbrRingSegments;
-        t1 %= nbrTubeSegments;
-        pointIndices.topLeft = r + t * nbrRingSteps;
-        pointIndices.bottomLeft = r + t1 * nbrRingSteps;
-        pointIndices.topRight = r1 + t * nbrRingSteps;
-        pointIndices.bottomRight = r1 + t1 * nbrRingSteps;
-        return pointIndices;
+    public IntegerProperty nbrRingSegmentsProperty() {
+        return nbrRingSegments;
     }
 
-    private static class Indices {
-
-        private int topLeft;
-        private int topRight;
-        private int bottomLeft;
-        private int bottomRight;
-
+    public IntegerProperty nbrTubeSegmentsProperty() {
+        return nbrTubeSegments;
     }
 
+    public DoubleProperty ringRadProperty() {
+        return ringRad;
+    }
+
+    public DoubleProperty tubeRadXProperty() {
+        return tubeRadX;
+    }
+
+    public DoubleProperty tubeRadYProperty() {
+        return tubeRadY;
+    }
+
+    public DoubleProperty tubeZeroPosProperty() {
+        return tubeZeroPos;
+    }
 }

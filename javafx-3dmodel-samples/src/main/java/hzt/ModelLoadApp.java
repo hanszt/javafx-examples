@@ -9,12 +9,19 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
+
+import static java.util.function.Predicate.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -35,18 +42,58 @@ public class ModelLoadApp extends Application {
         Pyramid pyramid = getPyramid();
         TuxRotation tuxRotation = getTuxRotation();
         var toroid = getToroid();
+        var toroidContainer = new Group(toroid);
+        toroidContainer.setTranslateX(-50);
+        var labeledSlider = labeledToroidSliders(toroid);
+        labeledSlider.setTranslateX(50);
+        labeledSlider.setTranslateY(-100);
+        labeledSlider.setTranslateZ(300);
         Group root = new Group(scooter, plane, lunarLander, cylinderHead,
-                propellerAssembly, duck, pyramid, tuxRotation, toroid);
+                propellerAssembly, duck, pyramid, tuxRotation, toroidContainer, labeledSlider);
         return buildScene(root);
     }
 
-    @NotNull
+    private VBox labeledToroidSliders(Toroid toroid) {
+        Slider tubeRadXSlider = new Slider();
+        tubeRadXSlider.setValue(10);
+        tubeRadXSlider.setMin(.5);
+        tubeRadXSlider.setMax(20);
+        toroid.tubeRadXProperty().bind(tubeRadXSlider.valueProperty());
+        Slider tubeRadYSlider = new Slider();
+        tubeRadYSlider.setValue(10);
+        tubeRadYSlider.setMin(.5);
+        tubeRadYSlider.setMax(20);
+        toroid.tubeRadYProperty().bind(tubeRadYSlider.valueProperty());
+        Slider ringRadiusSlider = new Slider();
+        ringRadiusSlider.setValue(30);
+        toroid.ringRadProperty().bind(ringRadiusSlider.valueProperty());
+        Slider tubeZeroPosSlider = new Slider();
+        tubeZeroPosSlider.setMax(2 * Math.PI);
+        toroid.tubeZeroPosProperty().bind(tubeZeroPosSlider.valueProperty());
+        Slider numberOfRingSegmentsSlider = new Slider();
+        numberOfRingSegmentsSlider.setValue(64);
+        toroid.nbrRingSegmentsProperty().bind(numberOfRingSegmentsSlider.valueProperty());
+        Slider numberOfTubeSegmentsSlider = new Slider();
+        numberOfTubeSegmentsSlider.setValue(32);
+        toroid.nbrTubeSegmentsProperty().bind(numberOfTubeSegmentsSlider.valueProperty());
+        return new VBox(
+                new Label("Tube rad x slider"), tubeRadXSlider,
+                new Label("Tube rad y slider"), tubeRadYSlider,
+                new Label("tube zero pos slider"), tubeZeroPosSlider,
+                new Label("Ring radius slider"), ringRadiusSlider,
+                new Label("number of ring segments slider"), numberOfRingSegmentsSlider,
+                new Label("Number of tube segments slider"), numberOfTubeSegmentsSlider);
+    }
+
     private Scene buildScene(Group root) {
         Scene scene = new Scene(root, 1280, 720, true);
         scene.setOnKeyTyped(keyEvent -> keyTypedAction(keyEvent, root));
-        root.getChildren().forEach(model -> addMouseControl(model, scene));
+        root.getChildren().stream()
+                .filter(not(Slider.class::isInstance))
+                .forEach(model -> addMouseControl(model, scene));
 
         PerspectiveCamera camera = getPerspectiveCamera();
+        camera.setTranslateZ(-300);
         scene.setCamera(camera);
         return scene;
     }
@@ -73,13 +120,17 @@ public class ModelLoadApp extends Application {
         return tuxRotation;
     }
 
-    private Group getToroid() {
-        var toroid = new Toroid(10, 2, 2, 90);
+    private Toroid getToroid() {
+        var toroid = new Toroid();
+        var material = toroid.getPhongMaterial();
+        material.setSpecularColor(Color.WHITE);
+        material.setSpecularPower(64);
+        var diffuseMap = new Image(getClass().getResourceAsStream("model/images/cup_diffuseMap_1024.png"));
+        var bumpMap = new Image(getClass().getResourceAsStream("model/images/cup_normalMap_1024.png"));
+        toroid.setTexture(diffuseMap, bumpMap);
         toroid.setRotationAxis(Rotate.Z_AXIS);
         toroid.setRotate(90);
-        toroid.setDrawMode(DrawMode.LINE);
-        toroid.setScaleX(1);
-        return new Group(toroid);
+        return toroid;
     }
 
     @NotNull
@@ -116,7 +167,8 @@ public class ModelLoadApp extends Application {
     private PropellerAssembly getPropellerAssembly() {
         PropellerAssembly propellerAssembly = new PropellerAssembly();
         propellerAssembly.setScale(.05);
-        propellerAssembly.setTranslateX(50);
+        propellerAssembly.setTranslateX(-150);
+        propellerAssembly.setTranslateY(-100);
         return propellerAssembly;
     }
 
