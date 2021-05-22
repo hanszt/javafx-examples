@@ -20,34 +20,32 @@ package org.fxyz.utils.delaunay;
  * DEALINGS IN THE SOFTWARE.
  */
 
-import java.awt.*;
-import java.awt.event.*;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.*;
+
+import static java.lang.System.err;
+import static java.lang.System.out;
 
 /**
  * The Delauany applet.
- *
+ * <p>
  * Creates and displays a Delaunay Triangulation (DT) or a Voronoi Diagram
  * (VoD). Has a main program so it is an application as well as an applet.
  *
  * @author Paul Chew
- *
+ * <p>
  * Created July 2005. Derived from an earlier, messier version.
- *
+ * <p>
  * Modified December 2007. Updated some of the Triangulation methods. Added the
  * "Colorful" checkbox. Reorganized the interface between DelaunayAp and
  * DelaunayPanel. Added code to find a Voronoi cell.
- *
  */
 @SuppressWarnings("serial")
 public class DelaunayAp extends JFrame
@@ -59,7 +57,7 @@ public class DelaunayAp extends JFrame
     private static final String windowTitle = "Voronoi/Delaunay Window";
     private final JRadioButton voronoiButton = new JRadioButton("Voronoi Diagram");
     private final JRadioButton delaunayButton =
-                                    new JRadioButton("Delaunay Triangulation");
+            new JRadioButton("Delaunay Triangulation");
     private final JButton clearButton = new JButton("Clear");
     private final JCheckBox colorfulBox = new JCheckBox("More Colorful");
     private final DelaunayPanel delaunayPanel = new DelaunayPanel(this);
@@ -69,17 +67,18 @@ public class DelaunayAp extends JFrame
 
     /**
      * Main program (used when run as application instead of applet).
+     *
      * @param args
      */
-    public static void main (String[] args) {
+    public static void main(String[] args) {
         DelaunayAp app = new DelaunayAp();    // Create applet
         app.init();                           // Applet initialization
         app.setSize(700, 500);               // Set window size
         app.setTitle(windowTitle);           // Set window title
-        app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                                                 // Specify closing behavior
+        app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        // Specify closing behavior
         app.setVisible(true);                // Show the window
-        
+
     }
 
     /**
@@ -87,9 +86,13 @@ public class DelaunayAp extends JFrame
      * As recommended, the actual use of Swing components takes place in the
      * event-dispatching thread.
      */
-    public void init () {
-        try {SwingUtilities.invokeAndWait(this);}
-        catch (InterruptedException | InvocationTargetException e) {System.err.println("Initialization failure");}
+    public void init() {
+        try {
+            SwingUtilities.invokeAndWait(this);
+        } catch (InterruptedException | InvocationTargetException e) {
+            err.println("Initialization failure");
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**
@@ -98,7 +101,7 @@ public class DelaunayAp extends JFrame
      * thread.
      */
     @Override
-    public void run () {
+    public void run() {
         setLayout(new BorderLayout());
 
         // Add the button controls
@@ -142,18 +145,20 @@ public class DelaunayAp extends JFrame
 
     /**
      * A button has been pressed; redraw the picture.
+     *
      * @param e
      */
     @Override
     public void actionPerformed(ActionEvent e) {
         if (debug)
-            System.out.println(((AbstractButton)e.getSource()).getText());
+            out.println(((AbstractButton) e.getSource()).getText());
         if (e.getSource() == clearButton) delaunayPanel.clear();
         delaunayPanel.repaint();
     }
 
     /**
      * If entering a mouse-entry switch then redraw the picture.
+     *
      * @param e
      */
     @Override
@@ -165,6 +170,7 @@ public class DelaunayAp extends JFrame
 
     /**
      * If exiting a mouse-entry switch then redraw the picture.
+     *
      * @param e
      */
     @Override
@@ -175,25 +181,30 @@ public class DelaunayAp extends JFrame
 
     /**
      * If mouse has been pressed inside the delaunayPanel then add a new site.
+     *
      * @param e
      */
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getSource() != delaunayPanel) return;
         Pnt point = new Pnt(e.getX(), e.getY());
-        if (debug ) System.out.println("Click " + point);
+        if (debug) out.println("Click " + point);
         delaunayPanel.addSite(point);
         delaunayPanel.repaint();
     }
 
     /**
      * Not used, but needed for MouseListener.
+     *
      * @param e
      */
     @Override
-    public void mouseReleased(MouseEvent e) {}
+    public void mouseReleased(MouseEvent e) {
+    }
+
     @Override
-    public void mouseClicked(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) {
+    }
 
     /**
      * @return true iff the "colorful" box is selected
@@ -253,31 +264,32 @@ class DelaunayPanel extends JPanel {
     /**
      * Create and initialize the DT.
      */
-    public DelaunayPanel (DelaunayAp controller) {
+    public DelaunayPanel(DelaunayAp controller) {
         this.controller = controller;
         initialTriangle = new Triangle(
                 new Pnt(-initialSize, -initialSize),
-                new Pnt( initialSize, -initialSize),
-                new Pnt(           0,  initialSize));
+                new Pnt(initialSize, -initialSize),
+                new Pnt(0, initialSize));
         dt = new Triangulation(initialTriangle);
         colorTable = new HashMap<>();
-        
-        List<Pnt> points=Arrays.asList(new Pnt(0,21),new Pnt(0,1),new Pnt(1,0),
-                new Pnt(24,0),new Pnt(25,1),new Pnt(25,26),
-                new Pnt(16,26),new Pnt(16,21),new Pnt(12,21),
-                new Pnt(12,23),new Pnt(10,23),new Pnt(10,21),
-                new Pnt(0,21),new Pnt(12.5,13));
-        points.forEach(p->addSite(p));
-        
-        System.out.println("Triangles: ");
-        dt.stream().forEach(t->{
-            System.out.println("T: "+t);
-            t.stream().forEach(p->System.out.println("  "+p));
+
+        List<Pnt> points = Arrays.asList(new Pnt(0, 21), new Pnt(0, 1), new Pnt(1, 0),
+                new Pnt(24, 0), new Pnt(25, 1), new Pnt(25, 26),
+                new Pnt(16, 26), new Pnt(16, 21), new Pnt(12, 21),
+                new Pnt(12, 23), new Pnt(10, 23), new Pnt(10, 21),
+                new Pnt(0, 21), new Pnt(12.5, 13));
+        points.forEach(p -> addSite(p));
+
+        out.println("Triangles: ");
+        dt.stream().forEach(t -> {
+            out.println("T: " + t);
+            t.stream().forEach(p -> out.println("  " + p));
         });
     }
 
     /**
      * Add a new site to the DT.
+     *
      * @param point the site to add
      */
     public void addSite(Pnt point) {
@@ -293,10 +305,11 @@ class DelaunayPanel extends JPanel {
 
     /**
      * Get the color for the spcified item; generate a new color if necessary.
+     *
      * @param item we want the color for this item
      * @return item's color
      */
-    private Color getColor (Object item) {
+    private Color getColor(Object item) {
         if (colorTable.containsKey(item)) return colorTable.get(item);
         Color color = new Color(Color.HSBtoRGB(random.nextFloat(), 1.0f, 1.0f));
         colorTable.put(item, color);
@@ -307,40 +320,43 @@ class DelaunayPanel extends JPanel {
 
     /**
      * Draw a point.
+     *
      * @param point the Pnt to draw
      */
-    public void draw (Pnt point) {
+    public void draw(Pnt point) {
         int r = pointRadius;
         int x = (int) point.coord(0);
         int y = (int) point.coord(1);
-        g.fillOval(x-r, y-r, r+r, r+r);
+        g.fillOval(x - r, y - r, r + r, r + r);
     }
 
     /**
      * Draw a circle.
-     * @param center the center of the circle
-     * @param radius the circle's radius
+     *
+     * @param center    the center of the circle
+     * @param radius    the circle's radius
      * @param fillColor null implies no fill
      */
-    public void draw (Pnt center, double radius, Color fillColor) {
+    public void draw(Pnt center, double radius, Color fillColor) {
         int x = (int) center.coord(0);
         int y = (int) center.coord(1);
         int r = (int) radius;
         if (fillColor != null) {
             Color temp = g.getColor();
             g.setColor(fillColor);
-            g.fillOval(x-r, y-r, r+r, r+r);
+            g.fillOval(x - r, y - r, r + r, r + r);
             g.setColor(temp);
         }
-        g.drawOval(x-r, y-r, r+r, r+r);
+        g.drawOval(x - r, y - r, r + r, r + r);
     }
 
     /**
      * Draw a polygon.
-     * @param polygon an array of polygon vertices
+     *
+     * @param polygon   an array of polygon vertices
      * @param fillColor null implies no fill
      */
-    public void draw (Pnt[] polygon, Color fillColor) {
+    public void draw(Pnt[] polygon, Color fillColor) {
         int[] x = new int[polygon.length];
         int[] y = new int[polygon.length];
         for (int i = 0; i < polygon.length; i++) {
@@ -361,10 +377,11 @@ class DelaunayPanel extends JPanel {
     /**
      * Handles painting entire contents of DelaunayPanel.
      * Called automatically; requested via call to repaint().
+     *
      * @param g the Graphics context
      */
     @Override
-    public void paintComponent (Graphics g) {
+    public void paintComponent(Graphics g) {
         super.paintComponent(g);
         this.g = g;
 
@@ -395,33 +412,35 @@ class DelaunayPanel extends JPanel {
 
     /**
      * Draw all the Delaunay triangles.
+     *
      * @param withFill true iff drawing Delaunay triangles with fill colors
      */
-    public void drawAllDelaunay (boolean withFill) {
-        dt.stream().forEach((triangle) -> {
+    public void drawAllDelaunay(boolean withFill) {
+        dt.forEach(triangle -> {
             Pnt[] vertices = triangle.toArray(new Pnt[0]);
-            draw(vertices, withFill? getColor(triangle) : null);
+            draw(vertices, withFill ? getColor(triangle) : null);
         });
     }
 
     /**
      * Draw all the Voronoi cells.
-     * @param withFill true iff drawing Voronoi cells with fill colors
+     *
+     * @param withFill  true iff drawing Voronoi cells with fill colors
      * @param withSites true iff drawing the site for each Voronoi cell
      */
-    public void drawAllVoronoi (boolean withFill, boolean withSites) {
+    public void drawAllVoronoi(boolean withFill, boolean withSites) {
         // Keep track of sites done; no drawing for initial triangles sites
         HashSet<Pnt> done = new HashSet<>(initialTriangle);
-        dt.stream().forEach((triangle) -> {
-            for (Pnt site: triangle) {
+        dt.forEach((triangle) -> {
+            for (Pnt site : triangle) {
                 if (done.contains(site)) continue;
                 done.add(site);
                 List<Triangle> list = dt.surroundingTriangles(site, triangle);
                 Pnt[] vertices = new Pnt[list.size()];
                 int i = 0;
-                for (Triangle tri: list)
-                    vertices[i++] = tri.getCircumcenter();
-                draw(vertices, withFill? getColor(site) : null);
+                for (Triangle tri : list)
+                    vertices[i++] = tri.getCircumCenter();
+                draw(vertices, withFill ? getColor(site) : null);
                 if (withSites) draw(site);
             }
         });
@@ -430,12 +449,12 @@ class DelaunayPanel extends JPanel {
     /**
      * Draw all the empty circles (one for each triangle) of the DT.
      */
-    public void drawAllCircles () {
+    public void drawAllCircles() {
         // Loop through all triangles of the DT
-        for (Triangle triangle: dt) {
+        for (Triangle triangle : dt) {
             // Skip circles involving the initial-triangle vertices
             if (triangle.containsAny(initialTriangle)) continue;
-            Pnt c = triangle.getCircumcenter();
+            Pnt c = triangle.getCircumCenter();
             double radius = c.subtract(triangle.get(0)).magnitude();
             draw(c, radius, null);
         }

@@ -114,9 +114,9 @@ class Triangle extends ArraySet<Pnt> {
     /**
      * @return the triangle's circumcenter
      */
-    public Pnt getCircumcenter () {
+    public Pnt getCircumCenter() {
         if (circumcenter == null)
-            circumcenter = Pnt.circumcenter(this.toArray(new Pnt[0]));
+            circumcenter = Pnt.circumCenter(this.toArray(new Pnt[0]));
         return circumcenter;
     }
 
