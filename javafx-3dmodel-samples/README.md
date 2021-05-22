@@ -15,7 +15,7 @@ Before you run the program, make sure you modify the following in Intellij:
 - Go to File -->  hzt.Settings --> Appearance and Behaviour --> Path Variables
 - Add a new path variable by clicking on the + sign and name it PATH_TO_FX and browse to the lib folder of the JavaFX SDK to set its value, and click apply.
 - Go to Run --> Edit Configurations
-- Type the following in the VM Options section: --module-path ${PATH_TO_FX} --add-modules javafx.controls,javafx.fxml
+- Type the following in the VM Options section: `--module-path ${PATH_TO_FX} --add-modules javafx.controls,javafx.fxml`
 - Click Apply and Run the application. It should work now.
 
 [Source](https://openjfx.io/openjfx-docs/#IDE-Intellij)

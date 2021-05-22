@@ -121,4 +121,5 @@ The PhongMaterial class contains three constructors:
 The no-args constructor creates a PhongMaterial with the diffuse color as Color.WHITE. The other two constructors are used to create a PhongMaterial with the specified properties.
 
 ### Source
-[3d shape examples](https://examples.javacodegeeks.com/desktop-java/javafx/javafx-3d-shapes-example/)
+- [3d shape examples](https://examples.javacodegeeks.com/desktop-java/javafx/javafx-3d-shapes-example/)
+- [Project FXyz](https://github.com/FXyz)
