@@ -1,5 +1,6 @@
 package hzt;
 
+import hzt.service.MouseControlService;
 import javafx.application.Application;
 import javafx.scene.*;
 import javafx.scene.control.Label;
@@ -24,7 +25,7 @@ public class Fx3DNr72dMixedWith3D extends Application {
         //Add all 3D content to the root3D node
         var sphere = new Sphere(100);
         root3D.getChildren().addAll(sphere);
-        new MouseControlService(sphere).initMouseControl(scene);
+        new MouseControlService().initMouseControl(sphere, scene);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

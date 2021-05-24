@@ -9,28 +9,19 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
-import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
-import static java.util.function.Predicate.*;
+import static java.util.function.Predicate.not;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class ModelLoadApp extends Application {
-
-    private static void setDrawMode(MeshView m) {
-        m.setDrawMode(m.getDrawMode().equals(DrawMode.LINE) ? DrawMode.FILL : DrawMode.LINE);
-    }
 
     private Scene createScene() {
         Scooter scooter = getScooter();
@@ -41,48 +32,9 @@ public class ModelLoadApp extends Application {
         Duck duck = getDuck();
         Pyramid pyramid = getPyramid();
         TuxRotation tuxRotation = getTuxRotation();
-        var toroid = getToroid();
-        var toroidContainer = new Group(toroid);
-        toroidContainer.setTranslateX(-50);
-        var labeledSlider = labeledToroidSliders(toroid);
-        labeledSlider.setTranslateX(50);
-        labeledSlider.setTranslateY(-100);
-        labeledSlider.setTranslateZ(300);
         Group root = new Group(scooter, plane, lunarLander, cylinderHead,
-                propellerAssembly, duck, pyramid, tuxRotation, toroidContainer, labeledSlider);
+                propellerAssembly, duck, pyramid, tuxRotation);
         return buildScene(root);
-    }
-
-    private VBox labeledToroidSliders(Toroid toroid) {
-        Slider tubeRadXSlider = new Slider();
-        tubeRadXSlider.setValue(10);
-        tubeRadXSlider.setMin(.5);
-        tubeRadXSlider.setMax(20);
-        toroid.tubeRadXProperty().bind(tubeRadXSlider.valueProperty());
-        Slider tubeRadYSlider = new Slider();
-        tubeRadYSlider.setValue(10);
-        tubeRadYSlider.setMin(.5);
-        tubeRadYSlider.setMax(20);
-        toroid.tubeRadYProperty().bind(tubeRadYSlider.valueProperty());
-        Slider ringRadiusSlider = new Slider();
-        ringRadiusSlider.setValue(30);
-        toroid.ringRadProperty().bind(ringRadiusSlider.valueProperty());
-        Slider tubeZeroPosSlider = new Slider();
-        tubeZeroPosSlider.setMax(2 * Math.PI);
-        toroid.tubeZeroPosProperty().bind(tubeZeroPosSlider.valueProperty());
-        Slider numberOfRingSegmentsSlider = new Slider();
-        numberOfRingSegmentsSlider.setValue(64);
-        toroid.nbrRingSegmentsProperty().bind(numberOfRingSegmentsSlider.valueProperty());
-        Slider numberOfTubeSegmentsSlider = new Slider();
-        numberOfTubeSegmentsSlider.setValue(32);
-        toroid.nbrTubeSegmentsProperty().bind(numberOfTubeSegmentsSlider.valueProperty());
-        return new VBox(
-                new Label("Tube rad x slider"), tubeRadXSlider,
-                new Label("Tube rad y slider"), tubeRadYSlider,
-                new Label("tube zero pos slider"), tubeZeroPosSlider,
-                new Label("Ring radius slider"), ringRadiusSlider,
-                new Label("number of ring segments slider"), numberOfRingSegmentsSlider,
-                new Label("Number of tube segments slider"), numberOfTubeSegmentsSlider);
     }
 
     private Scene buildScene(Group root) {
@@ -108,8 +60,12 @@ public class ModelLoadApp extends Application {
         if (keyEvent.getCharacter().equals("w")) {
             FxUtils.getAllDescendents(root).stream()
                     .filter(MeshView.class::isInstance)
-                    .map(FxUtils::toMeshView).forEach(ModelLoadApp::setDrawMode);
+                    .map(FxUtils::toMeshView).forEach(this::setDrawMode);
         }
+    }
+
+    private void setDrawMode(MeshView m) {
+        m.setDrawMode(m.getDrawMode().equals(DrawMode.LINE) ? DrawMode.FILL : DrawMode.LINE);
     }
 
     @NotNull
@@ -118,19 +74,6 @@ public class ModelLoadApp extends Application {
         tuxRotation.setTranslateX(20);
         tuxRotation.setTranslateY(20);
         return tuxRotation;
-    }
-
-    private Toroid getToroid() {
-        var toroid = new Toroid();
-        var material = toroid.getPhongMaterial();
-        material.setSpecularColor(Color.WHITE);
-        material.setSpecularPower(64);
-        var diffuseMap = new Image(getClass().getResourceAsStream("model/images/cup_diffuseMap_1024.png"));
-        var bumpMap = new Image(getClass().getResourceAsStream("model/images/cup_normalMap_1024.png"));
-        toroid.setTexture(diffuseMap, bumpMap);
-        toroid.setRotationAxis(Rotate.Z_AXIS);
-        toroid.setRotate(90);
-        return toroid;
     }
 
     @NotNull

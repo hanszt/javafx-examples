@@ -170,8 +170,8 @@ public class MeshViewer extends Application {
     }
 
     private SubScene configuredSubScene(Group subSceneRoot) {
-        SubScene scene = new SubScene(subSceneRoot, 0, 0, true, SceneAntialiasing.BALANCED);
-        PerspectiveCamera camera = new PerspectiveCamera(true);
+        var scene = new SubScene(subSceneRoot, 0, 0, true, SceneAntialiasing.BALANCED);
+        var camera = new PerspectiveCamera(true);
         camera.setFarClip(1_000);
         camera.setTranslateZ(-100);
         scene.setCamera(camera);
@@ -179,7 +179,7 @@ public class MeshViewer extends Application {
     }
 
     private void configureMesh(PlaneZMesh planeZMesh) {
-        PhongMaterial material = new PhongMaterial();
+        var material = new PhongMaterial();
         material.setDiffuseColor(Color.LIGHTGRAY);
         material.setSpecularColor(Color.WHITE);
         material.setSpecularPower(64);
