@@ -5,14 +5,9 @@ import hzt.service.IMouseControlService;
 import hzt.service.MouseControlService;
 import hzt.utils.FxUtils;
 import javafx.application.Application;
-import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.Property;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
@@ -32,11 +27,11 @@ public class Fx3DToroidSample extends Application {
         var toroid = getToroid();
         var toroidContainer = new Group(toroid);
         toroidContainer.setTranslateX(-50);
-        var labeledSliders = labeledToroidSliders(toroid);
-        labeledSliders.setTranslateX(50);
-        labeledSliders.setTranslateY(-150);
-        labeledSliders.setTranslateZ(350);
-        Group root = new Group(toroidContainer, labeledSliders);
+        var toroidSliderPane = new ToroidSliderPane(toroid);
+        toroidSliderPane.setTranslateX(50);
+        toroidSliderPane.setTranslateY(-200);
+        toroidSliderPane.setTranslateZ(750);
+        Group root = new Group(toroidContainer, toroidSliderPane);
         return buildScene(root);
     }
 
@@ -66,11 +61,15 @@ public class Fx3DToroidSample extends Application {
         mouseControlService.setOrientation(20, 20);
     }
 
-    private void keyTypedAction(KeyEvent keyEvent, Group root) {
+    private void keyTypedAction(KeyEvent keyEvent, Parent root) {
         if (keyEvent.getCharacter().equals("w")) {
             FxUtils.getAllDescendents(root).stream()
                     .filter(MeshView.class::isInstance)
                     .map(FxUtils::toMeshView).forEach(this::setDrawMode);
+        } else if (keyEvent.getCharacter().equals("r")) {
+            root.getChildrenUnmodifiable().stream()
+                    .filter(ToroidSliderPane.class::isInstance)
+                    .map(ToroidSliderPane.class::cast).forEach(ToroidSliderPane::reset);
         }
     }
 
@@ -78,48 +77,86 @@ public class Fx3DToroidSample extends Application {
         m.setDrawMode(m.getDrawMode().equals(DrawMode.LINE) ? DrawMode.FILL : DrawMode.LINE);
     }
 
-    private VBox labeledToroidSliders(Toroid toroid) {
-        var tubeRadXSlider = buildSlider(-10, 20, 10, toroid.tubeRadXProperty());
-        var tubeRadYSlider = buildSlider(-20, 20, 10, toroid.tubeRadYProperty());
-        var ringRadiusSlider = buildSlider(-100,100, 30, toroid.ringRadProperty());
-        var tubeZeroPosSlider = buildSlider(0, 2 * Math.PI, 0, toroid.tubeZeroPosProperty());
-        var xOffsetSlider = buildSlider(-1, 1, 0, toroid.xOffsetProperty());
-        var yOffsetSlider = buildSlider(-1, 2,1, toroid.yOffsetProperty());
-        var zOffsetSlider = buildSlider(-1, 1, 0, toroid.zOffsetProperty());
-        var numberOfRingSegmentsSlider = buildSlider(0, 100, 64, toroid.nbrRingSegmentsProperty());
-        var numberOfTubeSegmentsSlider = buildSlider(0, 100, 32, toroid.nbrTubeSegmentsProperty());
-        var vBox = new VBox(
-                new Label("Ring radius slider"), ringRadiusSlider,
-                new Label("Tube rad x slider"), tubeRadXSlider,
-                new Label("Tube rad y slider"), tubeRadYSlider,
-                new Label("tube zero pos slider"), tubeZeroPosSlider,
-                new Label("x offset slider"), xOffsetSlider,
-                new Label("y offset slider"), yOffsetSlider,
-                new Label("z offset slider"), zOffsetSlider,
-                new Label("number of ring segments slider"), numberOfRingSegmentsSlider,
-                new Label("Number of tube segments slider"), numberOfTubeSegmentsSlider);
-        vBox.getChildren().stream().filter(Slider.class::isInstance)
-                .map(Slider.class::cast)
-                .forEach(this::showTickMarksAndLabels);
-        return vBox;
+    private static class ToroidSliderPane extends Group {
+
+        private final Slider tubeRadXSlider;
+        private final Slider tubeRadYSlider;
+        private final Slider ringRadiusSlider;
+        private final Slider tubeZeroPosSlider;
+        private final Slider xOffsetSlider;
+        private final Slider yOffsetSlider;
+        private final Slider zOffsetSlider;
+        private final Slider numberOfRingSegmentsSlider;
+        private final Slider numberOfTubeSegmentsSlider;
+
+        private ToroidSliderPane(Toroid toroid) {
+            tubeRadXSlider = buildSlider(-10, 20, 10, toroid.tubeRadXProperty());
+            tubeRadYSlider = buildSlider(-20, 20, 10, toroid.tubeRadYProperty());
+            ringRadiusSlider = buildSlider(-100, 100, 30, toroid.ringRadProperty());
+            tubeZeroPosSlider = buildSlider(0, 2 * Math.PI, 0, toroid.tubeZeroPosProperty());
+            xOffsetSlider = buildSlider(-1, 1, 0, toroid.xOffsetProperty());
+            yOffsetSlider = buildSlider(-1, 2, 1, toroid.yOffsetProperty());
+            zOffsetSlider = buildSlider(-1, 1, 0, toroid.zOffsetProperty());
+            numberOfTubeSegmentsSlider = buildSlider(32, toroid.nbrTubeSegmentsProperty());
+            numberOfRingSegmentsSlider = buildSlider(64, toroid.nbrRingSegmentsProperty());
+            var sliderVbox = filledSliderVbox();
+            getChildren().add(sliderVbox);
+            showTickLabelsAndTickMarks(sliderVbox);
+        }
+
+        private VBox filledSliderVbox() {
+            return new VBox(
+                    new Label("Ring radius slider"), ringRadiusSlider,
+                    new Label("Tube rad x slider"), tubeRadXSlider,
+                    new Label("Tube rad y slider"), tubeRadYSlider,
+                    new Label("tube zero pos slider"), tubeZeroPosSlider,
+                    new Label("x offset slider"), xOffsetSlider,
+                    new Label("y offset slider"), yOffsetSlider,
+                    new Label("z offset slider"), zOffsetSlider,
+                    new Label("number of ring segments slider"), numberOfRingSegmentsSlider,
+                    new Label("Number of tube segments slider"), numberOfTubeSegmentsSlider
+            );
+        }
+
+        private void showTickLabelsAndTickMarks(VBox sliderVbox) {
+            sliderVbox.getChildren().stream()
+                    .filter(Slider.class::isInstance)
+                    .map(Slider.class::cast)
+                    .forEach(this::showTickMarksAndLabels);
+        }
+
+        private void showTickMarksAndLabels(Slider s) {
+            s.setShowTickMarks(true);
+            s.setShowTickLabels(true);
+        }
+
+        private Slider buildSlider(double min, double max, double cur, DoubleProperty property) {
+            var slider = new Slider(min, max, cur);
+            property.bind(slider.valueProperty());
+            return slider;
+        }
+
+        private Slider buildSlider(double cur, IntegerProperty property) {
+            var slider = new Slider();
+            slider.setValue(cur);
+            property.bind(slider.valueProperty());
+            return slider;
+        }
+
+        private void reset() {
+            tubeRadXSlider.setValue(10);
+            tubeRadYSlider.setValue(10);
+            ringRadiusSlider.setValue(30);
+            tubeZeroPosSlider.setValue(0);
+            xOffsetSlider.setValue(0);
+            yOffsetSlider.setValue(1);
+            zOffsetSlider.setValue(0);
+            numberOfTubeSegmentsSlider.setValue(32);
+            numberOfRingSegmentsSlider.setValue(64);
+        }
+
     }
 
-    private Slider buildSlider(double min, double max, double cur, DoubleProperty property) {
-        var slider = new Slider(min, max, cur);
-        property.bind(slider.valueProperty());
-        return slider;
-    }
-
-    private Slider buildSlider(double min, double max, double cur, IntegerProperty property) {
-        var slider = new Slider(min, max, cur);
-        property.bind(slider.valueProperty());
-        return slider;
-    }
-
-    private void showTickMarksAndLabels(Slider s) {
-        s.setShowTickMarks(true);
-        s.setShowTickLabels(true);
-    }
 
     private Toroid getToroid() {
         var toroid = new Toroid();
