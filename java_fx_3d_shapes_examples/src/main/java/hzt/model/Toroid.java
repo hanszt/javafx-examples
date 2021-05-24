@@ -22,6 +22,7 @@
  */
 package hzt.model;
 
+import javafx.beans.Observable;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -33,31 +34,26 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+
 import static java.lang.Math.*;
 
 /**
- * Simple class to create a Toroid shape, it extends MeshView class so it
+ * Class to create a Toroid shape, it extends MeshView class so it
  * will work seamlessly with JavaFX.<br>
- * <p>
- * NOTE: <br>
- * I would like to thank Wayne Holder for pointing out a visual artefact
- * in the torus and correctly identifying what caused it. <br>
- * The artefact looks like a seam where the mesh edges join because it is
- * wrapped round a torus. The solution was to modify the code that defined
- * the triangle so the joined edges used 'shared' vertices, see the method
- * calcFaces() for the corrected code. <br>
- * used in this program.
- * <p>
- * The original method, calcFacesPT_OpenMesh() is kept for completeness
- * and will work just fine with an open mesh.
  *
- * @author Peter Lager (2017-19)
+ * @author Peter Lager (2017-19) refactored by Hans Zuidervaart
  */
 public class Toroid extends MeshView {
 
     // Default values
     private static final int NBR_RING_SEGMENTS = 64;
     private static final int NBR_TUBE_SEGMENTS = 32;
+    private static final double DEFAULT_X_OFFSET = 0.0D;
+    private static final double DEFAULT_Y_OFFSET = 1.0D;
+    private static final double DEFAULT_Z_OFFSET = 0.0D;
 
     // Stores the number of segments which controls the surface 'smoothness'
     private final IntegerProperty nbrRingSegments = new SimpleIntegerProperty();
@@ -69,6 +65,10 @@ public class Toroid extends MeshView {
     private final DoubleProperty tubeRadX = new SimpleDoubleProperty();
     private final DoubleProperty tubeRadY = new SimpleDoubleProperty();
     private final DoubleProperty tubeZeroPos = new SimpleDoubleProperty(); // radians
+
+    private final DoubleProperty xOffset = new SimpleDoubleProperty(DEFAULT_X_OFFSET);
+    private final DoubleProperty yOffset = new SimpleDoubleProperty(DEFAULT_Y_OFFSET);
+    private final DoubleProperty zOffset = new SimpleDoubleProperty(DEFAULT_Z_OFFSET);
 
     private final PhongMaterial material;
     private final TriangleMesh mesh = new TriangleMesh();
@@ -133,12 +133,23 @@ public class Toroid extends MeshView {
     }
 
     private void addListeners() {
-        nbrRingSegments.addListener((o,c, n) -> calculatePointsTexCoordsAndFaces(mesh));
-        nbrTubeSegments.addListener((o, c, n) -> calculatePointsTexCoordsAndFaces(mesh));
-        ringRad.addListener((o, c, n) -> calculatePointsTexCoordsAndFaces(mesh));
-        tubeRadX.addListener((o, c, n) -> calculatePointsTexCoordsAndFaces(mesh));
-        tubeRadY.addListener((o, c, n) -> calculatePointsTexCoordsAndFaces(mesh));
-        tubeZeroPos.addListener((o, c, n) -> calculatePointsTexCoordsAndFaces(mesh));
+        Arrays.stream(Toroid.class.getDeclaredFields())
+                .filter(this::ofTypeObservable)
+                .forEach(this::addListener);
+    }
+
+    private boolean ofTypeObservable(Field field) {
+        Type type = field.getType();
+        return type.equals(DoubleProperty.class) || type.equals(IntegerProperty.class);
+    }
+
+    private void addListener(Field f) {
+        try {
+            var obs = (Observable) f.get(this);
+            obs.addListener(o -> calculatePointsTexCoordsAndFaces(mesh));
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     private Mesh buildToroidMesh() {
@@ -169,7 +180,7 @@ public class Toroid extends MeshView {
      * number of ring and tube repeats.
      *
      * @param diffuseMap the image to be used as a texture
-     * @param bumpMap the bumpMap to be used
+     * @param bumpMap    the bumpMap to be used
      */
     public void setTexture(Image diffuseMap, Image bumpMap) {
         if (diffuseMap != null) material.setDiffuseMap(diffuseMap);
@@ -241,9 +252,9 @@ public class Toroid extends MeshView {
         private int facesIndex = 0;
 
         private void calculateAndAddPoint(Point3D point0, double angle) {
-            var x = point0.getX() * cos(angle);
-            var y = point0.getY();
-            var z = point0.getX() * sin(angle);
+            var x = point0.getX() * (cos(angle) + xOffset.get());
+            var y = point0.getY() * yOffset.get();
+            var z = point0.getX() * (sin(angle) + zOffset.get());
             points[pointsIndex++] = (float) x;
             points[pointsIndex++] = (float) y;
             points[pointsIndex++] = (float) z;
@@ -373,5 +384,17 @@ public class Toroid extends MeshView {
 
     public DoubleProperty tubeZeroPosProperty() {
         return tubeZeroPos;
+    }
+
+    public DoubleProperty xOffsetProperty() {
+        return xOffset;
+    }
+
+    public DoubleProperty yOffsetProperty() {
+        return yOffset;
+    }
+
+    public DoubleProperty zOffsetProperty() {
+        return zOffset;
     }
 }

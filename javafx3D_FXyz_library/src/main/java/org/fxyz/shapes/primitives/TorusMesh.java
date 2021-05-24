@@ -74,12 +74,20 @@ public class TorusMesh extends MeshView {
                 texCoords = new float[numVerts * 2];
         int[] faces = new int[faceCount * 6];
 
-        int pointIndex = 0, texIndex = 0, faceIndex = 0;
+        int pointIndex = 0;
+        int texIndex = 0;
+        int faceIndex = 0;
         float tubeFraction = 1.0f / tubeDivisions;
         float radiusFraction = 1.0f / radiusDivisions;
-        float x, y, z;
 
-        int p0 = 0, p1 = 0, p2 = 0, p3 = 0, t0 = 0, t1 = 0, t2 = 0, t3 = 0;
+        int p0;
+        int p1 = 0;
+        int p2 = 0;
+        int p3 = 0;
+        int t0 = 0;
+        int t1 = 0;
+        int t2 = 0;
+        int t3 = 0;
 
         // create points
         for (int tubeIndex = 0; tubeIndex < tubeDivisions; tubeIndex++) {
@@ -90,18 +98,13 @@ public class TorusMesh extends MeshView {
 
                 float localRadian = radiusFraction * (radiusIndex) * 2.0f * 3.141592653589793f;
 
-                points[pointIndex + 0] = x = (radius + tRadius * ((float) Math.cos(radian))) * ((float) Math.cos(localRadian) + xOffset);
-                points[pointIndex + 1] = y = (radius + tRadius * ((float) Math.cos(radian))) * ((float) Math.sin(localRadian) + yOffset);
-                points[pointIndex + 2] = z = (tRadius * (float) Math.sin(radian) * zOffset);
-
-                pointIndex += 3;
+                points[pointIndex++] = (radius + tRadius * ((float) Math.cos(radian))) * ((float) Math.cos(localRadian) + xOffset);
+                points[pointIndex++] = (radius + tRadius * ((float) Math.cos(radian))) * ((float) Math.sin(localRadian) + yOffset);
+                points[pointIndex++] = (tRadius * (float) Math.sin(radian) * zOffset);
 
                 float r = radiusIndex < tubeDivisions ? tubeFraction * radiusIndex * 2.0F * 3.141592653589793f : 0.0f;
-                texCoords[texIndex] = (0.5F + (float) (Math.sin(r) * 0.5D));
-                texCoords[texIndex + 1] = ((float) (Math.cos(r) * 0.5D) + 0.5F);
-
-                texIndex += 2;
-
+                texCoords[texIndex++] = (0.5F + (float) (Math.sin(r) * 0.5D));
+                texCoords[texIndex++] = ((float) (Math.cos(r) * 0.5D) + 0.5F);
             }
 
         }
