@@ -18,6 +18,7 @@ import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.NotNull;
 
 import static java.util.function.Predicate.not;
 
@@ -104,6 +105,7 @@ public class Fx3DToroidSample extends Application {
             showTickLabelsAndTickMarks(sliderVbox);
         }
 
+        @NotNull
         private VBox filledSliderVbox() {
             return new VBox(
                     new Label("Ring radius slider"), ringRadiusSlider,
@@ -163,9 +165,11 @@ public class Fx3DToroidSample extends Application {
         var material = toroid.getPhongMaterial();
         material.setSpecularColor(Color.WHITE);
         material.setSpecularPower(64);
-        var diffuseMap = new Image(getClass().getResourceAsStream("/images/cup_diffuseMap_1024.png"));
-        var bumpMap = new Image(getClass().getResourceAsStream("/images/cup_normalMap_1024.png"));
-        toroid.setTexture(diffuseMap, bumpMap);
+        var diffuseMapInputStream = getClass().getResourceAsStream("/images/cup_diffuseMap_1024.png");
+        var bumpMapInputStream = getClass().getResourceAsStream("/images/cup_normalMap_1024.png");
+        if (diffuseMapInputStream != null && bumpMapInputStream != null) {
+            toroid.setTexture(new Image(diffuseMapInputStream), new Image(bumpMapInputStream));
+        }
         toroid.setRotationAxis(Rotate.Z_AXIS);
         toroid.setRotate(90);
         return toroid;

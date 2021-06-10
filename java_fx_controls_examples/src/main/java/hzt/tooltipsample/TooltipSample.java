@@ -44,7 +44,7 @@ public class TooltipSample extends Application {
         for (int i = 0; i < rooms.length; i++) {
             final CheckBox checkBox = cbs[i] = new CheckBox(rooms[i]);
             final Integer rate = rates[i];
-            final Tooltip tooltip = new Tooltip("$" + rates[i].toString());
+            final Tooltip tooltip = new Tooltip("$" + rates[i]);
             tooltip.setFont(new Font("Arial", 16));
             checkBox.setTooltip(tooltip);
             checkBox.selectedProperty().addListener((ov, oldVal, newVal) -> updateSum(checkBox, rate));

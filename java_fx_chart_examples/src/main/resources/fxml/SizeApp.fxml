@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.layout.*?>
+<AnchorPane maxHeight="400.0" maxWidth="600.0" minHeight="400.0" minWidth="600.0" prefHeight="400.0" prefWidth="600.0"
+            styleClass="root" stylesheets="@css.css" xmlns="http://javafx.com/javafx/8.0.111"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="hzt.fxml.controller.MainAppController">
+    <HBox prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane prefHeight="400.0" prefWidth="420.0" HBox.hgrow="ALWAYS">
+            <LineChart fx:id="lineGraph" createSymbols="false" legendVisible="false" prefWidth="423.0"
+                       visible="false" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="0.0"
+                       AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <xAxis>
+                    <NumberAxis autoRanging="false" lowerBound="-10" side="BOTTOM" tickUnit="1"
+                                upperBound="10"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis autoRanging="false" lowerBound="-10" side="LEFT" tickUnit="1"
+                                upperBound="10"/>
+                </yAxis>
+                <cursor>
+                    <Cursor fx:constant="CROSSHAIR"/>
+                </cursor>
+            </LineChart>
+            <AreaChart fx:id="areaGraph" createSymbols="false" legendVisible="false" prefHeight="372.0"
+                       prefWidth="423.0" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="0.0"
+                       AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <xAxis>
+                    <NumberAxis autoRanging="false" lowerBound="-10" side="BOTTOM" tickUnit="1"
+                                upperBound="10"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis autoRanging="false" lowerBound="-10" side="LEFT" tickUnit="1"
+                                upperBound="10"/>
+                </yAxis>
+                <cursor>
+                    <Cursor fx:constant="CROSSHAIR"/>
+                </cursor>
+            </AreaChart>
+            <HBox layoutX="33.0" layoutY="366.0" prefHeight="29.0" prefWidth="377.0"
+                  AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="33.0" AnchorPane.rightAnchor="13.0">
+                <Button maxWidth="Infinity" mnemonicParsing="false"
+                        onAction="#handleLineGraphButtonAction" prefHeight="29.0" prefWidth="183.0"
+                        text="Line Graph" HBox.hgrow="ALWAYS"/>
+                <Button maxWidth="Infinity" mnemonicParsing="false"
+                        onAction="#handleAreaGraphButtonAction" prefHeight="29.0" prefWidth="184.0"
+                        text="Area Graph" HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </AnchorPane>
+        <VBox prefHeight="398.0" prefWidth="183.0" HBox.hgrow="NEVER">
+            <Button maxHeight="Infinity" mnemonicParsing="false" onAction="#handleXYButtonAction"
+                    prefHeight="66.0" prefWidth="266.0" text="y=x" VBox.vgrow="ALWAYS"/>
+            <Button maxHeight="Infinity" mnemonicParsing="false" onAction="#handleXYButton2Action"
+                    prefHeight="66.0" prefWidth="266.0" text="y=x-3" VBox.vgrow="ALWAYS"/>
+            <Button maxHeight="Infinity" mnemonicParsing="false"
+                    onAction="#handleSquaredButtonAction" prefHeight="67.0" prefWidth="266.0" text="y=x^2"
+                    VBox.vgrow="ALWAYS"/>
+            <Button maxHeight="Infinity" mnemonicParsing="false"
+                    onAction="#handleSquaredButton2Action" prefHeight="67.0" prefWidth="266.0"
+                    text="y=x^2+2" VBox.vgrow="ALWAYS"/>
+            <Button maxHeight="Infinity" mnemonicParsing="false"
+                    onAction="#handleCubedButtonAction" prefHeight="67.0" prefWidth="266.0" text="y=x^3"
+                    VBox.vgrow="ALWAYS"/>
+            <Button maxHeight="Infinity" mnemonicParsing="false"
+                    onAction="#handleCubedButton2Action" prefHeight="67.0" prefWidth="266.0"
+                    text="y=(x-3)^3-1" VBox.vgrow="ALWAYS"/>
+            <Button maxHeight="Infinity" mnemonicParsing="false"
+                    onAction="#handleSineButtonAction" prefHeight="67.0" prefWidth="266.0" text="y=4*sin(x)"
+                    VBox.vgrow="ALWAYS"/>
+            <Button maxHeight="Infinity" mnemonicParsing="false"
+                    onAction="#handleExponentButtonAction" prefHeight="67.0" prefWidth="266.0" text="y=e^x"
+                    VBox.vgrow="ALWAYS"/>
+            <Button maxHeight="Infinity" mnemonicParsing="false"
+                    onAction="#handleLogButtonAction" prefHeight="67.0" prefWidth="266.0" text="y=ln(x)"
+                    VBox.vgrow="ALWAYS"/>
+            <Button maxHeight="Infinity" mnemonicParsing="false"
+                    onAction="#handleSemiCircleButtonAction" prefHeight="67.0" prefWidth="266.0" text="Semi circle"
+                    VBox.vgrow="ALWAYS"/>
+            <Button maxHeight="Infinity" mnemonicParsing="false"
+                    onAction="#handleClearButtonAction" prefHeight="67.0" prefWidth="266.0" text="clear"
+                    VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </HBox>
+</AnchorPane>
