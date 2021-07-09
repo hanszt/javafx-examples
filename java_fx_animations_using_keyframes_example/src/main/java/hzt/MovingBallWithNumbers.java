@@ -1,12 +1,7 @@
 package hzt;
 
-import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.effect.Lighting;
@@ -24,64 +19,57 @@ public class MovingBallWithNumbers extends Application {
 
     @Override
     public void start(Stage stage) {
-        Group group = new Group();
-        Scene scene = new Scene(group);
-        stage.setScene(scene);
-        stage.setWidth(500);
-        stage.setHeight(500);
-        group.setTranslateX(80);
-        group.setTranslateY(80);
-
         //create a circle with effect
-        final Circle circle = new Circle(20, Color.rgb(156, 216, 255));
+        final var circle = new Circle(20, Color.rgb(156, 216, 255));
         circle.setEffect(new Lighting());
         //create a text inside a circle
-        final Text text = new Text("" + i);
+        final var text = new Text("" + i);
         text.setStroke(Color.BLACK);
         //create a layout for circle with text inside
-        final StackPane stackPane = new StackPane();
-        stackPane.getChildren().addAll(circle, text);
+        final var stackPane = new StackPane(circle, text);
         stackPane.setLayoutX(30);
         stackPane.setLayoutY(30);
 
-        group.getChildren().add(stackPane);
-        stage.show();
-
-        //create a timeline for moving the circle
-        //main timeline
-        Timeline timeline = new Timeline();
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.setAutoReverse(true);
-
         //You can add a specific action when each frame is started.
-        AnimationTimer timer = new AnimationTimer() {
+        var timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
                 text.setText("" + i);
                 i++;
             }
         };
+        timer.start();
 
         //create a keyValue with factory: scaling the circle 2times
-        KeyValue keyValueX = new KeyValue(stackPane.scaleXProperty(), 2);
-        KeyValue keyValueY = new KeyValue(stackPane.scaleYProperty(), 2);
+        var keyValueX = new KeyValue(stackPane.scaleXProperty(), 2);
+        var keyValueY = new KeyValue(stackPane.scaleYProperty(), 2);
 
-        //create a keyFrame, the keyValue is reached at time 2s
-        Duration duration = Duration.millis(2000);
+        var duration = Duration.seconds(2);
         //one can add a specific action when the keyframe is reached
-        EventHandler<ActionEvent> onFinished = t -> {
-            stackPane.setTranslateX(Math.random() * 200 - 100);
-            //reset counter
-            i = 0;
-        };
+        var keyFrame = new KeyFrame(duration, t -> onAnimationFinished(stackPane), keyValueX, keyValueY);
 
-        KeyFrame keyFrame = new KeyFrame(duration, onFinished, keyValueX, keyValueY);
-
-        //add the keyframe to the timeline
+        var timeline = new Timeline();
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.setAutoReverse(true);
         timeline.getKeyFrames().add(keyFrame);
-
         timeline.play();
-        timer.start();
+
+        var group = new Group(stackPane);
+        group.setTranslateX(80);
+        group.setTranslateY(80);
+
+        var scene = new Scene(group);
+
+        stage.setScene(scene);
+        stage.setWidth(500);
+        stage.setHeight(500);
+        stage.show();
+    }
+
+    private void onAnimationFinished(StackPane stackPane) {
+        stackPane.setTranslateX(Math.random() * 200 - 100);
+        //reset counter
+        i = 0;
     }
 
 

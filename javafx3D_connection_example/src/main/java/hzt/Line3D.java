@@ -4,6 +4,7 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -50,7 +51,7 @@ public class Line3D extends Group {
         DoubleProperty zDistanceSquared = bindOperation(zDistance.multiply(zDistance));
         DoubleProperty xDistance1Squared = bindOperation(xDistanceSquared.add(yDistanceSquared));
         DoubleProperty lengthSquared = bindOperation(xDistanceSquared.add(yDistanceSquared.add(zDistanceSquared)));
-        lengthSquared.addListener((observableValue, number, t1) -> cylinder.setHeight(Math.sqrt(lengthSquared.get())));
+        lengthSquared.addListener(this::updateHeightIfNotBound);
         xDistance.addListener((o, c, n) -> rotate(xDistance, yDistance, zDistance, xDistance1Squared));
         yDistance.addListener((o, c, n) -> rotate(xDistance, yDistance, zDistance, xDistance1Squared));
         zDistance.addListener((o, c, n) -> rotateCylinderX(zDistance, xDistance1Squared));
@@ -136,5 +137,11 @@ public class Line3D extends Group {
         endX.set(end.getX());
         endY.set(end.getY());
         endZ.set(end.getZ());
+    }
+
+    private void updateHeightIfNotBound(ObservableValue<? extends Number> o, Number c, Number n) {
+        if (!cylinder.heightProperty().isBound()) {
+            cylinder.setHeight(Math.sqrt(n.doubleValue()));
+        }
     }
 }

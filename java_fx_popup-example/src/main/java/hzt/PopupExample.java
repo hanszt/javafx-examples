@@ -17,21 +17,22 @@ public class PopupExample extends Application {
 
     @Override
     public void start(final Stage primaryStage) {
-        primaryStage.setTitle("Popup Example");
-        final Popup popup = new Popup();
+        final var popup = new Popup();
         popup.setX(300);
         popup.setY(200);
-        popup.getContent().addAll(new Circle(25, 25, 50, Color.AQUAMARINE));
+        popup.getContent().add(new Circle(25, 25, 50, Color.AQUAMARINE));
 
-        Button show = new Button("Show");
-        show.setOnAction(event -> popup.show(primaryStage));
+        var showButton = new Button("Show");
+        showButton.setOnAction(event -> popup.show(primaryStage));
 
-        Button hide = new Button("Hide");
-        hide.setOnAction(event -> popup.hide());
+        var hideButton = new Button("Hide");
+        hideButton.setOnAction(event -> popup.hide());
 
-        HBox layout = new HBox(10);
+        var layout = new HBox(10);
         layout.setStyle("-fx-background-color: cornsilk; -fx-padding: 10;");
-        layout.getChildren().addAll(show, hide);
+        layout.getChildren().addAll(showButton, hideButton);
+
+        primaryStage.setTitle("Popup Example");
         primaryStage.setScene(new Scene(layout));
         primaryStage.show();
     }

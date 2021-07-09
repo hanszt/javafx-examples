@@ -35,12 +35,20 @@ import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
@@ -50,7 +58,9 @@ import javafx.stage.Stage;
 import service.IMouseControlService;
 import service.MouseControlService;
 
-public class MeshViewer extends Application {
+import static java.lang.System.*;
+
+public final class MeshViewer extends Application {
 
     private static final int INIT_ANGLE_X = 30;
     private static final int INIT_AMPLITUDE = -10;
@@ -63,7 +73,7 @@ public class MeshViewer extends Application {
 
     private final Group planeMeshContainer = new Group();
 
-    IMouseControlService mouseControlService = new MouseControlService();
+    private final IMouseControlService mouseControlService = new MouseControlService();
     private final ComboBox<PlaneMeshPicker> planeZMeshComboBox = new ComboBox<>();
     private final Slider dampeningSlider = new Slider(0, 1, INIT_DAMPENING_VALUE);
     private final Slider amplitudeSlider = new Slider(-20, 20, INIT_AMPLITUDE);
@@ -73,27 +83,17 @@ public class MeshViewer extends Application {
     private final Slider meshSizeYSlider = new Slider(0, 100, INIT_MES_SIZE_Y);
     private final Slider waveFrequencySlider = new Slider(-3, 3, INIT_FREQUENCY);
 
-    @SuppressWarnings("SameParameterValue")
-    private Scene buildScene(int width, int height, boolean depthBuffer) {
-        VBox root = FxSetup.configuredVBox();
+    private Scene buildScene() {
+        var root = FxSetup.configuredVBox();
         root.setBackground(new Background(new BackgroundFill(Color.rgb(10, 10, 40), CornerRadii.EMPTY, Insets.EMPTY)));
-        Scene scene = new Scene(root, width, height, depthBuffer);
+        var scene = new Scene(root, 700, 750, true);
 
-        PlaneZMesh waveMesh = new WaveMesh();
-        PlaneZMesh parabolaMesh = new ParabolaMesh();
-        PlaneZMesh mazeMesh = new DiscreteWaveMesh();
-        HBox controlsPane = buildControls(scene, waveMesh, parabolaMesh, mazeMesh);
+        var controlsPane = buildControls(scene, new WaveMesh(), new ParabolaMesh(), new DiscreteWaveMesh());
         controlsPane.setOpacity(.8);
 
         planeMeshContainer.getChildren().add(planeZMeshComboBox.getValue().getPlaneZMesh());
-        PointLight pointLight = new PointLight(Color.ANTIQUEWHITE);
-        pointLight.setTranslateX(300);
-        pointLight.setTranslateY(-50);
-        pointLight.setTranslateZ(-1000);
 
-        Group subSceneRoot = new Group(planeMeshContainer, pointLight);
-
-        final SubScene subScene = configuredSubScene(subSceneRoot);
+        final var subScene = configuredSubScene();
         subScene.widthProperty().bind(scene.widthProperty());
         subScene.heightProperty().bind(scene.heightProperty().multiply(0.75));
 
@@ -106,28 +106,30 @@ public class MeshViewer extends Application {
         return scene;
     }
 
-    private void configurePlaneZMeshes(ObservableList<PlaneMeshPicker> planeZMeshes) {
-        for (PlaneMeshPicker meshPicker : planeZMeshes) {
-            configureMesh(meshPicker.getPlaneZMesh());
-        }
+    private void configurePlaneZMeshes(ObservableList<PlaneMeshPicker> planeZMeshPickers) {
+        planeZMeshPickers.stream()
+                .map(PlaneMeshPicker::getPlaneZMesh)
+                .forEach(this::configureMesh);
     }
 
-    private HBox buildControls(Scene scene, PlaneZMesh waveMesh, PlaneZMesh parabolaMesh, PlaneZMesh mazeMesh) {
-        PlaneMeshPicker waveMeshPicker = new PlaneMeshPicker("Wave mesh", waveMesh);
+    private Parent buildControls(Scene scene, PlaneZMesh waveMesh, PlaneZMesh parabolaMesh, PlaneZMesh mazeMesh) {
+        var waveMeshPicker = new PlaneMeshPicker("Wave mesh", waveMesh);
         planeZMeshComboBox.getItems().addAll(waveMeshPicker,
                 new PlaneMeshPicker("Parabola mesh", parabolaMesh),
                 new PlaneMeshPicker("Maze mesh", mazeMesh));
         planeZMeshComboBox.setValue(waveMeshPicker);
         planeZMeshComboBox.valueProperty().addListener(this::updatePlaneZMeshView);
         planeZMeshComboBox.prefWidthProperty().bind(scene.widthProperty());
-        VBox vBox0 = FxSetup.configuredVBox(planeZMeshComboBox);
-        VBox vBox1 = FxSetup.configuredVBox(dampeningSlider, amplitudeSlider);
-        VBox vBox2 = FxSetup.configuredVBox(resolutionXSlider, resolutionYSlider);
-        VBox vBox3 = FxSetup.configuredVBox(meshSizeXSlider, meshSizeYSlider, waveFrequencySlider);
-        HBox controlsRoot = FxSetup.configuredHBox(vBox0, vBox1, vBox2, vBox3);
+        var vBox0 = FxSetup.configuredVBox(planeZMeshComboBox);
+        var vBox1 = FxSetup.configuredVBox(dampeningSlider, amplitudeSlider);
+        var vBox2 = FxSetup.configuredVBox(resolutionXSlider, resolutionYSlider);
+        var vBox3 = FxSetup.configuredVBox(meshSizeXSlider, meshSizeYSlider, waveFrequencySlider);
+        var controlsRoot = FxSetup.configuredHBox(vBox0, vBox1, vBox2, vBox3);
 
-        FxUtils.getAllDescendents(controlsRoot).stream().filter(n -> n instanceof Slider)
-                .map(FxUtils::toSlider).forEach(s -> configureSlider(scene, s));
+        FxUtils.getAllDescendents(controlsRoot).stream()
+                .filter(Slider.class::isInstance)
+                .map(FxUtils::toSlider)
+                .forEach(s -> configureSlider(scene, s));
         return controlsRoot;
     }
 
@@ -162,14 +164,20 @@ public class MeshViewer extends Application {
         mouseControlService.setOrientation(INIT_ANGLE_X, 0);
     }
 
-    private void configureSlider(Scene scene, Slider slider) {
+    private static void configureSlider(Scene scene, Slider slider) {
         slider.setMajorTickUnit(5);
         slider.setShowTickLabels(true);
         slider.setShowTickMarks(true);
         slider.prefWidthProperty().bind(scene.widthProperty());
     }
 
-    private SubScene configuredSubScene(Group subSceneRoot) {
+    private SubScene configuredSubScene() {
+        var pointLight = new PointLight(Color.ANTIQUEWHITE);
+        pointLight.setTranslateX(300);
+        pointLight.setTranslateY(-50);
+        pointLight.setTranslateZ(-1000);
+
+        var subSceneRoot = new Group(planeMeshContainer, pointLight);
         var scene = new SubScene(subSceneRoot, 0, 0, true, SceneAntialiasing.BALANCED);
         var camera = new PerspectiveCamera(true);
         camera.setFarClip(1_000);
@@ -179,17 +187,41 @@ public class MeshViewer extends Application {
     }
 
     private void configureMesh(PlaneZMesh planeZMesh) {
+        setMaterial(planeZMesh);
+        setTexture(planeZMesh);
+        planeZMesh.setDrawMode(DrawMode.FILL);
+        planeZMesh.setCullFace(CullFace.NONE);
+        planeZMesh.setRotationAxis(Rotate.X_AXIS);
+        planeZMesh.setRotate(-90);
+        bindPropertiesBidirectional(planeZMesh);
+    }
+
+    private void setTexture(PlaneZMesh planeZMesh) {
+        var diffuseMapLocation = "images/cup_diffuseMap_1024.png";
+        var diffuseMapInputStream = getClass().getResourceAsStream(diffuseMapLocation);
+        if (diffuseMapInputStream != null) {
+            planeZMesh.setDiffuseMap(new Image(diffuseMapInputStream));
+        } else {
+            err.println(diffuseMapLocation + " not found");
+        }
+        var bumpMapLocation = "images/cup_normalMap_1024.png";
+        var bumpMapInputStream = getClass().getResourceAsStream(bumpMapLocation);
+        if (bumpMapInputStream != null) {
+            planeZMesh.setBumpMap(new Image(bumpMapInputStream));
+        } else {
+            err.println(bumpMapLocation + " not found");
+        }
+    }
+
+    private static void setMaterial(PlaneZMesh planeZMesh) {
         var material = new PhongMaterial();
         material.setDiffuseColor(Color.LIGHTGRAY);
         material.setSpecularColor(Color.WHITE);
         material.setSpecularPower(64);
         planeZMesh.setMaterial(material);
-        planeZMesh.setDiffuseMap(new Image(getClass().getResourceAsStream("images/cup_diffuseMap_1024.png")));
-        planeZMesh.setBumpMap(new Image(getClass().getResourceAsStream("images/cup_normalMap_1024.png")));
-        planeZMesh.setDrawMode(DrawMode.FILL);
-        planeZMesh.setCullFace(CullFace.NONE);
-        planeZMesh.setRotationAxis(Rotate.X_AXIS);
-        planeZMesh.setRotate(-90);
+    }
+
+    private void bindPropertiesBidirectional(PlaneZMesh planeZMesh) {
         planeZMesh.amplitudeProperty().bindBidirectional(amplitudeSlider.valueProperty());
         planeZMesh.dampeningProperty().bindBidirectional(dampeningSlider.valueProperty());
         planeZMesh.resolutionXProperty().bindBidirectional(resolutionXSlider.valueProperty());
@@ -201,7 +233,7 @@ public class MeshViewer extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Scene scene = buildScene(700, 750, true);
+        var scene = buildScene();
         primaryStage.setTitle("MeshViewer");
         primaryStage.setScene(scene);
         primaryStage.show();

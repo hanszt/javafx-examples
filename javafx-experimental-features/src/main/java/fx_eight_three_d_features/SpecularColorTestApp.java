@@ -44,9 +44,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SpecularColorTestApp extends Application {
 
@@ -55,21 +57,21 @@ public class SpecularColorTestApp extends Application {
     private CheckBox specularColorCheckBox;
     private CheckBox specularMapCheckBox;
 
-    Image diffuseMap = new Image(getClass().getResourceAsStream("images/cup_diffuseMap_1024.png"));
-    Image specularGrayMap = new Image(getClass().getResourceAsStream("images/spec.png"));
-    Image specularColorMap = new Image(getClass().getResourceAsStream("images/spec_color.png"));
+    private final Image diffuseMap = new Image(Objects.requireNonNull(getClass().getResourceAsStream("images/cup_diffuseMap_1024.png")));
+    private final Image specularGrayMap = new Image(Objects.requireNonNull(getClass().getResourceAsStream("images/spec.png")));
+    private final Image specularColorMap = new Image(Objects.requireNonNull(getClass().getResourceAsStream("images/spec_color.png")));
 
     private final List<PhongMaterial> materials = new ArrayList<>();
 
-    private void addSphere(Group group, int x, int y, PhongMaterial material) {
-        Sphere sphere = new Sphere(10);
+    private Sphere buildSphere(int x, int y, PhongMaterial material) {
+        var sphere = new Sphere(10);
         sphere.setMaterial(material);
         sphere.setTranslateX(x);
         sphere.setTranslateY(y);
-        group.getChildren().add(sphere);
+        return sphere;
     }
 
-    interface MaterialModifier {
+    private interface MaterialModifier {
         void modify(PhongMaterial mat);
     }
 
@@ -99,7 +101,7 @@ public class SpecularColorTestApp extends Application {
         m.specularPowerProperty().bind(specularPowerScroll.valueProperty());
     }
 
-    private void addSpheres(Group g) {
+    private Group addSpheres() {
         // specular power with default color (null)
         addMaterials(m -> m.setSpecularPower(100));
 
@@ -107,21 +109,17 @@ public class SpecularColorTestApp extends Application {
         addMaterials(m -> m.setSpecularColor(Color.WHITE));
 
         ObjectBinding<Color> specularColorBind = Bindings.createObjectBinding(
-                () -> specularColorCheckBox.isSelected() ?
-                        specularColorPicker.getValue() : null,
+                () -> specularColorCheckBox.isSelected() ? specularColorPicker.getValue() : null,
                 specularColorPicker.valueProperty(),
-                specularColorCheckBox.selectedProperty()
-        );
+                specularColorCheckBox.selectedProperty());
 
         ObjectBinding<Image> specularGrayMapBind = Bindings.createObjectBinding(
-                () -> specularMapCheckBox.isSelected() ?
-                        specularGrayMap : null,
+                () -> specularMapCheckBox.isSelected() ? specularGrayMap : null,
                 specularMapCheckBox.selectedProperty()
         );
 
         ObjectBinding<Image> specularColorMapBind = Bindings.createObjectBinding(
-                () -> specularMapCheckBox.isSelected() ?
-                        specularColorMap : null,
+                () -> specularMapCheckBox.isSelected() ? specularColorMap : null,
                 specularMapCheckBox.selectedProperty()
         );
 
@@ -146,6 +144,25 @@ public class SpecularColorTestApp extends Application {
         // color specular map with power and color
         addMaterials(m -> bindMaterial(m, specularColorBind, specularColorMapBind));
 
+        Group group = buildSphereGroup();
+        PointLight pointLight = new PointLight(Color.ANTIQUEWHITE);
+        pointLight.setTranslateZ(-200);
+
+        PointLight pointLight2 = new PointLight(Color.ANTIQUEWHITE);
+        pointLight2.setTranslateX(-250);
+        pointLight2.setTranslateY(300);
+        pointLight2.setTranslateZ(-1500);
+
+        PointLight pointLight3 = new PointLight(Color.ANTIQUEWHITE);
+        pointLight3.setTranslateX(250);
+        pointLight3.setTranslateY(100);
+        pointLight3.setTranslateZ(500);
+        group.getChildren().addAll(pointLight, pointLight2, pointLight3);
+        return group;
+    }
+
+    private Group buildSphereGroup() {
+       var group = new Group();
         int numX = 6;
         int numY = (materials.size() + numX - 1) / numX;
         for (int y = 0; y < numY; y++) {
@@ -154,10 +171,11 @@ public class SpecularColorTestApp extends Application {
                 if (idx < materials.size()) {
                     int xPos = -50 + x * 100 / (numX - 1);
                     int yPos = -40 + y * 80 / (numY - 1);
-                    addSphere(g, xPos, yPos, materials.get(idx));
+                    group.getChildren().add(buildSphere(xPos, yPos, materials.get(idx)));
                 }
             }
         }
+        return group;
     }
 
     private Node createControls() {
@@ -177,7 +195,18 @@ public class SpecularColorTestApp extends Application {
         ImageView specColorView = createImageView(specularColorMap);
         VBox controls = new VBox(15);
         controls.setPadding(new Insets(15));
-        GridPane grid = new GridPane();
+
+        var grid = buildGrid();
+
+        controls.getChildren().addAll(specularColorCheckBox, specularColorPicker, specularPowerScroll,
+                grid, diffView, specularMapCheckBox, new HBox(15, specGrayView, specColorView));
+
+        return controls;
+    }
+
+    @NotNull
+    private GridPane buildGrid() {
+        var grid = new GridPane();
         grid.setHgap(5);
         grid.setVgap(5);
         grid.addRow(0, new Label("Diffuse"), new Label("Specuar power only"));
@@ -185,10 +214,7 @@ public class SpecularColorTestApp extends Application {
         grid.addRow(3, new Label("Gray map"), new Label("Color map"));
         grid.addRow(4, new Label("Gray map and power"), new Label("Color map and power"));
         grid.addRow(5, new Label("Gray map with color"), new Label("Color map with color"));
-        controls.getChildren().addAll(specularColorCheckBox, specularColorPicker, specularPowerScroll,
-                grid, diffView, specularMapCheckBox, new HBox(15, specGrayView, specColorView));
-
-        return controls;
+        return grid;
     }
 
     private ImageView createImageView(Image image) {
@@ -203,23 +229,11 @@ public class SpecularColorTestApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Node controls = createControls();
-        PointLight pointLight = new PointLight(Color.ANTIQUEWHITE);
-        pointLight.setTranslateZ(-200);
 
-        PointLight pointLight2 = new PointLight(Color.ANTIQUEWHITE);
-        pointLight2.setTranslateX(-250);
-        pointLight2.setTranslateY(300);
-        pointLight2.setTranslateZ(-1500);
 
-        PointLight pointLight3 = new PointLight(Color.ANTIQUEWHITE);
-        pointLight3.setTranslateX(250);
-        pointLight3.setTranslateY(100);
-        pointLight3.setTranslateZ(500);
+        Group sphereGroup = addSpheres();
 
-        Group root1 = new Group(pointLight/*, pointLight2, pointLight3*/);
-        addSpheres(root1);
-
-        SubScene scene3D = new SubScene(root1, 1024, 768, true, null);
+        SubScene scene3D = new SubScene(sphereGroup, 1024, 768, true, null);
         final Camera3D cam3d = new Camera3D();
         cam3d.setPosZ(-200);
         cam3d.setFarClip(10000);

@@ -17,8 +17,15 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
+import java.util.stream.IntStream;
+
 import static java.lang.Math.random;
+import static java.util.stream.Collectors.*;
 
 public class ColorfulCircles extends Application {
 
@@ -26,46 +33,68 @@ public class ColorfulCircles extends Application {
         launch(args);
     }
 
+    private static Circle toConfiguredCircle(int i) {
+        var circle = new Circle(150, Color.web("white", 0.05));
+        circle.setStrokeType(StrokeType.OUTSIDE);
+        circle.setStroke(Color.web("white", 0.16));
+        circle.setStrokeWidth(4);
+        return circle;
+    }
+
     @Override
     public void start(Stage primaryStage) {
-        Group root = new Group();
-        Scene scene = new Scene(root, 800, 600, Color.BLACK);
-        primaryStage.setScene(scene);
-        Group circles = new Group();
-        for (int i = 0; i < 30; i++) {
-            Circle circle = new Circle(150, Color.web("white", 0.05));
-            circle.setStrokeType(StrokeType.OUTSIDE);
-            circle.setStroke(Color.web("white", 0.16));
-            circle.setStrokeWidth(4);
-            circles.getChildren().add(circle);
-        }
-        Rectangle colors = new Rectangle(scene.getWidth(), scene.getHeight(),
-                new LinearGradient(0f, 1f, 1f, 0f, true, CycleMethod.NO_CYCLE, new Stop(0, Color.web("#f8bd55")),
-                        new Stop(0.14, Color.web("#c0fe56")),
-                        new Stop(0.28, Color.web("#5dfbc1")),
-                        new Stop(0.43, Color.web("#64c2f8")),
-                        new Stop(0.57, Color.web("#be4af7")),
-                        new Stop(0.71, Color.web("#ed5fc2")),
-                        new Stop(0.85, Color.web("#ef504c")),
-                        new Stop(1, Color.web("#f2660f"))));
-        Group blendModeGroup = new Group(new Group(new Rectangle(scene.getWidth(), scene.getHeight(), Color.BLACK), circles), colors);
-        colors.setBlendMode(BlendMode.OVERLAY);
-        root.getChildren().add(blendModeGroup);
-        circles.setEffect(new BoxBlur(10, 10, 3));
-        Timeline timeline = new Timeline();
+        var root = new Group();
+        var scene = new Scene(root, 800, 600, Color.BLACK);
+        scene.setOnMouseClicked(e -> primaryStage.close());
 
-        for (Node circle : circles.getChildren()) {
-            timeline.getKeyFrames().addAll(
-                    new KeyFrame(Duration.ZERO, // set start position at 0
-                            new KeyValue(circle.translateXProperty(), random() * 800),
-                            new KeyValue(circle.translateYProperty(), random() * 600)),
-                    new KeyFrame(Duration.seconds(40), // set end position at 40s
-                            new KeyValue(circle.translateXProperty(), random() * 800),
-                            new KeyValue(circle.translateYProperty(), random() * 600)));
-        }
+        var colorsRectangle = new Rectangle(scene.getWidth(), scene.getHeight(), getPaint());
+        colorsRectangle.setBlendMode(BlendMode.OVERLAY);
+
+        var circles = new Group(buildCircles());
+        circles.setEffect(new BoxBlur(10, 10, 3));
+
+        var blendModeGroup = new Group(new Group(new Rectangle(scene.getWidth(), scene.getHeight(), Color.BLACK), circles), colorsRectangle);
+        root.getChildren().add(blendModeGroup);
+        setupCircleMovementTimeline(circles);
+
+        primaryStage.setScene(scene);
+        primaryStage.initStyle(StageStyle.UNDECORATED);
+        primaryStage.show();
+    }
+
+    private void setupCircleMovementTimeline(Group circles) {
+        var timeline = new Timeline();
+        circles.getChildren().forEach(circle -> addCircleTranslationKeyFramesToTimeline(timeline, circle));
         // play 40s of animation
         timeline.play();
+    }
 
-        primaryStage.show();
+    @NotNull
+    private Collection<Node> buildCircles() {
+        return IntStream.range(0, 30)
+                .mapToObj(ColorfulCircles::toConfiguredCircle)
+                .collect(toList());
+    }
+
+    @NotNull
+    private LinearGradient getPaint() {
+        return new LinearGradient(0f, 1f, 1f, 0f, true, CycleMethod.NO_CYCLE, new Stop(0, Color.web("#f8bd55")),
+                new Stop(0.14, Color.web("#c0fe56")),
+                new Stop(0.28, Color.web("#5dfbc1")),
+                new Stop(0.43, Color.web("#64c2f8")),
+                new Stop(0.57, Color.web("#be4af7")),
+                new Stop(0.71, Color.web("#ed5fc2")),
+                new Stop(0.85, Color.web("#ef504c")),
+                new Stop(1, Color.web("#f2660f")));
+    }
+
+    private void addCircleTranslationKeyFramesToTimeline(Timeline timeline, Node circle) {
+        timeline.getKeyFrames().addAll(
+                new KeyFrame(Duration.ZERO, // set start position at 0
+                        new KeyValue(circle.translateXProperty(), random() * 800),
+                        new KeyValue(circle.translateYProperty(), random() * 600)),
+                new KeyFrame(Duration.seconds(40), // set end position at 40s
+                        new KeyValue(circle.translateXProperty(), random() * 800),
+                        new KeyValue(circle.translateYProperty(), random() * 600)));
     }
 }
