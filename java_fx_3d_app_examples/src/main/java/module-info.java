@@ -3,6 +3,7 @@ module Main.app {
     requires transitive javafx.controls;
     requires javafx.graphics;
     requires org.jetbrains.annotations;
+    requires org.apache.logging.log4j;
 
     exports hzt.chapt1 to javafx.graphics;
     exports hzt.chapt2 to javafx.graphics;
