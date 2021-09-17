@@ -1,6 +1,13 @@
 package hzt;
 
-import hzt.model.*;
+import hzt.model.CylinderHead;
+import hzt.model.Duck;
+import hzt.model.LunarLander;
+import hzt.model.Plane;
+import hzt.model.PropellerAssembly;
+import hzt.model.Pyramid;
+import hzt.model.Scooter;
+import hzt.model.TuxRotation;
 import hzt.service.IMouseControlService;
 import hzt.service.MouseControlService;
 import hzt.utils.FxUtils;
@@ -23,7 +30,7 @@ import static java.util.function.Predicate.not;
  */
 public class ModelLoadApp extends Application {
 
-    private Scene createScene() {
+    private static Scene createScene() {
         Scooter scooter = getScooter();
         Plane plane = getPlane();
         LunarLander lunarLander = new LunarLander();
@@ -37,7 +44,7 @@ public class ModelLoadApp extends Application {
         return buildScene(root);
     }
 
-    private Scene buildScene(Group root) {
+    private static Scene buildScene(Group root) {
         Scene scene = new Scene(root, 1280, 720, true);
         scene.setOnKeyTyped(keyEvent -> keyTypedAction(keyEvent, root));
         root.getChildren().stream()
@@ -50,26 +57,26 @@ public class ModelLoadApp extends Application {
         return scene;
     }
 
-    private void addMouseControl(Node model3D, Scene scene) {
+    private static void addMouseControl(Node model3D, Scene scene) {
         IMouseControlService planeMouseControlService = new MouseControlService();
         planeMouseControlService.initMouseControl(model3D, scene);
         planeMouseControlService.setOrientation(20, 20);
     }
 
-    private void keyTypedAction(KeyEvent keyEvent, Group root) {
-        if (keyEvent.getCharacter().equals("w")) {
+    private static void keyTypedAction(KeyEvent keyEvent, Group root) {
+        if ("w".equals(keyEvent.getCharacter())) {
             FxUtils.getAllDescendents(root).stream()
                     .filter(MeshView.class::isInstance)
-                    .map(FxUtils::toMeshView).forEach(this::setDrawMode);
+                    .map(FxUtils::toMeshView).forEach(ModelLoadApp::setDrawMode);
         }
     }
 
-    private void setDrawMode(MeshView m) {
-        m.setDrawMode(m.getDrawMode().equals(DrawMode.LINE) ? DrawMode.FILL : DrawMode.LINE);
+    private static void setDrawMode(MeshView m) {
+        m.setDrawMode(m.getDrawMode() == DrawMode.LINE ? DrawMode.FILL : DrawMode.LINE);
     }
 
     @NotNull
-    private TuxRotation getTuxRotation() {
+    private static TuxRotation getTuxRotation() {
         TuxRotation tuxRotation = new TuxRotation();
         tuxRotation.setTranslateX(20);
         tuxRotation.setTranslateY(20);
@@ -77,7 +84,7 @@ public class ModelLoadApp extends Application {
     }
 
     @NotNull
-    private Pyramid getPyramid() {
+    private static Pyramid getPyramid() {
         Pyramid pyramid = new Pyramid();
         pyramid.setTranslateY(10);
         pyramid.setScale(3);
@@ -85,21 +92,21 @@ public class ModelLoadApp extends Application {
     }
 
     @NotNull
-    private Plane getPlane() {
+    private static Plane getPlane() {
         Plane plane = new Plane();
         plane.setScale(2);
         return plane;
     }
 
     @NotNull
-    private Scooter getScooter() {
+    private static Scooter getScooter() {
         Scooter scooter = new Scooter();
         scooter.setScale(10);
         return scooter;
     }
 
     @NotNull
-    private Duck getDuck() {
+    private static Duck getDuck() {
         Duck duck = new Duck();
         duck.setTranslateY(-20);
         duck.setScale(2);
@@ -107,7 +114,7 @@ public class ModelLoadApp extends Application {
     }
 
     @NotNull
-    private PropellerAssembly getPropellerAssembly() {
+    private static PropellerAssembly getPropellerAssembly() {
         PropellerAssembly propellerAssembly = new PropellerAssembly();
         propellerAssembly.setScale(.05);
         propellerAssembly.setTranslateX(-150);
@@ -116,7 +123,7 @@ public class ModelLoadApp extends Application {
     }
 
     @NotNull
-    private PerspectiveCamera getPerspectiveCamera() {
+    private static PerspectiveCamera getPerspectiveCamera() {
         PerspectiveCamera camera = new PerspectiveCamera(true);
         camera.setFarClip(10_000);
         camera.setTranslateZ(-100);
@@ -124,7 +131,7 @@ public class ModelLoadApp extends Application {
     }
 
     @NotNull
-    private CylinderHead getCylinderHead() {
+    private static CylinderHead getCylinderHead() {
         CylinderHead cylinderHead = new CylinderHead();
         cylinderHead.setTranslateZ(100);
         cylinderHead.setTranslateY(70);

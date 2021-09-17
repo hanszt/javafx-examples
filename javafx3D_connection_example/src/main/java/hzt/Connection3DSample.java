@@ -2,7 +2,13 @@ package hzt;
 
 import javafx.application.Application;
 import javafx.geometry.Point3D;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
@@ -13,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class Connection3DSample extends Application {
 
+    private static final double DELTA = 1;
     private static final Point3D INIT_RED_POINT_POSITION = new Point3D(10, 0, 0);
 
     private final Sphere greenSphere = createAndPositionSphere(2, new Point3D(10, 30, 50));
@@ -21,8 +28,9 @@ public class Connection3DSample extends Application {
     private final Sphere yellowSphere = createAndPositionSphere(2, new Point3D(0, 10,0));
     private final MouseControlService mouseControlService = new MouseControlService();
 
+
     @NotNull
-    private Line3D createLine3D(Node begin, Node end) {
+    private static Line3D createLine3D(Node begin, Node end) {
         Line3D line3D = new Line3D();
         line3D.widthProperty().set(.5);
         line3D.defineStartAndEndpoint(begin, end);
@@ -54,32 +62,30 @@ public class Connection3DSample extends Application {
         scene.addEventFilter(KeyEvent.KEY_PRESSED, this::keyPressed);
     }
 
-    private static final double DELTA = 1;
-
     private void keyPressed(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.A)) {
+        if (keyEvent.getCode() == (KeyCode.A)) {
             redSphere.setTranslateX(redSphere.getTranslateX() - DELTA);
         }
-        if (keyEvent.getCode().equals(KeyCode.D)) {
+        if (keyEvent.getCode() == (KeyCode.D)) {
             redSphere.setTranslateX(redSphere.getTranslateX() + DELTA);
         }
-        if (keyEvent.getCode().equals(KeyCode.W)) {
+        if (keyEvent.getCode() == (KeyCode.W)) {
             redSphere.setTranslateY(redSphere.getTranslateY() - DELTA);
         }
-        if (keyEvent.getCode().equals(KeyCode.S)) {
+        if (keyEvent.getCode() == (KeyCode.S)) {
             redSphere.setTranslateY(redSphere.getTranslateY() + DELTA);
         }
-        if (keyEvent.getCode().equals(KeyCode.F)) {
+        if (keyEvent.getCode() == (KeyCode.F)) {
             redSphere.setTranslateZ(redSphere.getTranslateZ() - DELTA);
         }
-        if (keyEvent.getCode().equals(KeyCode.R)) {
+        if (keyEvent.getCode() == (KeyCode.R)) {
             redSphere.setTranslateZ(redSphere.getTranslateZ() + DELTA);
         }
-        if (keyEvent.getCode().equals(KeyCode.C)) {
+        if (keyEvent.getCode() == (KeyCode.C)) {
             mouseControlService.setOrientation(0 ,0);
             mouseControlService.setTargetTranslation(Point3D.ZERO);
         }
-        if (keyEvent.getCode().equals(KeyCode.V)) {
+        if (keyEvent.getCode() == (KeyCode.V)) {
             redSphere.setTranslateX(INIT_RED_POINT_POSITION.getX());
             redSphere.setTranslateY(INIT_RED_POINT_POSITION.getY());
             redSphere.setTranslateZ(INIT_RED_POINT_POSITION.getZ());
@@ -87,7 +93,7 @@ public class Connection3DSample extends Application {
     }
 
     @NotNull
-    private SubScene createSubScene(Group root) {
+    private static SubScene createSubScene(Group root) {
         SubScene subScene = new SubScene(root, 600, 600, true, SceneAntialiasing.BALANCED);
         subScene.setFill(Color.ALICEBLUE);
         PerspectiveCamera camera = createAndPositionCamera();
@@ -96,7 +102,7 @@ public class Connection3DSample extends Application {
     }
 
     @NotNull
-    private Sphere createAndPositionSphere(double radius, Point3D position) {
+    private static Sphere createAndPositionSphere(@SuppressWarnings("SameParameterValue") double radius, Point3D position) {
         Sphere sphere = new Sphere(radius);
         sphere.setTranslateX(position.getX());
         sphere.setTranslateY(position.getY());
@@ -105,7 +111,7 @@ public class Connection3DSample extends Application {
     }
 
     @NotNull
-    private PerspectiveCamera createAndPositionCamera() {
+    private static PerspectiveCamera createAndPositionCamera() {
         PerspectiveCamera camera = new PerspectiveCamera(true);
         camera.setNearClip(.01);
         camera.setFarClip(1000);

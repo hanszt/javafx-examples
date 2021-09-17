@@ -6,12 +6,7 @@
 
 package org.fxyz.tests;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiFunction;
-import java.util.stream.IntStream;
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -33,6 +28,11 @@ import javafx.stage.Stage;
 import org.fxyz.cameras.CameraTransformer;
 import org.fxyz.shapes.composites.PolyLine3D;
 import org.fxyz.shapes.primitives.SpheroidMesh;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.stream.IntStream;
 
 /**
  *

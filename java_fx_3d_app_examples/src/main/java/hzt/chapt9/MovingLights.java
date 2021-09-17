@@ -77,7 +77,7 @@ public class MovingLights extends Application {
 
     private Box prepareBox() {
         PhongMaterial material = new PhongMaterial();
-        material.setDiffuseMap(new Image(getClass().getResourceAsStream("../../wood.jpg")));
+        material.setDiffuseMap(new Image(getClass().getResourceAsStream("/wood.jpg")));
 
         Box box = new Box(100, 20, 50);
         box.setMaterial(material);

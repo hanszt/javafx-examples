@@ -19,6 +19,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class Line3D extends Group {
 
+    private static final int RIGHT_ANGLE = 90;
+
     private final Cylinder cylinder = new Cylinder();
     private final Rotate cylinderRotateX = new Rotate();
     private final Rotate rotateZ = new Rotate();
@@ -39,7 +41,7 @@ public class Line3D extends Group {
         cylinder.getTransforms().add(cylinderRotateX);
         bindPositionBasedOnStartAndEnd();
         bindRotationAndLengthBasedOnStartAndEnd();
-        getChildren().add(cylinder);
+        super.getChildren().add(cylinder);
     }
 
     private void bindRotationAndLengthBasedOnStartAndEnd() {
@@ -63,13 +65,11 @@ public class Line3D extends Group {
     }
 
     @NotNull
-    private DoubleProperty bindOperation(DoubleBinding doubleBinding) {
+    private static DoubleProperty bindOperation(DoubleBinding doubleBinding) {
         DoubleProperty doubleProperty = new SimpleDoubleProperty();
         doubleProperty.bind(doubleBinding);
         return doubleProperty;
     }
-
-    private static final int RIGHT_ANGLE = 90;
 
     private void rotate(DoubleProperty xDistance, DoubleProperty yDistance, DoubleProperty zDistance, DoubleProperty xDistance1Squared) {
         double angle = Math.toDegrees(Math.atan(yDistance.get() / xDistance.get()));
@@ -77,7 +77,7 @@ public class Line3D extends Group {
         rotateCylinderX(zDistance, xDistance1Squared);
     }
 
-    private void rotate(double distance1, double distance2, Rotate rotate) {
+    private static void rotate(double distance1, double distance2, Rotate rotate) {
         double angle = Math.toDegrees(Math.atan(distance2 / distance1));
         rotate.setAngle(angle + RIGHT_ANGLE);
     }
@@ -91,7 +91,7 @@ public class Line3D extends Group {
         translateZProperty().bind(centerZ);
     }
 
-    private DoubleProperty centerBasedOnStartAndEnd(DoubleProperty start, DoubleProperty end) {
+    private static DoubleProperty centerBasedOnStartAndEnd(DoubleProperty start, DoubleProperty end) {
         DoubleProperty center = new SimpleDoubleProperty();
         center.bind(bindOperation(start.add(end)).divide(2));
         return center;

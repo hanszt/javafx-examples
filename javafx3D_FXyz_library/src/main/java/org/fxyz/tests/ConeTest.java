@@ -6,7 +6,6 @@
 
 package org.fxyz.tests;
 
-import java.util.Random;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -20,36 +19,34 @@ import javafx.stage.Stage;
 import org.fxyz.cameras.AdvancedCamera;
 import org.fxyz.cameras.controllers.FPSController;
 import org.fxyz.shapes.Cone;
-import org.fxyz.shapes.primitives.ConeMesh;
+
+import java.util.Random;
 
 /**
  *
  * @author Birdasaur
- * @adapted Dub's Capsule Test merged with my original Cone Test
+ * Dub's Capsule Test merged with my original Cone Test
  */
 public class ConeTest extends Application {
-        
-    private AdvancedCamera camera;
-    private FPSController controller;
-    
+
+    public static final Random RANDOM = new Random();
     private final Group root = new Group();
    
     @Override
     public void start(Stage stage) {
-        
-        Group coneGroup = new Group();        
+
+        Group coneGroup = new Group();
         for (int i = 0; i < 100; i++) {
-            Random r = new Random();
             //A lot of magic numbers in here that just artificially constrain the math
-            float randomRadius = (float) ((r.nextFloat()*100) + 25);
-            float randomHeight = (float) ((r.nextFloat()*300)+ 75);
-            int randomDivisions = (int) ((r.nextFloat()*50) + 5);
-            Color randomColor = new Color(r.nextDouble(), r.nextDouble(), r.nextDouble(), r.nextDouble());
+            float randomRadius = (RANDOM.nextFloat()*100) + 25;
+            float randomHeight = (RANDOM.nextFloat()*300)+ 75;
+            int randomDivisions = (int) ((RANDOM.nextFloat()*50) + 5);
+            Color randomColor = new Color(RANDOM.nextDouble(), RANDOM.nextDouble(), RANDOM.nextDouble(), RANDOM.nextDouble());
             
             Cone cone = new Cone(randomDivisions, randomRadius, randomHeight, randomColor);               
             cone.setEmissiveLightingColor(randomColor);
-            cone.setEmissiveLightingOn(r.nextBoolean());
-            cone.setDrawMode(r.nextBoolean() ? DrawMode.FILL : DrawMode.LINE);
+            cone.setEmissiveLightingOn(RANDOM.nextBoolean());
+            cone.setDrawMode(RANDOM.nextBoolean() ? DrawMode.FILL : DrawMode.LINE);
             
             double translationX = Math.random() * 1024;
             if (Math.random() >= 0.5) {
@@ -73,9 +70,9 @@ public class ConeTest extends Application {
             coneGroup.getChildren().add(cone);
         }
         root.getChildren().add(coneGroup);
-        
-        camera = new AdvancedCamera();
-        controller = new FPSController();
+
+        AdvancedCamera camera = new AdvancedCamera();
+        FPSController controller = new FPSController();
         
         camera.setNearClip(0.1);
         camera.setFarClip(10000.0);

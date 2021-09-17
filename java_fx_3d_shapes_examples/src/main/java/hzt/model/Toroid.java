@@ -32,7 +32,11 @@ import javafx.geometry.Point3D;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.*;
+import javafx.scene.shape.CullFace;
+import javafx.scene.shape.DrawMode;
+import javafx.scene.shape.Mesh;
+import javafx.scene.shape.MeshView;
+import javafx.scene.shape.TriangleMesh;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -47,6 +51,8 @@ import static java.lang.Math.*;
  * @author Peter Lager (2017-19) refactored by Hans Zuidervaart
  */
 public class Toroid extends MeshView {
+
+    private static final int TWO_PER_TEXTURE_POINT = 2;
 
     // Default values
     private static final int NBR_RING_SEGMENTS = 64;
@@ -134,21 +140,21 @@ public class Toroid extends MeshView {
 
     private void addListeners() {
         Arrays.stream(Toroid.class.getDeclaredFields())
-                .filter(this::ofTypeObservable)
+                .filter(Toroid::ofTypeObservable)
                 .forEach(this::addListener);
     }
 
-    private boolean ofTypeObservable(Field field) {
+    private static boolean ofTypeObservable(Field field) {
         Type type = field.getType();
         return type.equals(DoubleProperty.class) || type.equals(IntegerProperty.class);
     }
 
-    private void addListener(Field f) {
+    private void addListener(Field field) {
         try {
-            var obs = (Observable) f.get(this);
+            var obs = (Observable) field.get(this);
             obs.addListener(o -> calculatePointsTexCoordsAndFaces(mesh));
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e);
         }
     }
 
@@ -183,8 +189,12 @@ public class Toroid extends MeshView {
      * @param bumpMap    the bumpMap to be used
      */
     public void setTexture(Image diffuseMap, Image bumpMap) {
-        if (diffuseMap != null) material.setDiffuseMap(diffuseMap);
-        if (bumpMap != null) material.setBumpMap(bumpMap);
+        if (diffuseMap != null) {
+            material.setDiffuseMap(diffuseMap);
+        }
+        if (bumpMap != null) {
+            material.setBumpMap(bumpMap);
+        }
     }
 
     /**
@@ -233,8 +243,6 @@ public class Toroid extends MeshView {
         return new Point3D(x, y, 0);
     }
 
-    private static final int TWO_PER_TEXTURE_POINT = 2;
-
     private class MeshData {
 
         private static final int NR_OF_POINTS_PER_FACE_PT = 12;
@@ -244,8 +252,8 @@ public class Toroid extends MeshView {
         private final float[] points = new float[nbrRingSteps.get() * nbrTubeSteps.get() * NR_OF_DIMENSIONS];
         private final int[] faces = new int[nbrRingSegments.get() * nbrTubeSegments.get() * NR_OF_POINTS_PER_FACE_PT];
 
-        private final float defaultDeltaU = 1f / nbrRingSegments.get();
-        private final float defaultDeltaV = 1f / nbrTubeSegments.get();
+        private final float defaultDeltaU = 1F / nbrRingSegments.get();
+        private final float defaultDeltaV = 1F / nbrTubeSegments.get();
 
         private int coordsIndex = 0;
         private int pointsIndex = 0;
@@ -323,6 +331,9 @@ public class Toroid extends MeshView {
             private int bottomLeft;
             private int bottomRight;
 
+            public Indices() {
+                super();
+            }
         }
     }
 

@@ -46,8 +46,8 @@ import static java.lang.System.err;
 
 public class IcosahedronViewer extends Application {
 
-    float resolution = 0.1f;
-    float rotateAngle = 0.0f;
+    private static final float RESOLUTION = 0.1F;
+    private float rotateAngle = 0.0F;
 
 
     @SuppressWarnings("SameParameterValue")
@@ -66,7 +66,7 @@ public class IcosahedronViewer extends Application {
         return scene;
     }
 
-    private PointLight getPointLight() {
+    private static PointLight getPointLight() {
         PointLight pointLight = new PointLight(Color.ANTIQUEWHITE);
         pointLight.setTranslateX(100);
         pointLight.setTranslateY(-100);
@@ -74,7 +74,7 @@ public class IcosahedronViewer extends Application {
         return pointLight;
     }
 
-    private Icosahedron getConfiguredIcosahedron() {
+    private static Icosahedron getConfiguredIcosahedron() {
         PhongMaterial material = new PhongMaterial();
         material.setDiffuseColor(Color.LIGHTGRAY);
         material.setSpecularColor(Color.WHITE);
@@ -94,11 +94,11 @@ public class IcosahedronViewer extends Application {
                 setDrawMode(icosahedron);
                 break;
             case "<":
-                rotateAngle -= (resolution * 5);
+                rotateAngle -= (RESOLUTION * 5);
                 icosahedron.setRotate(rotateAngle);
                 break;
             case ">":
-                rotateAngle += (resolution * 5);
+                rotateAngle += (RESOLUTION * 5);
                 icosahedron.setRotate(rotateAngle);
                 break;
             case "X":
@@ -119,7 +119,7 @@ public class IcosahedronViewer extends Application {
         }
     }
 
-    private void setDrawMode(MeshView icosahedron) {
+    private static void setDrawMode(MeshView icosahedron) {
         err.print("l ");
         boolean wireframe = icosahedron.getDrawMode() == DrawMode.LINE;
         icosahedron.setDrawMode(wireframe ? DrawMode.FILL : DrawMode.LINE);

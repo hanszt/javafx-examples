@@ -5,39 +5,53 @@
  */
 package spliterators;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import java.util.stream.Stream;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static spliterators.FixedBatchSpliterator.withBatchSize;
 
 public class SpliteratorBenchmark {
 
-    static double sink;
+    private static final Logger LOGGER = LogManager.getLogger(SpliteratorBenchmark.class);
+    private static double sink;
 
-    public static void main(String[] args) throws IOException {
-        final Path inputPath = createInput();
-        for (int i = 0; i < 3; i++) {
-            System.out.println("Start processing JDK stream");
-            measureProcessing(Files.lines(inputPath));
-            System.out.println("Start processing fixed-batch stream");
-            measureProcessing(withBatchSize(Files.lines(inputPath), 10));
+    public static void main(String[] args) {
+        try {
+            final Path inputPath = createInput();
+            for (int i = 0; i < 3; i++) {
+                LOGGER.info("Start processing JDK stream");
+                measureProcessing(Files.lines(inputPath));
+                LOGGER.info("Start processing fixed-batch stream");
+                measureProcessing(withBatchSize(Files.lines(inputPath), 10));
+            }
+        } catch (IOException e) {
+            LOGGER.error("Could not load input", e);
         }
     }
 
     private static void measureProcessing(Stream<String> input) {
         final long start = System.nanoTime();
         try (Stream<String> lines = input) {
-            final double cpuTime = lines.parallel().mapToLong(SpliteratorBenchmark::processLine).sum();
+            final double cpuTime = lines.parallel()
+                    .mapToLong(SpliteratorBenchmark::processLine)
+                    .sum();
+
             final double realTime = System.nanoTime() - (double) start;
             final int cores = Runtime.getRuntime().availableProcessors();
-            System.out.println(" Cores: " + cores);
-            System.out.format(" CPU time: %.2f s%n", cpuTime / SECONDS.toNanos(1));
-            System.out.format(" Real time: %.2f s%n", realTime / SECONDS.toNanos(1));
-            System.out.format("CPU utilization: %.2f%%%n%n", 100.0 * cpuTime / realTime / cores);
+            LOGGER.info(" Cores: {}", cores);
+            LOGGER.info(" CPU time: {} s", cpuTime / SECONDS.toNanos(1));
+            LOGGER.info(" Real time: {} s", realTime / SECONDS.toNanos(1));
+            LOGGER.info("CPU utilization: {} %", 100.0 * cpuTime / realTime / cores);
+            LOGGER.info("Sink: {}", sink);
+            LOGGER.info("");
         }
     }
 

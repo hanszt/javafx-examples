@@ -38,7 +38,19 @@ import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.effect.*;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.Bloom;
+import javafx.scene.effect.BoxBlur;
+import javafx.scene.effect.DisplacementMap;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.FloatMap;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.effect.InnerShadow;
+import javafx.scene.effect.Light;
+import javafx.scene.effect.Lighting;
+import javafx.scene.effect.MotionBlur;
+import javafx.scene.effect.PerspectiveTransform;
+import javafx.scene.effect.Reflection;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -49,7 +61,11 @@ import javafx.stage.Stage;
 
 public class HelloEffects extends Application {
 
-    Scene scene;
+    public HelloEffects() {
+        super();
+    }
+
+    private Scene scene;
 
     @Override
     public void start(Stage stage) {

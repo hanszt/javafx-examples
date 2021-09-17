@@ -18,7 +18,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static java.util.stream.Collectors.toList;
 import static javafx.util.Duration.seconds;
@@ -119,7 +125,9 @@ public class BarChartSample extends Application {
 
     private XYChart.Data<Number, String> toDataPoint(String country,  XYChart.Series<Number, String> yearSeries) {
         XYChart.Data<Number, String> dataPoint = new XYChart.Data<>(Math.random() * MAX_VALUE, country);
-        if (INIT_VISIBLE_COUNTRIES.contains(country)) yearSeries.getData().add(dataPoint);
+        if (INIT_VISIBLE_COUNTRIES.contains(country)) {
+            yearSeries.getData().add(dataPoint);
+        }
         dataPointToCountryMap.put(dataPoint, country);
         return dataPoint;
     }
@@ -131,7 +139,7 @@ public class BarChartSample extends Application {
         sortCountries(barChart);
     }
 
-    private void sortCountries(XYChart<Number, String> barChart) {
+    private static void sortCountries(XYChart<Number, String> barChart) {
         Comparator<XYChart.Data<Number, String>> comparator = Comparator.comparing(XYChart.Data::getYValue);
         barChart.getData().forEach(series -> series.getData().sort(comparator.reversed()));
     }

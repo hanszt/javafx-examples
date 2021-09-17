@@ -5,7 +5,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -13,7 +14,7 @@ import javafx.stage.Stage;
 
 public class PasswordFiledSample extends Application {
 
-    final Label message = new Label("");
+    private final Label message = new Label("");
 
     @Override
     public void start(Stage stage) {
@@ -42,7 +43,7 @@ public class PasswordFiledSample extends Application {
     }
 
     private void displayMessage(PasswordField passwordField) {
-        if (!passwordField.getText().equals("T2f$Ay!")) {
+        if (!"T2f$Ay!".equals(passwordField.getText())) {
             message.setText("Your password is incorrect!");
             message.setTextFill(Color.rgb(210, 39, 30));
         } else {

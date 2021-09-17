@@ -22,10 +22,10 @@ import javafx.util.Duration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.lang.Math.random;
-import static java.util.stream.Collectors.*;
 
 public class ColorfulCircles extends Application {
 
@@ -53,7 +53,8 @@ public class ColorfulCircles extends Application {
         var circles = new Group(buildCircles());
         circles.setEffect(new BoxBlur(10, 10, 3));
 
-        var blendModeGroup = new Group(new Group(new Rectangle(scene.getWidth(), scene.getHeight(), Color.BLACK), circles), colorsRectangle);
+        final var group = new Group(new Rectangle(scene.getWidth(), scene.getHeight(), Color.BLACK), circles);
+        var blendModeGroup = new Group(group, colorsRectangle);
         root.getChildren().add(blendModeGroup);
         setupCircleMovementTimeline(circles);
 
@@ -62,7 +63,7 @@ public class ColorfulCircles extends Application {
         primaryStage.show();
     }
 
-    private void setupCircleMovementTimeline(Group circles) {
+    private static void setupCircleMovementTimeline(Group circles) {
         var timeline = new Timeline();
         circles.getChildren().forEach(circle -> addCircleTranslationKeyFramesToTimeline(timeline, circle));
         // play 40s of animation
@@ -70,15 +71,15 @@ public class ColorfulCircles extends Application {
     }
 
     @NotNull
-    private Collection<Node> buildCircles() {
+    private static Collection<Node> buildCircles() {
         return IntStream.range(0, 30)
                 .mapToObj(ColorfulCircles::toConfiguredCircle)
-                .collect(toList());
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     @NotNull
-    private LinearGradient getPaint() {
-        return new LinearGradient(0f, 1f, 1f, 0f, true, CycleMethod.NO_CYCLE, new Stop(0, Color.web("#f8bd55")),
+    private static LinearGradient getPaint() {
+        return new LinearGradient(0, 1, 1, 0, true, CycleMethod.NO_CYCLE, new Stop(0, Color.web("#f8bd55")),
                 new Stop(0.14, Color.web("#c0fe56")),
                 new Stop(0.28, Color.web("#5dfbc1")),
                 new Stop(0.43, Color.web("#64c2f8")),
@@ -88,7 +89,7 @@ public class ColorfulCircles extends Application {
                 new Stop(1, Color.web("#f2660f")));
     }
 
-    private void addCircleTranslationKeyFramesToTimeline(Timeline timeline, Node circle) {
+    private static void addCircleTranslationKeyFramesToTimeline(Timeline timeline, Node circle) {
         timeline.getKeyFrames().addAll(
                 new KeyFrame(Duration.ZERO, // set start position at 0
                         new KeyValue(circle.translateXProperty(), random() * 800),

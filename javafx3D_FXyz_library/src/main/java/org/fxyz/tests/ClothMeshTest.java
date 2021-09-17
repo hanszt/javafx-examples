@@ -20,11 +20,19 @@ package org.fxyz.tests;
 
 import javafx.application.Application;
 import javafx.geometry.Point3D;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Shape3D;
@@ -35,11 +43,14 @@ import org.jetbrains.annotations.NotNull;
 import service.IMouseControlService;
 import service.MouseControlService;
 
+import java.util.Optional;
+
 /**
  * @author Jason Pollastrini aka jdub1581
  */
 public class ClothMeshTest extends Application {
 
+    private final IMouseControlService mouseControlService = new MouseControlService();
     private final CameraTransformer cameraTransform = new CameraTransformer();
 
     @Override
@@ -76,7 +87,7 @@ public class ClothMeshTest extends Application {
     }
 
     @NotNull
-    private ClothMesh buildCloth() {
+    private static ClothMesh buildCloth() {
         ClothMesh cloth = new ClothMesh();
         cloth.setPerPointMass(10);
         cloth.setBendStrength(0.5);
@@ -88,8 +99,6 @@ public class ClothMeshTest extends Application {
         cloth.setSpecularPower(5);
         return cloth;
     }
-
-    private final IMouseControlService mouseControlService = new MouseControlService();
 
     private void addMouseControl(Node model3D, Scene scene) {
         mouseControlService.initMouseControl(model3D, scene);
@@ -119,8 +128,10 @@ public class ClothMeshTest extends Application {
 
     private void setDiffuseAndBumpMap(ClothMesh clothMesh) {
         if (clothMesh.getDiffuseMap() == null && clothMesh.getBumpMap() == null) {
-            clothMesh.setDiffuseMap(new Image(getClass().getResourceAsStream("/images/cup_diffuseMap_1024.png")));
-            clothMesh.setBumpMap(new Image(getClass().getResourceAsStream("/images/cup_normalMap_1024.png")));
+            Optional.ofNullable(getClass().getResourceAsStream("/images/cup_diffuseMap_1024.png"))
+                    .ifPresent(resourceAsStream -> clothMesh.setDiffuseMap(new Image(resourceAsStream)));
+            Optional.ofNullable(getClass().getResourceAsStream("/images/cup_normalMap_1024.png"))
+                    .ifPresent(resourceAsStream -> clothMesh.setBumpMap(new Image(resourceAsStream)));
             clothMesh.setDiffuseColor(Color.WHITE);
         } else {
             clothMesh.setDiffuseMap(null);
@@ -129,8 +140,8 @@ public class ClothMeshTest extends Application {
         }
     }
 
-    private void setDrawMode(Shape3D shape3D) {
-        shape3D.setDrawMode(shape3D.getDrawMode().equals(DrawMode.LINE) ? DrawMode.FILL : DrawMode.LINE);
+    private static void setDrawMode(Shape3D shape3D) {
+        shape3D.setDrawMode(shape3D.getDrawMode() == DrawMode.LINE ? DrawMode.FILL : DrawMode.LINE);
     }
 
     private PerspectiveCamera buildPerspectiveCamera() {

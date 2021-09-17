@@ -7,7 +7,11 @@ import hzt.utils.FxUtils;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
@@ -20,9 +24,14 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import static java.util.function.Predicate.not;
 
 public class Fx3DToroidSample extends Application {
+
+    private static final Logger LOGGER = Logger.getLogger(Fx3DToroidSample.class.getName());
 
     private Scene createScene() {
         var toroid = getToroid();
@@ -36,7 +45,7 @@ public class Fx3DToroidSample extends Application {
         return buildScene(root);
     }
 
-    private Scene buildScene(Group root) {
+    private static Scene buildScene(Group root) {
         Scene scene = new Scene(root, 1280, 720, true);
         scene.setOnKeyTyped(keyEvent -> keyTypedAction(keyEvent, root));
         root.getChildren().stream()
@@ -49,36 +58,40 @@ public class Fx3DToroidSample extends Application {
         return scene;
     }
 
-    private PerspectiveCamera getPerspectiveCamera() {
+    private static PerspectiveCamera getPerspectiveCamera() {
         PerspectiveCamera camera = new PerspectiveCamera(true);
         camera.setFarClip(10_000);
         camera.setTranslateZ(-100);
         return camera;
     }
 
-    private void addMouseControl(Node model3D, Scene scene) {
+    private static void addMouseControl(Node model3D, Scene scene) {
         IMouseControlService mouseControlService = new MouseControlService();
         mouseControlService.initMouseControl(model3D, scene);
         mouseControlService.setOrientation(20, 20);
     }
 
-    private void keyTypedAction(KeyEvent keyEvent, Parent root) {
-        if (keyEvent.getCharacter().equals("w")) {
+    private static void keyTypedAction(KeyEvent keyEvent, Parent root) {
+        if ("w".equals(keyEvent.getCharacter())) {
             FxUtils.getAllDescendents(root).stream()
                     .filter(MeshView.class::isInstance)
-                    .map(FxUtils::toMeshView).forEach(this::setDrawMode);
-        } else if (keyEvent.getCharacter().equals("r")) {
+                    .map(FxUtils::toMeshView)
+                    .forEach(Fx3DToroidSample::setDrawMode);
+        } else if ("r".equals(keyEvent.getCharacter())) {
             root.getChildrenUnmodifiable().stream()
                     .filter(ToroidSliderPane.class::isInstance)
-                    .map(ToroidSliderPane.class::cast).forEach(ToroidSliderPane::reset);
+                    .map(ToroidSliderPane.class::cast)
+                    .forEach(ToroidSliderPane::reset);
+        } else {
+            LOGGER.log(Level.FINE, "{} is not a registered key", keyEvent.getCharacter());
         }
     }
 
-    private void setDrawMode(MeshView m) {
-        m.setDrawMode(m.getDrawMode().equals(DrawMode.LINE) ? DrawMode.FILL : DrawMode.LINE);
+    private static void setDrawMode(MeshView m) {
+        m.setDrawMode(m.getDrawMode() == DrawMode.LINE ? DrawMode.FILL : DrawMode.LINE);
     }
 
-    private static class ToroidSliderPane extends Group {
+    private static final class ToroidSliderPane extends Group {
 
         private final Slider tubeRadXSlider;
         private final Slider tubeRadYSlider;
@@ -101,7 +114,7 @@ public class Fx3DToroidSample extends Application {
             numberOfTubeSegmentsSlider = buildSlider(32, toroid.nbrTubeSegmentsProperty());
             numberOfRingSegmentsSlider = buildSlider(64, toroid.nbrRingSegmentsProperty());
             var sliderVbox = filledSliderVbox();
-            getChildren().add(sliderVbox);
+            super.getChildren().add(sliderVbox);
             showTickLabelsAndTickMarks(sliderVbox);
         }
 
@@ -120,25 +133,25 @@ public class Fx3DToroidSample extends Application {
             );
         }
 
-        private void showTickLabelsAndTickMarks(VBox sliderVbox) {
+        private static void showTickLabelsAndTickMarks(VBox sliderVbox) {
             sliderVbox.getChildren().stream()
                     .filter(Slider.class::isInstance)
                     .map(Slider.class::cast)
-                    .forEach(this::showTickMarksAndLabels);
+                    .forEach(ToroidSliderPane::showTickMarksAndLabels);
         }
 
-        private void showTickMarksAndLabels(Slider s) {
+        private static void showTickMarksAndLabels(Slider s) {
             s.setShowTickMarks(true);
             s.setShowTickLabels(true);
         }
 
-        private Slider buildSlider(double min, double max, double cur, DoubleProperty property) {
+        private static Slider buildSlider(double min, double max, double cur, DoubleProperty property) {
             var slider = new Slider(min, max, cur);
             property.bind(slider.valueProperty());
             return slider;
         }
 
-        private Slider buildSlider(double cur, IntegerProperty property) {
+        private static Slider buildSlider(double cur, IntegerProperty property) {
             var slider = new Slider();
             slider.setValue(cur);
             property.bind(slider.valueProperty());
