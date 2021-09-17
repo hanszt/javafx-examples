@@ -3,6 +3,7 @@ package hzt.model;
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
+import javafx.css.Styleable;
 import javafx.scene.Node;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
@@ -33,8 +34,8 @@ public class Scooter extends Model3D {
                 .forEach(this::animateRim);
     }
 
-    public boolean isRim(Node view) {
-        return view.getId().equals("RimFront") || view.getId().equals("RimRear");
+    public boolean isRim(Styleable view) {
+        return "RimFront".equals(view.getId()) || "RimRear".equals(view.getId());
     }
 
     public void animateRim(Node node) {

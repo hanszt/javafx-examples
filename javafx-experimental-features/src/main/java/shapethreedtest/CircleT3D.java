@@ -31,8 +31,6 @@ import javafx.animation.PauseTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.SequentialTransition;
 import javafx.application.Application;
-import javafx.application.ConditionalFeature;
-import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
@@ -72,11 +70,7 @@ public class CircleT3D extends Application {
         stage.sizeToScene();
         stage.show();
 
-        if (!Platform.isSupported(ConditionalFeature.SCENE3D)) {
-            LOGGER.error("*************************************************************");
-            LOGGER.error("*    WARNING: common conditional SCENE3D isn't supported    *");
-            LOGGER.error("*************************************************************");
-        }
+        Shape3DTestHelper.logWarningIf3DNotSupported(LOGGER);
 
         final RotateTransition tx = new RotateTransition(Duration.seconds(2), circle);
         tx.setToAngle(360);

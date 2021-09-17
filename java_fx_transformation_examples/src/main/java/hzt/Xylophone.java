@@ -41,14 +41,32 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.*;
+import javafx.scene.Cursor;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
-import javafx.scene.layout.*;
+
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.AudioClip;
-import javafx.scene.paint.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Box;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
@@ -57,13 +75,16 @@ import java.util.Deque;
 
 import static hzt.utils.PropertiesService.parsedDoubleAppProp;
 import static hzt.utils.PropertiesService.parsedIntAppProp;
-import static java.lang.System.err;
 
 public class Xylophone extends Application {
+
+    private static final Logger LOGGER = LogManager.getLogger(Xylophone.class);
 
     private static final int NR_OF_REQUIRED_AUDIOFILES = 8;
     private static final double INIT_ANGLE_X = parsedDoubleAppProp("init_angle_x", 0);
     private static final double INIT_ANGLE_Y = parsedDoubleAppProp("init_angle_y", 0);
+    private static final double BASE_HEIGHT = 14;
+    private static final double BASE_DEPTH = 10;
 
     private static final int MAX_NUMBER_OF_BARS = parsedIntAppProp("max_bar_slider_val", 29);
 
@@ -82,6 +103,7 @@ public class Xylophone extends Application {
 
     @Override
     public void start(final Stage stage) {
+        LOGGER.info("Starting {} ...", getClass().getSimpleName());
         int amount = Math.min(INIT_NUMBER_OF_BARS, MAX_NUMBER_OF_BARS);
         nrOfVisibleBars.set(amount);
 
@@ -106,17 +128,20 @@ public class Xylophone extends Application {
         mouseControlService.initMouseControl(xylophoneAssembly, scene);
         recenter();
         FxSetup.configureStage(stage, scene, "Xylophone").show();
+        LOGGER.info("{} started", getClass().getSimpleName());
     }
 
     private HBox buildControls(Group xylophoneBars, Scene scene) {
         Button recenterButton = FxSetup.configuredButton("Recenter", e -> recenter());
         recenterButton.setPrefWidth(200);
+        recenterButton.setOnMouseEntered(e -> recenterButton.setCursor(Cursor.HAND));
         int minBarSliderVal = parsedIntAppProp("min_bar_slider_val", 4);
         Slider barAmountSlider = FxSetup.configuredSlider(minBarSliderVal, MAX_NUMBER_OF_BARS, nrOfVisibleBars.get());
         barAmountSlider.setMajorTickUnit(5);
         barAmountSlider.setShowTickLabels(true);
         barAmountSlider.setShowTickMarks(true);
         barAmountSlider.prefWidthProperty().bind(scene.widthProperty());
+        barAmountSlider.setOnMouseEntered(e -> barAmountSlider.setCursor(Cursor.HAND));
         nrOfVisibleBars.bind(barAmountSlider.valueProperty());
         nrOfVisibleBars.addListener((o, c, n) -> updateXylophoneLength(n, xylophoneBars.getChildren()));
 
@@ -148,13 +173,13 @@ public class Xylophone extends Application {
         mcs.resetTranslation();
     }
 
-    private Scene configuredScene(Parent root) {
+    private static Scene configuredScene(Parent root) {
         int sceneWidth = parsedIntAppProp("init_scene_width", 800);
         int sceneHeight = parsedIntAppProp("init_scene_height", 600);
         return new Scene(root, sceneWidth, sceneHeight, true);
     }
 
-    private SubScene configuredSubScene(Parent root) {
+    private static SubScene configuredSubScene(Parent root) {
         SubScene scene = new SubScene(root, 0, 0, true, SceneAntialiasing.BALANCED);
         PerspectiveCamera camera = new PerspectiveCamera(true);
         camera.setFarClip(10_000);
@@ -163,9 +188,9 @@ public class Xylophone extends Application {
         return scene;
     }
 
-    private RadialGradient getSceneFill() {
+    private static RadialGradient getSceneFill() {
         return new RadialGradient(225, 0.85, 300, 300, 500, false,
-                CycleMethod.NO_CYCLE, new Stop(0f, Color.BLUE), new Stop(1f, Color.LIGHTBLUE));
+                CycleMethod.NO_CYCLE, new Stop(0, Color.BLUE), new Stop(1, Color.LIGHTBLUE));
     }
 
     private Box buildConfiguredBar(int barNr) {
@@ -175,23 +200,26 @@ public class Xylophone extends Application {
         DoubleProperty xPosLowestBar = new SimpleDoubleProperty();
         xPosLowestBar.bind(nrOfVisibleBars.multiply(-X_OFFSET_BAR / 2));
         barBox.translateXProperty().bind(xPosLowestBar.add(barNr * X_OFFSET_BAR));
+        barBox.setOnMouseEntered(e -> barBox.setCursor(Cursor.HAND));
         barBox.setTranslateZ(Y_POS_BAR);
         addAudioToBar(barNr, barBox);
         return barBox;
     }
 
-    private void addAudioToBar(int barNr, Box barBox) {
-        int audioFileNr = barNr <= NR_OF_REQUIRED_AUDIOFILES ? barNr : ((barNr - 2) % (NR_OF_REQUIRED_AUDIOFILES - 1)) + 2;
+    private static void addAudioToBar(int barNr, Box barBox) {
+        int audioFileNr = barNr <= NR_OF_REQUIRED_AUDIOFILES ? barNr : (((barNr - 2) % (NR_OF_REQUIRED_AUDIOFILES - 1)) + 2);
         String audiofileLocation = String.format("/xylophone/Note%d.wav", audioFileNr);
-        URL audioUrl = getClass().getResource(audiofileLocation);
+        URL audioUrl = Xylophone.class.getResource(audiofileLocation);
         if (audioUrl != null) {
             AudioClip barNote = configuredAudioClip(barNr, audioUrl);
             barBox.setOnMousePressed(me -> barNote.play());
-        } else err.println("No audiofile found at resource " + audiofileLocation);
+        } else {
+            LOGGER.error("No audiofile found at resource {}", audiofileLocation);
+        }
     }
 
     @NotNull
-    private AudioClip configuredAudioClip(int barNr, URL audioUrl) {
+    private static AudioClip configuredAudioClip(int barNr, URL audioUrl) {
         AudioClip barNote = new AudioClip(audioUrl.toString());
         int octave = ((barNr - 2) / (NR_OF_REQUIRED_AUDIOFILES - 1)) - 1;
         barNote.setRate(Math.pow(2, octave));
@@ -210,12 +238,9 @@ public class Xylophone extends Application {
     }
 
     private double lerp(int barNr) {
-        double denominator = nrOfVisibleBars.get() - 1 != 0 ? nrOfVisibleBars.get() - 1 : 1;
+        double denominator = nrOfVisibleBars.get() - 1 != 0 ? (nrOfVisibleBars.get() - 1) : 1;
         return (barNr - 1) / denominator;
     }
-
-    private static final double BASE_HEIGHT = 14;
-    private static final double BASE_DEPTH = 10;
 
     private Box createBaseBox(double yPos) {
         Box baseBox = new Box(X_OFFSET_BAR * nrOfVisibleBars.get(), BASE_HEIGHT, BASE_DEPTH);

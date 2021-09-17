@@ -4,7 +4,8 @@ module Main.app {
     requires javafx.graphics;
     requires javafx.media;
     requires org.jetbrains.annotations;
+    requires org.apache.logging.log4j;
 
-    opens hzt to javafx.graphics;
+    exports hzt to javafx.graphics;
 
 }

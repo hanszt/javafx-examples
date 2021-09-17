@@ -11,7 +11,7 @@ public class Cell {
 
     private static final double K_1 = 0.01;
     private static final double K_2 = 0.20000000000000001;
-    private static final double DAMP = 0.72999999999999998;
+    private static final double DAMP = 0.74;
 
     private final Grid grid;
     private final int row;

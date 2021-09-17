@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Grid extends Group {
 
@@ -35,9 +36,9 @@ public class Grid extends Group {
     @NotNull
     private Group buildLineGroup() {
         Group lineGroup = new Group();
-        final var horAndVertLines = Arrays.stream(cells)
+        final var horAndVertLines = Stream.of(cells)
                 .map(Grid::toHorizontalAndVerticalLineGroup)
-                .collect(Collectors.toUnmodifiableList());
+                .collect(Collectors.toUnmodifiableSet());
         lineGroup.getChildren().addAll(horAndVertLines);
         return lineGroup;
     }

@@ -39,7 +39,7 @@ public class ScatterChartSample extends Application {
         FxSetup.configureStage(stage, new Scene(vbox), "Scatter Chart Sample").show();
     }
 
-    private void addSeries(ScatterChart<Number, Number> scatterChart) {
+    private static void addSeries(ScatterChart<Number, Number> scatterChart) {
         if (scatterChart.getData() == null) {
             scatterChart.setData(FXCollections.observableArrayList());
         }
@@ -50,19 +50,19 @@ public class ScatterChartSample extends Application {
         scatterChart.getData().add(series);
     }
 
-    private void removeFirstSeries(ScatterChart<Number, Number> scatterChart) {
+    private static void removeFirstSeries(ScatterChart<Number, Number> scatterChart) {
         if (!scatterChart.getData().isEmpty()) {
             scatterChart.getData().remove(0);
         }
     }
 
-    private void removeRandomSeries(ScatterChart<Number, Number> scatterChart) {
+    private static void removeRandomSeries(ScatterChart<Number, Number> scatterChart) {
         if (!scatterChart.getData().isEmpty()) {
             scatterChart.getData().remove(new Random().nextInt(scatterChart.getData().size()));
         }
     }
 
-    private void removeLastSeries(ScatterChart<Number, Number> scatterChart) {
+    private static void removeLastSeries(ScatterChart<Number, Number> scatterChart) {
         if (!scatterChart.getData().isEmpty()) {
             scatterChart.getData().remove(scatterChart.getData().size() - 1);
         }

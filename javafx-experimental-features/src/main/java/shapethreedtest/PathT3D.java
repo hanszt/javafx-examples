@@ -29,8 +29,6 @@ import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.application.Application;
-import javafx.application.ConditionalFeature;
-import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
@@ -69,9 +67,7 @@ public class PathT3D extends Application {
         root.getChildren().addAll(pathGroup);
         stage.setScene(scene);
         stage.sizeToScene();
-        if (!Platform.isSupported(ConditionalFeature.SCENE3D)) {
-            logError();
-        }
+        Shape3DTestHelper.logWarningIf3DNotSupported(LOGGER);
         stage.show();
 
         addRotateTransitionToGroup(pathGroup);
@@ -83,12 +79,6 @@ public class PathT3D extends Application {
         tx.setCycleCount(Animation.INDEFINITE);
         tx.setInterpolator(Interpolator.LINEAR);
         tx.play();
-    }
-
-    private static void logError() {
-        LOGGER.error("*************************************************************");
-        LOGGER.error("*    WARNING: common conditional SCENE3D isn't supported    *");
-        LOGGER.error("*************************************************************");
     }
 
     @NotNull

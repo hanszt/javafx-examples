@@ -21,7 +21,6 @@
         <module>java_fx_popup-example</module>
         <module>java_fx_svg_path_examples</module>
         <module>java_fx_transformation_examples</module>
-        <module>javafx-3dmodel-samples</module>
         <module>javafx3D_connection_example</module>
         <module>javafx3D_FXyz_library</module>
         <module>javafx-2d-shapes-examples</module>
@@ -32,9 +31,11 @@
     </modules>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!--        plugins-->
         <java.version>17</java.version>
-        <javafx-maven-plugin.version>0.0.3</javafx-maven-plugin.version>
+        <javafx-maven-plugin.version>0.0.6</javafx-maven-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <!--        dependencies-->
         <javafx.version>11</javafx.version>
         <commons-math3.version>3.6.1</commons-math3.version>
@@ -44,6 +45,29 @@
         <archunit-junit5.version>0.18.0</archunit-junit5.version>
         <junit-jupiter.version>5.7.2</junit-jupiter.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!--            test-->
+            <dependency>
+                <groupId>com.tngtech.archunit</groupId>
+                <artifactId>archunit-junit5</artifactId>
+                <version>${archunit-junit5.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!--            utils-->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-math3</artifactId>
+                <version>${commons-math3.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!--        logging-->
@@ -62,12 +86,6 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit-jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.tngtech.archunit</groupId>
-            <artifactId>archunit-junit5</artifactId>
-            <version>${archunit-junit5.version}</version>
             <scope>test</scope>
         </dependency>
         <!--        javafx-->
@@ -108,16 +126,6 @@
         </dependency>
         <!--        utils-->
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-math3</artifactId>
-            <version>${commons-math3.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>${annotations.version}</version>
@@ -139,6 +147,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>

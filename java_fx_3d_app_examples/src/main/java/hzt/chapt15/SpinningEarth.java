@@ -3,13 +3,19 @@ package hzt.chapt15;
 import hzt.Application3D;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.scene.*;
+import javafx.scene.Camera;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+
+import java.util.Optional;
 
 import static hzt.Application3D.HEIGHT;
 import static hzt.Application3D.WIDTH;
@@ -22,8 +28,8 @@ import static hzt.Application3D.WIDTH;
  */
 public class SpinningEarth extends Application {
 
-  private final Sphere sphere = new Sphere(150);
-  
+  private static final int EARTH_RADIUS = 150;
+
   @Override
   public void start(Stage primaryStage) {
     Camera camera = new PerspectiveCamera(true);
@@ -32,7 +38,8 @@ public class SpinningEarth extends Application {
     camera.translateZProperty().set(-1000);
 
     Group world = new Group();
-    world.getChildren().add(prepareEarth());
+    final var earth = preparedEarth();
+    world.getChildren().add(earth);
 
     Scene scene = new Scene(world, WIDTH, HEIGHT, true);
     scene.setFill(Color.SILVER);
@@ -44,26 +51,30 @@ public class SpinningEarth extends Application {
     primaryStage.setScene(scene);
     primaryStage.show();
 
-    prepareAnimation();
+    prepareAnimation(earth);
   }
 
-  private void prepareAnimation() {
+  private static void prepareAnimation(Node earth) {
     AnimationTimer timer = new AnimationTimer() {
       @Override
       public void handle(long now) {
-        sphere.rotateProperty().set(sphere.getRotate() + 0.2);
+        earth.rotateProperty().set(earth.getRotate() + 0.2);
       }
     };
     timer.start();
   }
 
-  private Node prepareEarth() {
+  private Node preparedEarth() {
+    Sphere sphere = new Sphere(EARTH_RADIUS);
     PhongMaterial earthMaterial = new PhongMaterial();
-    earthMaterial.setDiffuseMap(new Image(getClass().getResourceAsStream("../../earth/earth-d.jpg")));
-    earthMaterial.setSelfIlluminationMap(new Image(getClass().getResourceAsStream("../../earth/earth-l.jpg")));
-    earthMaterial.setSpecularMap(new Image(getClass().getResourceAsStream("../../earth/earth-s.jpg")));
-    earthMaterial.setBumpMap(new Image(getClass().getResourceAsStream("../../earth/earth-n.jpg")));
-
+    Optional.ofNullable(getClass().getResourceAsStream("/earth/earth-d.jpg"))
+            .ifPresent(stream -> earthMaterial.setDiffuseMap(new Image(stream)));
+    Optional.ofNullable(getClass().getResourceAsStream("/earth/earth-l.jpg"))
+            .ifPresent(stream -> earthMaterial.setSelfIlluminationMap(new Image(stream)));
+    Optional.ofNullable(getClass().getResourceAsStream("/earth/earth-s.jpg"))
+            .ifPresent(stream -> earthMaterial.setSpecularMap(new Image(stream)));
+    Optional.ofNullable(getClass().getResourceAsStream("/earth/earth-n.jpg"))
+            .ifPresent(stream -> earthMaterial.setBumpMap(new Image(stream)));
     sphere.setRotationAxis(Rotate.Y_AXIS);
     sphere.setMaterial(earthMaterial);
     return sphere;

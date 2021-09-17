@@ -26,16 +26,11 @@
 package shapethreedtest;
 
 import javafx.application.Application;
-import javafx.application.ConditionalFeature;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Ellipse;
@@ -43,15 +38,16 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MixedShapesT3DOpacity2 extends Application {
-    private static final Stop[] stops = new Stop[]{new Stop(0, Color.web("#992222")),
-            new Stop(0.7f, Color.web("#772222")), new Stop(1, Color.web("#552222"))};
-    private static final LinearGradient lg = new LinearGradient(0, 0, 0, 1, true,
-            CycleMethod.NO_CYCLE, stops);
 
-    @Override public void start(Stage stage) {
-        Scene scene = new Scene(new Group(), 400.0f, 300.0f);
+    private static final Logger LOGGER = LogManager.getLogger(MixedShapesT3DOpacity2.class);
+
+    @Override
+    public void start(Stage stage) {
+        Scene scene = new Scene(new Group(), 400.0, 300.0);
         scene.setCamera(new PerspectiveCamera());
         Group group = new Group();
         Group group2 = new Group();
@@ -63,14 +59,14 @@ public class MixedShapesT3DOpacity2 extends Application {
         ellipse.setFill(Color.ORANGE);
         ellipse.setStroke(Color.BLUE);
         ellipse.setStrokeWidth(5.0F);
-        ellipse.setOnMouseClicked(e -> System.out.println("Ellipse: Mouse Clicked:" + e));
+        ellipse.setOnMouseClicked(e -> LOGGER.info("Ellipse: Mouse Clicked: {}", e));
         //                                    opacity: 0.5
         Arc arc = new Arc(250.0F, 80.0F, 50.0F, 25.0F, 45.0F, 270.0F);
         arc.setType(ArcType.ROUND);
         arc.setFill(Color.RED);
         arc.setStroke(Color.BLUE);
         arc.setStrokeWidth(5.0F);
-        arc.setOnMouseClicked(e -> System.out.println("Arc: Mouse Clicked:" + e));
+        arc.setOnMouseClicked(e -> LOGGER.info("Arc: Mouse Clicked: {}", e));
         //                                    opacity: 0.5
         Rectangle rectangle = new Rectangle(50.0F, 150.0F, 100.0F, 75.0F);
         rectangle.setArcHeight(20.0F);
@@ -78,26 +74,22 @@ public class MixedShapesT3DOpacity2 extends Application {
         rectangle.setFill(Color.GREEN);
         rectangle.setStroke(Color.BLUE);
         rectangle.setStrokeWidth(5.0F);
-        rectangle.setOnMouseClicked(e -> System.out.println("Rectangle: Mouse Clicked:" + e));
+        rectangle.setOnMouseClicked(e -> LOGGER.info("Rectangle: Mouse Clicked: {}", e));
         //                                    opacity: 0.5
-        ObservableList<Double> floats = javafx.collections.FXCollections.<Double>observableArrayList();
+        ObservableList<Double> floats = javafx.collections.FXCollections.observableArrayList();
         floats.addAll(200.0, 150.0, 250.0, 220.0, 300.0, 150.0);
         Polygon polygon = new Polygon();
         polygon.getPoints().addAll(floats);
         polygon.setFill(Color.YELLOW);
         polygon.setStroke(Color.BLUE);
         polygon.setStrokeWidth(5.0F);
-        polygon.setOnMouseClicked(e -> System.out.println("Polygon: Mouse Clicked:" + e));
+        polygon.setOnMouseClicked(e -> LOGGER.info("Polygon: Mouse Clicked: {}", e));
         group2.getChildren().addAll(ellipse, arc, rectangle, polygon);
         group.getChildren().addAll(group2);
-        ((Group)scene.getRoot()).getChildren().addAll(group);
+        ((Group) scene.getRoot()).getChildren().addAll(group);
         stage.setScene(scene);
         stage.sizeToScene();
-        if (!Platform.isSupported(ConditionalFeature.SCENE3D)) {
-            System.out.println("*************************************************************");
-            System.out.println("*    WARNING: common conditional SCENE3D isn\'t supported    *");
-            System.out.println("*************************************************************");
-        }
+        Shape3DTestHelper.logWarningIf3DNotSupported(LOGGER);
         stage.show();
     }
 
