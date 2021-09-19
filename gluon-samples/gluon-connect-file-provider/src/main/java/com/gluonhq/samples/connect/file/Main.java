@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016, 2020 Gluon
  * All rights reserved.
  *

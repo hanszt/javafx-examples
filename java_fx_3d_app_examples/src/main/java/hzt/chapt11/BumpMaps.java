@@ -1,12 +1,15 @@
 package hzt.chapt11;
 
 import hzt.Application3D;
+import hzt.JavaFxResourceUtils;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.scene.*;
-import javafx.scene.image.Image;
+import javafx.scene.Camera;
+import javafx.scene.Node;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
@@ -28,12 +31,11 @@ public class BumpMaps extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Box box = prepareBox();
+        Box box = JavaFxResourceUtils.illuminatedWoodenBox(100, 20, 50);
 
         Application3D.SmartGroup group = new Application3D.SmartGroup();
         group.getChildren().add(box);
         group.getChildren().addAll(prepareLightSource());
-//        group.getChildren().add(new AmbientLight());
 
         Camera camera = new PerspectiveCamera(true);
         camera.setNearClip(1);
@@ -73,15 +75,6 @@ public class BumpMaps extends Application {
         sphere.rotationAxisProperty().bind(pointLight.rotationAxisProperty());
 
         return new Node[]{pointLight, sphere};
-    }
-
-    private Box prepareBox() {
-        PhongMaterial material = new PhongMaterial();
-        material.setDiffuseMap(new Image(getClass().getResourceAsStream("../../wood.jpg")));
-        material.setBumpMap(new Image(getClass().getResourceAsStream("../../illuminati2.jpg")));
-        Box box = new Box(100, 20, 50);
-        box.setMaterial(material);
-        return box;
     }
 
 }

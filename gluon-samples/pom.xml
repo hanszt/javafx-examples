@@ -2,7 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.javafx.examples</groupId>
+        <artifactId>javafx-examples</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
     <groupId>com.gluonhq.samples</groupId>
     <artifactId>gluon-samples</artifactId>
@@ -10,18 +17,6 @@
     <packaging>pom</packaging>
 
     <name>Gluon Samples</name>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>11</maven.compiler.release>
-        <javafx.version>15.0.1</javafx.version>
-        <charm.version>6.0.6</charm.version>
-        <glisten.afterburner.version>2.0.5</glisten.afterburner.version>
-        <attach.version>4.0.10</attach.version>
-        <connect.version>2.0.1</connect.version>
-        <javafx.maven.plugin.version>0.0.5</javafx.maven.plugin.version>
-        <client.maven.plugin.version>0.1.35</client.maven.plugin.version>
-    </properties>
 
     <modules>
         <module>HelloWorld</module>
@@ -41,5 +36,17 @@
         <module>notes</module>
         <module>pushnotes</module>
     </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>11</maven.compiler.release>
+        <javafx.version>15.0.1</javafx.version>
+        <charm.version>6.0.6</charm.version>
+        <glisten.afterburner.version>2.0.5</glisten.afterburner.version>
+        <attach.version>4.0.10</attach.version>
+        <connect.version>2.0.1</connect.version>
+        <javafx.maven.plugin.version>0.0.5</javafx.maven.plugin.version>
+        <client.maven.plugin.version>0.1.35</client.maven.plugin.version>
+    </properties>
 
 </project>

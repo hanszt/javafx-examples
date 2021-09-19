@@ -2,7 +2,12 @@ package hzt;
 
 import hzt.service.MouseControlService;
 import javafx.application.Application;
-import javafx.scene.*;
+import javafx.scene.Camera;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Sphere;
@@ -18,7 +23,7 @@ public class Fx3DNr72dMixedWith3D extends Application {
 
         var root3D = new Group();
         var sub = new SubScene(root3D,1024,768,false, SceneAntialiasing.BALANCED);
-        sub.setCamera(preparedPErspectiveCamera());
+        sub.setCamera(preparedPerspectiveCamera());
         globalRoot.getChildren().add(sub);
 
 
@@ -30,7 +35,7 @@ public class Fx3DNr72dMixedWith3D extends Application {
         primaryStage.show();
     }
 
-    private Camera preparedPErspectiveCamera() {
+    private static Camera preparedPerspectiveCamera() {
         var perspectiveCamera = new PerspectiveCamera(true);
         perspectiveCamera.setFarClip(10000);
         perspectiveCamera.setNearClip(.1);

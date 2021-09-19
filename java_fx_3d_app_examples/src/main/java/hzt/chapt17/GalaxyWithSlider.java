@@ -1,21 +1,27 @@
 package hzt.chapt17;
 
 import hzt.Application3D;
+import hzt.JavaFxResourceUtils;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.scene.*;
+import javafx.scene.Camera;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.Slider;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import utils.FxUtils;
+
+import java.util.stream.Collectors;
 
 import static hzt.Application3D.HEIGHT;
 import static hzt.Application3D.WIDTH;
+import static hzt.JavaFxResourceUtils.configuredCamera;
 
 /**
  * @author afsal villan
@@ -25,25 +31,24 @@ import static hzt.Application3D.WIDTH;
  */
 public class GalaxyWithSlider extends Application {
 
+    private static final Logger LOGGER = LogManager.getLogger(GalaxyWithSlider.class);
+    public static final int EARTH_RADIUS = 150;
     private final Application3D application3D = new Application3D();
-    private final Sphere sphere = new Sphere(150);
 
     @Override
     public void start(Stage primaryStage) {
-        Camera camera = new PerspectiveCamera(true);
-        camera.setNearClip(1);
-        camera.setFarClip(10_000);
-        camera.translateZProperty().set(-1000);
+        Camera camera = configuredCamera();
 
         Group world = new Group();
-        world.getChildren().add(prepareEarth());
+        final var earth = preparedEarth();
+        world.getChildren().add(earth);
 
         Slider slider = prepareSlider();
         world.translateZProperty().bindBidirectional(slider.valueProperty());
 
         Group root = new Group();
         root.getChildren().add(world);
-        root.getChildren().add(prepareImageView());
+        root.getChildren().add(JavaFxResourceUtils.toConfiguredImageView("/galaxy/galaxy.jpg"));
         root.getChildren().add(slider);
 
         Scene scene = new Scene(root, WIDTH, HEIGHT, true);
@@ -56,10 +61,18 @@ public class GalaxyWithSlider extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        prepareAnimation();
+        prepareAnimation(earth);
+        LOGGER.info("All descendents from root: {}", getAllDescendentsFromAsString(root));
     }
 
-    private void prepareAnimation() {
+    private static String getAllDescendentsFromAsString(Group root) {
+        return FxUtils.allDescendents(root).stream()
+                .map(Object::getClass)
+                .map(Class::getSimpleName)
+                .collect(Collectors.joining("\n"));
+    }
+
+    private static void prepareAnimation(Sphere sphere) {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -69,19 +82,11 @@ public class GalaxyWithSlider extends Application {
         timer.start();
     }
 
-    private ImageView prepareImageView() {
-        Image image = new Image(getClass().getResourceAsStream("../../galaxy/galaxy.jpg"));
-        ImageView imageView = new ImageView(image);
-        imageView.setPreserveRatio(true);
-        imageView.getTransforms().add(new Translate(-image.getWidth() / 2, -image.getHeight() / 2, 800));
-        return imageView;
-    }
-
-    private Slider prepareSlider() {
+    private static Slider prepareSlider() {
         Slider slider = new Slider();
         slider.setMax(800);
         slider.setMin(-400);
-        slider.setPrefWidth(300d);
+        slider.setPrefWidth(300);
         slider.setLayoutX(-150);
         slider.setLayoutY(200);
         slider.setShowTickLabels(true);
@@ -90,13 +95,10 @@ public class GalaxyWithSlider extends Application {
         return slider;
     }
 
-    private Node prepareEarth() {
+    private static Sphere preparedEarth() {
+        final Sphere sphere = new Sphere(EARTH_RADIUS);
         PhongMaterial earthMaterial = new PhongMaterial();
-        earthMaterial.setDiffuseMap(new Image(getClass().getResourceAsStream("../../earth/earth-d.jpg")));
-        earthMaterial.setSelfIlluminationMap(new Image(getClass().getResourceAsStream("../../earth/earth-l.jpg")));
-        earthMaterial.setSpecularMap(new Image(getClass().getResourceAsStream("../../earth/earth-s.jpg")));
-        earthMaterial.setBumpMap(new Image(getClass().getResourceAsStream("../../earth/earth-n.jpg")));
-
+        JavaFxResourceUtils.setEarthMaterialMaps(earthMaterial);
         sphere.setRotationAxis(Rotate.Y_AXIS);
         sphere.setMaterial(earthMaterial);
         return sphere;

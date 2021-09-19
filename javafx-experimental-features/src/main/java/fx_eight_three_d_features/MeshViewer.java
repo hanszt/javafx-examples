@@ -30,7 +30,6 @@ import fx_eight_three_d_features.model.ParabolaMesh;
 import fx_eight_three_d_features.model.PlaneZMesh;
 import fx_eight_three_d_features.model.WaveMesh;
 import fx_eight_three_d_features.utils.FxSetup;
-import fx_eight_three_d_features.utils.FxUtils;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -57,6 +56,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import service.IMouseControlService;
 import service.MouseControlService;
+import utils.FxUtils;
 
 import static java.lang.System.*;
 
@@ -126,27 +126,24 @@ public final class MeshViewer extends Application {
         var vBox3 = FxSetup.configuredVBox(meshSizeXSlider, meshSizeYSlider, waveFrequencySlider);
         var controlsRoot = FxSetup.configuredHBox(vBox0, vBox1, vBox2, vBox3);
 
-        FxUtils.getAllDescendents(controlsRoot).stream()
+        FxUtils.allDescendents(controlsRoot).stream()
                 .filter(Slider.class::isInstance)
-                .map(FxUtils::toSlider)
+                .map(Slider.class::cast)
                 .forEach(s -> configureSlider(scene, s));
         return controlsRoot;
     }
 
     private void keyTypedAction(KeyEvent e, PlaneZMesh meshView) {
         switch (e.getCharacter()) {
-            case "i":
-                meshView.setDiffuseAndBumpMapMaterial();
-                break;
-            case "w":
+            case "i" -> meshView.setDiffuseAndBumpMapMaterial();
+            case "w" -> {
                 boolean wireframe = meshView.getDrawMode() == DrawMode.LINE;
                 meshView.setDrawMode(wireframe ? DrawMode.FILL : DrawMode.LINE);
-                break;
-            case "r":
-                reset(meshView);
-                break;
-            default:
-                break;
+            }
+            case "r" -> reset(meshView);
+            default -> {
+                // nothing to do
+            }
         }
     }
 

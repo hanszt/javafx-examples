@@ -6,6 +6,7 @@ module Main.app {
     requires javafx.swing;
     requires org.jetbrains.annotations;
     requires org.apache.logging.log4j;
+    requires javafx.utils;
 
     opens shapethreedtest to javafx.graphics;
     opens strechygrid to javafx.graphics;

@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -15,20 +16,16 @@ public class App extends Application {
     private double xOffset;
     private double yOffset;
 
+    public App() {
+        super();
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/MainView.fxml"));
 
-        root.setOnMousePressed(event -> {
-            xOffset = event.getSceneX();
-            yOffset = event.getSceneY();
-            event.consume();
-        });
-        root.setOnMouseDragged(event -> {
-            primaryStage.setX(event.getScreenX() - xOffset);
-            primaryStage.setY(event.getScreenY() - yOffset);
-            event.consume();
-        });
+        root.setOnMousePressed(this::setOffsetPoints);
+        root.setOnMouseDragged(event -> updateStagePosition(primaryStage, event));
 
         Scene scene = new Scene(root);
         scene.getRoot().setEffect(new DropShadow(10, Color.rgb(100, 100, 100)));
@@ -43,7 +40,19 @@ public class App extends Application {
         primaryStage.show();
     }
 
+    private void updateStagePosition(Stage primaryStage, MouseEvent event) {
+        primaryStage.setX(event.getScreenX() - xOffset);
+        primaryStage.setY(event.getScreenY() - yOffset);
+        event.consume();
+    }
+
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private void setOffsetPoints(MouseEvent event) {
+        xOffset = event.getSceneX();
+        yOffset = event.getSceneY();
+        event.consume();
     }
 }

@@ -1,9 +1,14 @@
 package hzt.chapt8;
 
 import hzt.Application3D;
+import hzt.JavaFxResourceUtils;
 import javafx.application.Application;
-import javafx.scene.*;
-import javafx.scene.image.Image;
+import javafx.scene.Camera;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -48,7 +53,7 @@ public class Lighting extends Application {
         primaryStage.show();
     }
 
-    private Node[] prepareLightSource() {
+    private static Node[] prepareLightSource() {
         PointLight pointLight = new PointLight();
         pointLight.setColor(Color.RED);
         pointLight.getTransforms().add(new Translate(0, -50, 100));
@@ -58,10 +63,9 @@ public class Lighting extends Application {
         return new Node[]{pointLight, sphere};
     }
 
-    private Box prepareBox() {
+    private static Box prepareBox() {
         PhongMaterial material = new PhongMaterial();
-        material.setDiffuseMap(new Image(getClass().getResourceAsStream("../../wood.jpg")));
-
+        JavaFxResourceUtils.acceptImageIfPresent("/wood.jpg", material::setDiffuseMap);
         Box box = new Box(100, 20, 50);
         box.setMaterial(material);
         return box;

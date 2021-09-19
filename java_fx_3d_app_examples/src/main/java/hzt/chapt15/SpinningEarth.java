@@ -8,7 +8,6 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
@@ -17,11 +16,9 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import static hzt.Application3D.HEIGHT;
 import static hzt.Application3D.WIDTH;
+import static hzt.JavaFxResourceUtils.setEarthMaterialMaps;
 
 /**
  * @author afsal villan
@@ -36,6 +33,7 @@ public class SpinningEarth extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        LOGGER.info("Starting {}", getClass().getSimpleName());
         Camera camera = new PerspectiveCamera(true);
         camera.setNearClip(1);
         camera.setFarClip(10_000);
@@ -56,6 +54,7 @@ public class SpinningEarth extends Application {
         primaryStage.show();
 
         prepareAnimation(earth);
+        LOGGER.info("{} started", getClass().getSimpleName());
     }
 
     private static void prepareAnimation(Node earth) {
@@ -71,19 +70,10 @@ public class SpinningEarth extends Application {
     private static Node preparedEarth() {
         Sphere sphere = new Sphere(EARTH_RADIUS);
         PhongMaterial earthMaterial = new PhongMaterial();
-        acceptImageIfPresent("/earth/earth-d.jpg", earthMaterial::setDiffuseMap);
-        acceptImageIfPresent("/earth/earth-l.jpg", earthMaterial::setSelfIlluminationMap);
-        acceptImageIfPresent("/earth/earth-s.jpg", earthMaterial::setSpecularMap);
-        acceptImageIfPresent("/earth/earth-n.jpg", earthMaterial::setBumpMap);
+        setEarthMaterialMaps(earthMaterial);
         sphere.setRotationAxis(Rotate.Y_AXIS);
         sphere.setMaterial(earthMaterial);
         return sphere;
-    }
-
-    private static void acceptImageIfPresent(String location, Consumer<Image> imageConsumer) {
-        Optional.ofNullable(SpinningEarth.class.getResourceAsStream(location))
-                .ifPresentOrElse(stream -> imageConsumer.accept(new Image(stream)),
-                        () -> LOGGER.error("Could not find {}", location));
     }
 
 }

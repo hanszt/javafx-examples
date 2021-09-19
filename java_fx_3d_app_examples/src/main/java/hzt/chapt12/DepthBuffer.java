@@ -3,15 +3,18 @@ package hzt.chapt12;
 import hzt.Application3D;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.scene.*;
-import javafx.scene.image.Image;
+import javafx.scene.AmbientLight;
+import javafx.scene.Camera;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 
 import static hzt.Application3D.HEIGHT;
 import static hzt.Application3D.WIDTH;
+import static hzt.JavaFxResourceUtils.woodenBox;
 
 /**
  * @author afsal villan
@@ -25,11 +28,11 @@ public class DepthBuffer extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Box box = prepareBox();
+        Box box = woodenBox(100, 20, 50);
 
         Application3D.SmartGroup group = new Application3D.SmartGroup();
         group.getChildren().add(box);
-        group.getChildren().add(prepareSecondBox());
+        group.getChildren().add(woodenBox(20, 100, 100));
         group.getChildren().add(new AmbientLight());
 
         Camera camera = new PerspectiveCamera(true);
@@ -60,22 +63,6 @@ public class DepthBuffer extends Application {
             }
         };
         timer.start();
-    }
-
-    private Node prepareSecondBox() {
-        PhongMaterial material = new PhongMaterial();
-        material.setDiffuseMap(new Image(getClass().getResourceAsStream("../../wood.jpg")));
-        Box box = new Box(20, 100, 100);
-        box.setMaterial(material);
-        return box;
-    }
-
-    private Box prepareBox() {
-        PhongMaterial material = new PhongMaterial();
-        material.setDiffuseMap(new Image(getClass().getResourceAsStream("../../wood.jpg")));
-        Box box = new Box(100, 20, 50);
-        box.setMaterial(material);
-        return box;
     }
 
 }

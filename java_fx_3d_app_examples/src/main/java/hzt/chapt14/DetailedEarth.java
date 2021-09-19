@@ -1,9 +1,13 @@
 package hzt.chapt14;
 
 import hzt.Application3D;
+import hzt.JavaFxResourceUtils;
 import javafx.application.Application;
-import javafx.scene.*;
-import javafx.scene.image.Image;
+import javafx.scene.Camera;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
@@ -41,13 +45,9 @@ public class DetailedEarth extends Application {
         primaryStage.show();
     }
 
-    private Node prepareEarth() {
+    private static Node prepareEarth() {
         PhongMaterial earthMaterial = new PhongMaterial();
-        earthMaterial.setDiffuseMap(new Image(getClass().getResourceAsStream("../../earth/earth-d.jpg")));
-        earthMaterial.setSelfIlluminationMap(new Image(getClass().getResourceAsStream("../../earth/earth-l.jpg")));
-        earthMaterial.setSpecularMap(new Image(getClass().getResourceAsStream("../../earth/earth-s.jpg")));
-        earthMaterial.setBumpMap(new Image(getClass().getResourceAsStream("../../earth/earth-n.jpg")));
-
+        JavaFxResourceUtils.setEarthMaterialMaps(earthMaterial);
         Sphere sphere = new Sphere(150);
         sphere.setMaterial(earthMaterial);
         return sphere;

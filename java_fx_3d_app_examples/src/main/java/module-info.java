@@ -1,9 +1,10 @@
-module Main.app {
+open module Main.app {
 
     requires transitive javafx.controls;
     requires javafx.graphics;
     requires org.jetbrains.annotations;
     requires org.apache.logging.log4j;
+    requires javafx.utils;
 
     exports hzt.chapt1 to javafx.graphics;
     exports hzt.chapt2 to javafx.graphics;
@@ -19,4 +20,7 @@ module Main.app {
     exports hzt.chapt13 to javafx.graphics;
     exports hzt.chapt14 to javafx.graphics;
     exports hzt.chapt15 to javafx.graphics;
+    exports hzt.chapt16 to javafx.graphics;
+    exports hzt.chapt17 to javafx.graphics;
+    exports hzt to javafx.graphics;
 }

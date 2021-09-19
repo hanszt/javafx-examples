@@ -10,7 +10,6 @@ import hzt.model.Scooter;
 import hzt.model.TuxRotation;
 import hzt.service.IMouseControlService;
 import hzt.service.MouseControlService;
-import hzt.utils.FxUtils;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -22,11 +21,18 @@ import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
+import utils.FxUtils;
 
 import static java.util.function.Predicate.not;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
+ *
+ *  Run this application via FxLauncher. Then the JavaFX runtime components are missing, and are required to run this application is omitted
+ *  @see hzt.FxLauncher#main(String[])
+ *  @see <a href="https://stackoverflow.com/questions/61033077/how-do-i-install-and-forget-java-9-modules-on-windows">
+ *      How do I install and forget java 9 modules</a>
+ *
  */
 public class ModelLoadApp extends Application {
 
@@ -65,9 +71,10 @@ public class ModelLoadApp extends Application {
 
     private static void keyTypedAction(KeyEvent keyEvent, Group root) {
         if ("w".equals(keyEvent.getCharacter())) {
-            FxUtils.getAllDescendents(root).stream()
+            FxUtils.allDescendents(root).stream()
                     .filter(MeshView.class::isInstance)
-                    .map(FxUtils::toMeshView).forEach(ModelLoadApp::setDrawMode);
+                    .map(MeshView.class::cast)
+                    .forEach(ModelLoadApp::setDrawMode);
         }
     }
 
@@ -144,6 +151,10 @@ public class ModelLoadApp extends Application {
     public void start(Stage stage) {
         stage.setScene(createScene());
         stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
 }

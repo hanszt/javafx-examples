@@ -42,8 +42,6 @@ import javafx.stage.Stage;
 import service.IMouseControlService;
 import service.MouseControlService;
 
-import static java.lang.System.err;
-
 public class IcosahedronViewer extends Application {
 
     private static final float RESOLUTION = 0.1F;
@@ -90,37 +88,29 @@ public class IcosahedronViewer extends Application {
 
     private void keyTypedAction(MeshView icosahedron, KeyEvent e) {
         switch (e.getCharacter()) {
-            case "l":
-                setDrawMode(icosahedron);
-                break;
-            case "<":
+            case "l" -> setDrawMode(icosahedron);
+            case "<" -> {
                 rotateAngle -= (RESOLUTION * 5);
                 icosahedron.setRotate(rotateAngle);
-                break;
-            case ">":
+            }
+            case ">" -> {
                 rotateAngle += (RESOLUTION * 5);
                 icosahedron.setRotate(rotateAngle);
-                break;
-            case "X":
-                icosahedron.setRotationAxis(Rotate.X_AXIS);
-                break;
-            case "Y":
-                icosahedron.setRotationAxis(Rotate.Y_AXIS);
-                break;
-            case "Z":
-                icosahedron.setRotationAxis(Rotate.Z_AXIS);
-                break;
-            case "P":
+            }
+            case "X" -> icosahedron.setRotationAxis(Rotate.X_AXIS);
+            case "Y" -> icosahedron.setRotationAxis(Rotate.Y_AXIS);
+            case "Z" -> icosahedron.setRotationAxis(Rotate.Z_AXIS);
+            case "P" -> {
                 rotateAngle = 0;
                 icosahedron.setRotate(rotateAngle);
-                break;
-            default:
-                break;
+            }
+            default -> {
+                //nothing to do
+            }
         }
     }
 
     private static void setDrawMode(MeshView icosahedron) {
-        err.print("l ");
         boolean wireframe = icosahedron.getDrawMode() == DrawMode.LINE;
         icosahedron.setDrawMode(wireframe ? DrawMode.FILL : DrawMode.LINE);
     }

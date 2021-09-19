@@ -6,14 +6,13 @@ import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 
 import static hzt.Application3D.HEIGHT;
 import static hzt.Application3D.WIDTH;
+import static hzt.JavaFxResourceUtils.woodenSpecBox;
 
 /**
  * @author afsal villan
@@ -25,7 +24,7 @@ public class Reflection extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Box box = prepareBox();
+        Box box = woodenSpecBox(100, 20, 50);
 
         Group group = new Group();
         group.getChildren().add(box);
@@ -44,16 +43,6 @@ public class Reflection extends Application {
         primaryStage.setTitle("Genuine Coder");
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
-
-    private Box prepareBox() {
-        PhongMaterial material = new PhongMaterial();
-        material.setDiffuseMap(new Image(getClass().getResourceAsStream("../../wood.jpg")));
-        material.setSpecularMap(new Image(getClass().getResourceAsStream("../../spec.jpg")));
-
-        Box box = new Box(100, 20, 50);
-        box.setMaterial(material);
-        return box;
     }
 
 }

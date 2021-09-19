@@ -1,15 +1,14 @@
 package hzt.chapt10;
 
 import hzt.Application3D;
+import hzt.JavaFxResourceUtils;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Camera;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 
@@ -28,7 +27,7 @@ public class SelfIllumination extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Box box = prepareBox();
+        Box box = JavaFxResourceUtils.illuminatedWoodenBox(100, 20, 50);
 
         Application3D.SmartGroup group = new Application3D.SmartGroup();
         group.getChildren().add(box);
@@ -58,17 +57,6 @@ public class SelfIllumination extends Application {
             }
         };
         timer.start();
-    }
-
-    private Box prepareBox() {
-        PhongMaterial material = new PhongMaterial();
-        material.setDiffuseMap(new Image(getClass().getResourceAsStream("../../wood.jpg")));
-
-        //Set self illumination map
-        material.setSelfIlluminationMap(new Image(getClass().getResourceAsStream("../../illuminati2.jpg")));
-        Box box = new Box(100, 20, 50);
-        box.setMaterial(material);
-        return box;
     }
 
 }

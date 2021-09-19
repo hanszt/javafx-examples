@@ -1,8 +1,11 @@
 package hzt.chapt13;
 
+import hzt.JavaFxResourceUtils;
 import javafx.application.Application;
-import javafx.scene.*;
-import javafx.scene.image.Image;
+import javafx.scene.Camera;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
@@ -27,7 +30,7 @@ public class Earth extends Application {
         camera.translateZProperty().set(-1000);
 
         Group world = new Group();
-        world.getChildren().add(prepareEarth());
+        world.getChildren().add(preparedEarth());
 
         Scene scene = new Scene(world, WIDTH, HEIGHT, true);
         scene.setFill(Color.SILVER);
@@ -38,9 +41,9 @@ public class Earth extends Application {
         primaryStage.show();
     }
 
-    private Node prepareEarth() {
+    private static Sphere preparedEarth() {
         PhongMaterial earthMaterial = new PhongMaterial();
-        earthMaterial.setDiffuseMap(new Image(getClass().getResourceAsStream("../../earth/earth-d.jpg")));
+        JavaFxResourceUtils.acceptImageIfPresent("/earth/earth-d.jpg", earthMaterial::setDiffuseMap);
         Sphere sphere = new Sphere(150);
         sphere.setMaterial(earthMaterial);
         return sphere;

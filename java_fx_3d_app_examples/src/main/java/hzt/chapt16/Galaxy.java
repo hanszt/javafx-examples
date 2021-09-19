@@ -1,16 +1,18 @@
 package hzt.chapt16;
 
 import hzt.Application3D;
+import hzt.JavaFxResourceUtils;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.scene.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.Camera;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 
 import static hzt.Application3D.HEIGHT;
@@ -39,7 +41,7 @@ public class Galaxy extends Application {
 
         Group root = new Group();
         root.getChildren().add(world);
-        root.getChildren().add(prepareImageView());
+        root.getChildren().add(JavaFxResourceUtils.toConfiguredImageView("/galaxy/galaxy.jpg"));
 
         Scene scene = new Scene(root, WIDTH, HEIGHT, true);
         scene.setFill(Color.SILVER);
@@ -64,21 +66,9 @@ public class Galaxy extends Application {
         timer.start();
     }
 
-    private ImageView prepareImageView() {
-        Image image = new Image(getClass().getResourceAsStream("../../galaxy/galaxy.jpg"));
-        ImageView imageView = new ImageView(image);
-        imageView.setPreserveRatio(true);
-        imageView.getTransforms().add(new Translate(-image.getWidth() / 2, -image.getHeight() / 2, 800));
-        return imageView;
-    }
-
     private Node prepareEarth() {
         PhongMaterial earthMaterial = new PhongMaterial();
-        earthMaterial.setDiffuseMap(new Image(getClass().getResourceAsStream("../../earth/earth-d.jpg")));
-        earthMaterial.setSelfIlluminationMap(new Image(getClass().getResourceAsStream("../../earth/earth-l.jpg")));
-        earthMaterial.setSpecularMap(new Image(getClass().getResourceAsStream("../../earth/earth-s.jpg")));
-        earthMaterial.setBumpMap(new Image(getClass().getResourceAsStream("../../earth/earth-n.jpg")));
-
+        JavaFxResourceUtils.setEarthMaterialMaps(earthMaterial);
         sphere.setRotationAxis(Rotate.Y_AXIS);
         sphere.setMaterial(earthMaterial);
         return sphere;

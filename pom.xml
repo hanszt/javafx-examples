@@ -28,22 +28,29 @@
         <module>java_fx_3d_motion_examples</module>
         <module>javafx-experimental-features</module>
         <module>clean-ui</module>
+        <module>java-fx-commons</module>
+        <module>gluon-samples</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!--        plugins-->
         <java.version>17</java.version>
+        <!--        plugins-->
         <javafx-maven-plugin.version>0.0.6</javafx-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
         <!--        dependencies-->
-        <javafx.version>11</javafx.version>
+        <javafx.version>16</javafx.version>
         <commons-math3.version>3.6.1</commons-math3.version>
         <guava.version>29.0-jre</guava.version>
         <annotations.version>17.0.0</annotations.version>
-        <log4j-api.version>2.13.3</log4j-api.version>
-        <archunit-junit5.version>0.18.0</archunit-junit5.version>
-        <junit-jupiter.version>5.7.2</junit-jupiter.version>
+        <log4j-api.version>2.14.1</log4j-api.version>
+        <!--        test-->
+        <archunit-junit5.version>0.21.0</archunit-junit5.version>
+        <mockito.version>3.12.4</mockito.version>
+        <junit-jupiter.version>5.8.0</junit-jupiter.version>
+        <hamcrest.version>2.2</hamcrest.version>
+        <testfx.version>4.0.16-alpha</testfx.version>
     </properties>
 
     <dependencyManagement>
@@ -86,6 +93,43 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit-jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${junit-jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!--        https://github.com/TestFX/TestFX-->
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-core</artifactId>
+            <version>${testfx.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!--        https://jar-download.com/artifacts/org.testfx/testfx-junit5/4.0.6-alpha/source-code/org/testfx/framework/junit5/ApplicationExtension.java-->
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-junit5</artifactId>
+            <version>${testfx.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <version>${hamcrest.version}</version>
             <scope>test</scope>
         </dependency>
         <!--        javafx-->
@@ -159,6 +203,17 @@
                 <version>${javafx-maven-plugin.version}</version>
                 <configuration>
                     <mainClass>org.openjfx.App</mainClass>
+                </configuration>
+            </plugin>
+            <!--            https://github.com/TestFX/TestFX/issues/638-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <argLine>
+                        --add-exports javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
+                    </argLine>
                 </configuration>
             </plugin>
         </plugins>

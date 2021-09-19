@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2019 Gluon
  * All rights reserved.
  *
@@ -44,32 +44,32 @@ import javafx.scene.layout.VBox;
 
 public class HelloGluon extends MobileApplication {
 
+    private static View buildView() {
+        FloatingActionButton fab = new FloatingActionButton(MaterialDesignIcon.SEARCH.text, e -> System.out.println("Search"));
+
+        ImageView imageView = new ImageView(new Image(HelloGluon.class.getResourceAsStream("openduke.png")));
+
+        imageView.setFitHeight(200);
+        imageView.setPreserveRatio(true);
+
+        Label label = new Label("Hello, Gluon Mobile!");
+        VBox root = new VBox(20, imageView, label);
+        root.setAlignment(Pos.CENTER);
+
+        View view = new View(root) {
+            @Override
+            protected void updateAppBar(AppBar appBar) {
+                appBar.setTitleText("Gluon Mobile");
+            }
+        };
+
+        fab.showOn(view);
+        return view;
+    }
+
     @Override
     public void init() {
-        addViewFactory(HOME_VIEW, () -> {
-            FloatingActionButton fab = new FloatingActionButton(MaterialDesignIcon.SEARCH.text,
-                    e -> System.out.println("Search"));
-
-            ImageView imageView = new ImageView(new Image(HelloGluon.class.getResourceAsStream("openduke.png")));
-
-            imageView.setFitHeight(200);
-            imageView.setPreserveRatio(true);
-
-            Label label = new Label("Hello, Gluon Mobile!");
-            VBox root = new VBox(20, imageView, label);
-            root.setAlignment(Pos.CENTER);
-
-            View view = new View(root) {
-                @Override
-                protected void updateAppBar(AppBar appBar) {
-                    appBar.setTitleText("Gluon Mobile");
-                }
-            };
-
-            fab.showOn(view);
-
-            return view;
-        });
+        addViewFactory(HOME_VIEW, HelloGluon::buildView);
     }
 
     @Override
