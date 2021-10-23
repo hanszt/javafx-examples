@@ -65,14 +65,13 @@ public class HelloEffects extends Application {
         super();
     }
 
-    private Scene scene;
-
     @Override
     public void start(Stage stage) {
         stage.show();
 
-        scene = new Scene(new Group(), 840, 680);
-        ObservableList<Node> content = ((Group) scene.getRoot()).getChildren();
+        final Group group = new Group();
+        Scene scene = new Scene(group, 840, 680);
+        ObservableList<Node> content = group.getChildren();
 
         /// Perspective
         content.add(perspective());
@@ -103,19 +102,19 @@ public class HelloEffects extends Application {
 
     static Node distantLight() {
         Light.Distant light = new Light.Distant();
-        light.setAzimuth(-135.0f);
-        light.setElevation(30.0f);
+        light.setAzimuth(-135.0F);
+        light.setElevation(30.0F);
 
         Lighting l = new Lighting();
         l.setLight(light);
-        l.setSurfaceScale(5.0f);
+        l.setSurfaceScale(5.0F);
 
         final Text t = new Text();
         t.setText("Distant Light");
         t.setFill(Color.RED);
         t.setFont(Font.font("null", FontWeight.BOLD, 70));
-        t.setX(10.0f);
-        t.setY(50.0f);
+        t.setX(10.0F);
+        t.setY(50.0F);
         t.setTextOrigin(VPos.TOP);
 
         t.setEffect(l);
@@ -135,28 +134,28 @@ public class HelloEffects extends Application {
     static Node perspective() {
         Group g = new Group();
         PerspectiveTransform pt = new PerspectiveTransform();
-        pt.setUlx(10.0f);
-        pt.setUly(10.0f);
-        pt.setUrx(210.0f);
-        pt.setUry(40.0f);
-        pt.setLrx(210.0f);
-        pt.setLry(60.0f);
-        pt.setLlx(10.0f);
-        pt.setLly(90.0f);
+        pt.setUlx(10.0F);
+        pt.setUly(10.0F);
+        pt.setUrx(210.0F);
+        pt.setUry(40.0F);
+        pt.setLrx(210.0F);
+        pt.setLry(60.0F);
+        pt.setLlx(10.0F);
+        pt.setLly(90.0F);
 
         g.setEffect(pt);
         g.setCache(true);
 
         Rectangle r = new Rectangle();
-        r.setX(10.0f);
-        r.setY(10.0f);
-        r.setWidth(280.0f);
-        r.setHeight(80.0f);
+        r.setX(10.0F);
+        r.setY(10.0F);
+        r.setWidth(280.0F);
+        r.setHeight(80.0F);
         r.setFill(Color.DARKBLUE);
 
         Text t = new Text();
-        t.setX(20.0f);
-        t.setY(65.0f);
+        t.setX(20.0F);
+        t.setY(65.0F);
         t.setText("Perspective");
         t.setFill(Color.RED);
         t.setFont(Font.font("null", FontWeight.BOLD, 36));
@@ -168,8 +167,8 @@ public class HelloEffects extends Application {
 
     static Node gaussianBlur() {
         Text t2 = new Text();
-        t2.setX(10.0f);
-        t2.setY(140.0f);
+        t2.setX(10.0F);
+        t2.setY(140.0F);
         t2.setCache(true);
         t2.setText("Gaussian Blur");
         t2.setFill(Color.RED);
@@ -180,15 +179,15 @@ public class HelloEffects extends Application {
 
     static Node reflection() {
         Text t = new Text();
-        t.setX(10.0f);
-        t.setY(50.0f);
+        t.setX(10.0F);
+        t.setY(50.0F);
         t.setCache(true);
         t.setText("Reflections on JavaFX...");
         t.setFill(Color.RED);
         t.setFont(Font.font("null", FontWeight.BOLD, 30));
 
         Reflection r = new Reflection();
-        r.setFraction(0.7f);
+        r.setFraction(0.7);
 
         t.setEffect(r);
 
@@ -198,15 +197,15 @@ public class HelloEffects extends Application {
 
     static Node motionBlur() {
         Text t = new Text();
-        t.setX(20.0f);
-        t.setY(80.0f);
+        t.setX(20.0F);
+        t.setY(80.0F);
         t.setText("Motion Blur");
         t.setFill(Color.RED);
         t.setFont(Font.font("null", FontWeight.BOLD, 60));
 
         MotionBlur mb = new MotionBlur();
-        mb.setRadius(15.0f);
-        mb.setAngle(45.0f);
+        mb.setRadius(15.0F);
+        mb.setAngle(45.0F);
 
         t.setEffect(mb);
 
@@ -218,18 +217,18 @@ public class HelloEffects extends Application {
 
     static Node lighting() {
         Light.Distant light = new Light.Distant();
-        light.setAzimuth(-135.0f);
+        light.setAzimuth(-135.0F);
 
         Lighting l = new Lighting();
         l.setLight(light);
-        l.setSurfaceScale(5.0f);
+        l.setSurfaceScale(5.0F);
 
         Text t = new Text();
         t.setText("JavaFX\nLighting!");
         t.setFill(Color.RED);
         t.setFont(Font.font("null", FontWeight.BOLD, 70));
-        t.setX(500.0f);
-        t.setY(100.0f);
+        t.setX(500.0F);
+        t.setY(100.0F);
         t.setTextOrigin(VPos.TOP);
 
         t.setEffect(l);
@@ -242,21 +241,21 @@ public class HelloEffects extends Application {
 
     static Node innerShadow() {
         InnerShadow is = new InnerShadow();
-        is.setOffsetX(2.0f);
-        is.setOffsetY(2.0f);
+        is.setOffsetX(2.0F);
+        is.setOffsetY(2.0F);
 
-        Text t = new Text();
-        t.setEffect(is);
-        t.setX(20);
-        t.setY(100);
-        t.setText("Inner Shadow");
-        t.setFill(Color.RED);
-        t.setFont(Font.font("null", FontWeight.BOLD, 80));
+        Text text = new Text();
+        text.setEffect(is);
+        text.setX(20);
+        text.setY(100);
+        text.setText("Inner Shadow");
+        text.setFill(Color.RED);
+        text.setFont(Font.font("null", FontWeight.BOLD, 80));
 
-        t.setTranslateX(300);
-        t.setTranslateY(300);
+        text.setTranslateX(300);
+        text.setTranslateY(300);
 
-        return t;
+        return text;
     }
 
     static Node displacementMap() {
@@ -269,7 +268,7 @@ public class HelloEffects extends Application {
         for (int i = 0; i < w; i++) {
             double v = (Math.sin(i / 50.0 * Math.PI) - 0.5) / 40.0;
             for (int j = 0; j < h; j++) {
-                map.setSamples(i, j, 0.0f, (float) v);
+                map.setSamples(i, j, 0.0F, (float) v);
             }
         }
 
@@ -278,8 +277,8 @@ public class HelloEffects extends Application {
         dm.setMapData(map);
 
         Rectangle r = new Rectangle();
-        r.setX(20.0f);
-        r.setY(20.0f);
+        r.setX(20.0F);
+        r.setY(20.0F);
         r.setWidth(w);
         r.setHeight(h);
         r.setFill(Color.BLUE);
@@ -287,8 +286,8 @@ public class HelloEffects extends Application {
         g.getChildren().add(r);
 
         Text t = new Text();
-        t.setX(40.0f);
-        t.setY(80.0f);
+        t.setX(40.0F);
+        t.setY(80.0F);
         t.setText("Wavy Text");
         t.setFill(Color.YELLOW);
         t.setFont(Font.font("null", FontWeight.BOLD, 36));
@@ -350,26 +349,26 @@ public class HelloEffects extends Application {
     static Node dropShadow() {
         Group group = new Group();
         DropShadow dropShadow = new DropShadow();
-        dropShadow.setOffsetY(3.0f);
-        dropShadow.setColor(Color.color(0.4f, 0.4f, 0.4f));
+        dropShadow.setOffsetY(3.0F);
+        dropShadow.setColor(Color.color(0.4, 0.4, 0.4));
 
         Text text = new Text();
         text.setEffect(dropShadow);
         text.setCache(true);
-        text.setX(10.0f);
-        text.setY(270.0f);
+        text.setX(10.0F);
+        text.setY(270.0F);
         text.setFill(Color.RED);
         text.setText("JavaFX drop shadow...");
         text.setFont(Font.font("null", FontWeight.BOLD, 32));
 
         DropShadow dropShadow1 = new DropShadow();
-        dropShadow1.setOffsetY(4.0f);
+        dropShadow1.setOffsetY(4.0F);
 
         Circle circle = new Circle();
         circle.setEffect(dropShadow1);
-        circle.setCenterX(50.0f);
-        circle.setCenterY(325.0f);
-        circle.setRadius(30.0f);
+        circle.setCenterX(50.0F);
+        circle.setCenterY(325.0F);
+        circle.setRadius(30.0F);
         circle.setFill(Color.ORANGE);
         circle.setCache(true);
 
