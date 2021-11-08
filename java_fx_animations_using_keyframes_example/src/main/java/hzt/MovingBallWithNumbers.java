@@ -16,10 +16,12 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class MovingBallWithNumbers extends Application {
+public final class MovingBallWithNumbers extends Application {
 
-    //variable for storing actual frame
-    private int i = 0;
+    private int frameNr;
+
+    private MovingBallWithNumbers() {
+    }
 
     @Override
     public void start(Stage stage) {
@@ -27,7 +29,7 @@ public class MovingBallWithNumbers extends Application {
         final var circle = new Circle(20, Color.rgb(156, 216, 255));
         circle.setEffect(new Lighting());
         //create a text inside a circle
-        final var text = new Text("" + i);
+        final var text = new Text("" + frameNr);
         text.setStroke(Color.BLACK);
         //create a layout for circle with text inside
         final var stackPane = new StackPane(circle, text);
@@ -38,8 +40,8 @@ public class MovingBallWithNumbers extends Application {
         var timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
-                text.setText("" + i);
-                i++;
+                text.setText("" + frameNr);
+                frameNr++;
             }
         };
         timer.start();
@@ -73,7 +75,7 @@ public class MovingBallWithNumbers extends Application {
     private void onAnimationFinished(StackPane stackPane) {
         stackPane.setTranslateX(Math.random() * 200 - 100);
         //reset counter
-        i = 0;
+        frameNr = 0;
     }
 
 

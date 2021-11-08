@@ -91,10 +91,12 @@ public class ColorfulCircles extends Application {
 
     private static void addCircleTranslationKeyFramesToTimeline(Timeline timeline, Node circle) {
         timeline.getKeyFrames().addAll(
-                new KeyFrame(Duration.ZERO, // set start position at 0
+                // set start position at 0
+                new KeyFrame(Duration.ZERO,
                         new KeyValue(circle.translateXProperty(), random() * 800),
                         new KeyValue(circle.translateYProperty(), random() * 600)),
-                new KeyFrame(Duration.seconds(40), // set end position at 40s
+                // set end position at 40s
+                new KeyFrame(Duration.seconds(40),
                         new KeyValue(circle.translateXProperty(), random() * 800),
                         new KeyValue(circle.translateYProperty(), random() * 600)));
     }
