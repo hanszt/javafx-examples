@@ -30,9 +30,14 @@ import com.gluonhq.attach.util.Constants;
 import com.gluonhq.samples.beacons.views.AppViewManager;
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.visual.Swatch;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.stage.Window;
+
+import java.net.URL;
+import java.util.Optional;
 
 public class Beacons extends MobileApplication {
 
@@ -47,8 +52,20 @@ public class Beacons extends MobileApplication {
         AppViewManager.registerDrawer(this);
         Swatch.BLUE.assignTo(scene);
 
-        scene.getStylesheets().add(Beacons.class.getResource("style.css").toExternalForm());
-        ((Stage) scene.getWindow()).getIcons().add(new Image(Beacons.class.getResourceAsStream("/icon.png")));
+        final ObservableList<String> stylesheets = scene.getStylesheets();
+
+        Optional.ofNullable(Beacons.class.getResource("style.css"))
+                        .map(URL::toExternalForm)
+                .ifPresent(stylesheets::add);
+
+        final Window window = scene.getWindow();
+        if (window instanceof Stage) {
+            final ObservableList<Image> icons = ((Stage) window).getIcons();
+
+            Optional.ofNullable(Beacons.class.getResourceAsStream("/icon.png"))
+                    .map(Image::new)
+                    .ifPresent(icons::add);
+        }
     }
 
     public static void main(String[] args) {

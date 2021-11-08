@@ -107,17 +107,11 @@ public class ClothMeshTest extends Application {
 
     private void keyTypedAction(KeyEvent e, ClothMesh clothMesh) {
         switch (e.getCharacter()) {
-            case "i":
-                setDiffuseAndBumpMap(clothMesh);
-                break;
-            case "w":
-                setDrawMode(clothMesh);
-                break;
-            case "r":
-                reset();
-                break;
-            default:
-                break;
+            case "i" -> setDiffuseAndBumpMap(clothMesh);
+            case "w" -> setDrawMode(clothMesh);
+            case "r" -> reset();
+            default -> {
+            }
         }
     }
 

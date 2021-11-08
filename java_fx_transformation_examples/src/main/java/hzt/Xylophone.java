@@ -31,9 +31,9 @@
 
 package hzt;
 
-import hzt.service.IMouseControlService;
-import hzt.service.MouseControlService;
+import fx_customs.MyScene;
 import hzt.utils.FxSetup;
+import interfaces.IMouseControlService;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -68,6 +68,8 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import services.MouseControlService;
+import utils.FxUtils;
 
 import java.net.URL;
 import java.util.ArrayDeque;
@@ -117,7 +119,7 @@ public class Xylophone extends Application {
         VBox root = new VBox();
         root.setBackground(new Background(new BackgroundFill(getSceneFill(), CornerRadii.EMPTY, Insets.EMPTY)));
 
-        final Scene scene = configuredScene(root);
+        final MyScene scene = configuredScene(root);
         final SubScene subScene = configuredSubScene(xylophoneAssembly);
         subScene.widthProperty().bind(scene.widthProperty());
         subScene.heightProperty().bind(scene.heightProperty().multiply(0.9));
@@ -126,6 +128,7 @@ public class Xylophone extends Application {
         controlsPane.setOpacity(.8);
         root.getChildren().addAll(subScene, controlsPane);
         mouseControlService.initMouseControl(xylophoneAssembly, scene);
+        mouseControlService.setMoveWhenTargetPressedProperty(false);
         recenter();
         FxSetup.configureStage(stage, scene, "Xylophone").show();
         LOGGER.info("{} started", getClass().getSimpleName());
@@ -143,7 +146,7 @@ public class Xylophone extends Application {
         barAmountSlider.prefWidthProperty().bind(scene.widthProperty());
         barAmountSlider.setOnMouseEntered(e -> barAmountSlider.setCursor(Cursor.HAND));
         nrOfVisibleBars.bind(barAmountSlider.valueProperty());
-        nrOfVisibleBars.addListener((o, c, n) -> updateXylophoneLength(n, xylophoneBars.getChildren()));
+        nrOfVisibleBars.addListener(FxUtils.forNewValue(n -> updateXylophoneLength(n, xylophoneBars.getChildren())));
 
         return FxSetup.configuredHBox(recenterButton, barAmountSlider);
     }
@@ -168,15 +171,14 @@ public class Xylophone extends Application {
     private void recenter() {
         MouseControlService mcs = (MouseControlService) this.mouseControlService;
         mcs.setOrientation(INIT_ANGLE_X, INIT_ANGLE_Y);
-        mcs.resetShear();
-        mcs.resetScale();
-        mcs.resetTranslation();
+        mcs.setShear(0, 0);
+        mcs.setTargetTranslation(0, 0,0);
     }
 
-    private static Scene configuredScene(Parent root) {
+    private static MyScene configuredScene(Parent root) {
         int sceneWidth = parsedIntAppProp("init_scene_width", 800);
         int sceneHeight = parsedIntAppProp("init_scene_height", 600);
-        return new Scene(root, sceneWidth, sceneHeight, true);
+        return new MyScene(root, sceneWidth, sceneHeight, true);
     }
 
     private static SubScene configuredSubScene(Parent root) {
@@ -264,7 +266,10 @@ public class Xylophone extends Application {
             }
             size = children.size();
         }
-        children.stream().map(Box.class::cast).forEach(this::adaptProperties);
+        children.stream()
+                .filter(Box.class::isInstance)
+                .map(Box.class::cast)
+                .forEach(this::adaptProperties);
     }
 
     private void adaptProperties(Box bar) {

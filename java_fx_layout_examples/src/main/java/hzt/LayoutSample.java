@@ -59,6 +59,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.InputStream;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 /**
  * Sample application that shows examples of the different layout panes
@@ -111,7 +116,7 @@ public class LayoutSample extends Application {
      * Creates an HBox with two buttons for the top region
      */
 
-    private HBox addHBox() {
+    private static HBox addHBox() {
 
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(15, 12, 15, 12));
@@ -132,7 +137,7 @@ public class LayoutSample extends Application {
     /*
      * Creates a VBox with a list of links for the left region
      */
-    private VBox addVBox() {
+    private static VBox addVBox() {
 
         VBox vbox = new VBox();
         vbox.setPadding(new Insets(10)); // Set all sides to 10
@@ -162,7 +167,7 @@ public class LayoutSample extends Application {
      *
      * @param hb HBox to add the stack to
      */
-    private void addStackPaneInTopRegion(HBox hb) {
+    private static void addStackPaneInTopRegion(HBox hb) {
 
         StackPane stack = new StackPane();
         Rectangle helpIcon = new Rectangle(30.0, 25.0);
@@ -193,7 +198,7 @@ public class LayoutSample extends Application {
     /*
      * Creates a grid for the center region with four columns and three rows
      */
-    private GridPane addGridPane() {
+    private static GridPane addGridPane() {
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -215,9 +220,10 @@ public class LayoutSample extends Application {
         grid.add(chartSubtitle, 1, 1, 2, 1);
 
         // House icon in column 1, rows 1-2
-        ImageView imageHouse = new ImageView(
-                new Image(LayoutSample.class.getResourceAsStream(RELATIVE_PATH_TO_RESOURCES + "house.png")));
-        grid.add(imageHouse, 0, 0, 1, 2);
+        Optional.ofNullable(LayoutSample.class.getResourceAsStream(RELATIVE_PATH_TO_RESOURCES + "house.png"))
+                .map(Image::new)
+                .map(ImageView::new)
+                .ifPresent(imageHouse -> grid.add(imageHouse, 0, 0, 1, 2));
 
         // Left label in column 1 (bottom), row 3
         Text goodsPercent = new Text("Goods\n80%");
@@ -225,9 +231,10 @@ public class LayoutSample extends Application {
         grid.add(goodsPercent, 0, 2);
 
         // Chart in columns 2-3, row 3
-        ImageView imageChart = new ImageView(
-                new Image(LayoutSample.class.getResourceAsStream(RELATIVE_PATH_TO_RESOURCES + "piechart.png")));
-        grid.add(imageChart, 1, 2, 2, 1);
+        Optional.ofNullable(LayoutSample.class.getResourceAsStream(RELATIVE_PATH_TO_RESOURCES + "piechart.png"))
+                .map(Image::new)
+                .map(ImageView::new)
+                .ifPresent(imageChart -> grid.add(imageChart, 1, 2, 2, 1));
 
         // Right label in column 4 (top), row 3
         Text servicesPercent = new Text("Services\n20%");
@@ -241,7 +248,7 @@ public class LayoutSample extends Application {
     /*
      * Creates a horizontal flow pane with eight icons in four rows
      */
-    private FlowPane addFlowPane() {
+    private static FlowPane addFlowPane() {
 
         FlowPane flow = new FlowPane();
         flow.setPadding(new Insets(5, 0, 5, 0));
@@ -250,21 +257,26 @@ public class LayoutSample extends Application {
         flow.setPrefWrapLength(170); // preferred width allows for two columns
         flow.setStyle("-fx-background-color: DAE6F3;");
 
-        ImageView[] pages = new ImageView[8];
-        for (int i = 0; i < 8; i++) {
-            pages[i] = new ImageView(
-                    new Image(getClass().getResourceAsStream(
-                            RELATIVE_PATH_TO_RESOURCES + "chart_" + (i + 1) + ".png")));
-            flow.getChildren().add(pages[i]);
-        }
+        flow.getChildren().addAll(IntStream.rangeClosed(1, 8)
+                .mapToObj(LayoutSample::getChartResource)
+                .flatMap(Optional::stream)
+                .map(Image::new)
+                .map(ImageView::new)
+                .toList());
 
         return flow;
+    }
+
+    @NotNull
+    private static Optional<InputStream> getChartResource(int i) {
+        final String name = RELATIVE_PATH_TO_RESOURCES + "chart_" + i + ".png";
+        return Optional.ofNullable(LayoutSample.class.getResourceAsStream(name));
     }
 
     /*
      * Creates a horizontal (default) tile pane with eight icons in four rows
      */
-    private TilePane addTilePane() {
+    private static TilePane addTilePane() {
 
         TilePane tile = new TilePane();
         tile.setPadding(new Insets(5, 0, 5, 0));
@@ -273,14 +285,12 @@ public class LayoutSample extends Application {
         tile.setPrefColumns(2);
         tile.setStyle("-fx-background-color: DAE6F3;");
 
-        ImageView[] pages = new ImageView[8];
-        for (int i = 0; i < 8; i++) {
-            pages[i] = new ImageView(
-                    new Image(LayoutSample.class.getResourceAsStream(
-                            RELATIVE_PATH_TO_RESOURCES + "chart_" + (i + 1) + ".png")));
-            tile.getChildren().add(pages[i]);
-        }
-
+        tile.getChildren().addAll(IntStream.rangeClosed(1, 8)
+                .mapToObj(LayoutSample::getChartResource)
+                .flatMap(Optional::stream)
+                .map(Image::new)
+                .map(ImageView::new)
+                .toList());
         return tile;
     }
 
@@ -289,7 +299,7 @@ public class LayoutSample extends Application {
      *
      * @param grid Grid to anchor to the top of the anchor pane
      */
-    private AnchorPane addAnchorPane(GridPane grid) {
+    private static AnchorPane addAnchorPane(GridPane grid) {
 
         AnchorPane anchorpane = new AnchorPane();
 

@@ -40,6 +40,8 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+import static utils.FxUtils.forNewValue;
+
 public class BeaconPresenter extends GluonPresenter<Beacons> {
 
     @FXML
@@ -74,43 +76,15 @@ public class BeaconPresenter extends GluonPresenter<Beacons> {
     public void initialize() {
         circleFar.setFill(null);
         circleFar.setStroke(Color.TRANSPARENT);
-        circleFar.strokeProperty().bind(Bindings.createObjectBinding(() -> {
-            if (scanDetection != null && scanDetection.getProximity().equals(Proximity.FAR)) {
-                circleFar.setEffect(new DropShadow(10, Color.GREEN));
-                return Color.GREEN;
-            }
-            circleFar.setEffect(null);
-            return Color.GRAY;
-        }, labelDistance.textProperty()));
+        circleFar.strokeProperty().bind(Bindings.createObjectBinding(this::textColorIfFar, labelDistance.textProperty()));
         circleNear.setFill(null);
         circleNear.setStroke(Color.TRANSPARENT);
-        circleNear.strokeProperty().bind(Bindings.createObjectBinding(() -> {
-            if (scanDetection != null && scanDetection.getProximity().equals(Proximity.NEAR)) {
-                circleNear.setEffect(new DropShadow(15, Color.GREEN));
-                return Color.GREEN;
-            }
-            circleNear.setEffect(null);
-            return Color.GRAY;
-        }, labelDistance.textProperty()));
+        circleNear.strokeProperty().bind(Bindings.createObjectBinding(this::textColorIfNear, labelDistance.textProperty()));
         circleImmediate.setFill(null);
         circleImmediate.setStroke(Color.TRANSPARENT);
-        circleImmediate.strokeProperty().bind(Bindings.createObjectBinding(() -> {
-            if (scanDetection != null && scanDetection.getProximity().equals(Proximity.IMMEDIATE)) {
-                circleImmediate.setEffect(new DropShadow(20, Color.GREEN));
-                return Color.GREEN;
-            }
-            circleImmediate.setEffect(null);
-            return Color.GRAY;
-        }, labelDistance.textProperty()));
+        circleImmediate.strokeProperty().bind(Bindings.createObjectBinding(this::textColorIfImmediate, labelDistance.textProperty()));
 
-        beacon.showingProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue) {
-                AppBar appBar = getApp().getAppBar();
-                appBar.setNavIcon(MaterialDesignIcon.CHEVRON_LEFT.button(e ->
-                        getApp().switchToPreviousView()));
-                appBar.setTitleText("Beacon");
-            }
-        });
+        beacon.showingProperty().addListener(forNewValue(this::setNavIconAndText));
     }
 
     void setBeacon(ScanDetection scan) {
@@ -124,5 +98,40 @@ public class BeaconPresenter extends GluonPresenter<Beacons> {
 
     ScanDetection getCurrentBeacon() {
         return beacon.isShowing() ? scanDetection : null;
+    }
+
+    private void setNavIconAndText(boolean showing) {
+        if (showing) {
+            AppBar appBar = getApp().getAppBar();
+            appBar.setNavIcon(MaterialDesignIcon.CHEVRON_LEFT.button(e -> getApp().switchToPreviousView()));
+            appBar.setTitleText("Beacon");
+        }
+    }
+
+    private Color textColorIfImmediate() {
+        if (scanDetection != null && scanDetection.getProximity() == Proximity.IMMEDIATE) {
+            circleImmediate.setEffect(new DropShadow(20, Color.GREEN));
+            return Color.GREEN;
+        }
+        circleImmediate.setEffect(null);
+        return Color.GRAY;
+    }
+
+    private Color textColorIfNear() {
+        if (scanDetection != null && scanDetection.getProximity() == Proximity.NEAR) {
+            circleNear.setEffect(new DropShadow(15, Color.GREEN));
+            return Color.GREEN;
+        }
+        circleNear.setEffect(null);
+        return Color.GRAY;
+    }
+
+    private Color textColorIfFar() {
+        if (scanDetection != null && scanDetection.getProximity() == Proximity.FAR) {
+            circleFar.setEffect(new DropShadow(10, Color.GREEN));
+            return Color.GREEN;
+        }
+        circleFar.setEffect(null);
+        return Color.GRAY;
     }
 }

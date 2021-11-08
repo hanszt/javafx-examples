@@ -66,7 +66,7 @@ public class TooltipSample extends Application {
     }
 
     private void updateSum(CheckBox cb, Integer rate) {
-        sum = cb.isSelected() ? sum + rate : sum - rate;
+        sum = cb.isSelected() ? (sum + rate) : (sum - rate);
         total.setText("Total: $" + sum);
     }
 }

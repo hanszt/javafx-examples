@@ -16,6 +16,10 @@ import static javafx.scene.paint.Color.GREY;
 
 public class LineChartSample extends Application {
 
+    private static final int MAX = 60;
+    private static final String[] MONTHS =
+            {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
     @Override
     public void start(Stage stage) {
         final LineChart<String, Number> lineChart = new LineChart<>(categoryAxis("Month"), numberAxis("Amount"));
@@ -25,7 +29,7 @@ public class LineChartSample extends Application {
         lineChart.setAlternativeRowFillVisible(false);
         //noinspection unchecked
         lineChart.getData().addAll(series("Portfolio 1"), series("Portfolio 2"), series("Portfolio 3"));
-        lineChart.getData().forEach(this::getRandomData);
+        lineChart.getData().forEach(LineChartSample::getRandomData);
         lineChart.setEffect(preparedShadow(GREY));
 
         final Button updateButton = configuredButton("Update", e -> update(lineChart));
@@ -33,19 +37,17 @@ public class LineChartSample extends Application {
         configureStage(stage, scene, "Line Chart Sample").show();
     }
 
-    private void update(LineChart<String, Number> lineChart) {
+    private static void update(LineChart<String, Number> lineChart) {
         for (XYChart.Series<String, Number> series : lineChart.getData()) {
             getRandomData(series);
         }
     }
 
-    private static final int MAX = 60;
-    private static final String[] MONTHS =
-            {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-
-    private void getRandomData(XYChart.Series<String, Number> series) {
+    private static void getRandomData(XYChart.Series<String, Number> series) {
         series.getData().clear();
-        for (String month : MONTHS) series.getData().add(new XYChart.Data<>(month, new Random().nextInt(MAX)));
+        for (String month : MONTHS) {
+            series.getData().add(new XYChart.Data<>(month, new Random().nextInt(MAX)));
+        }
     }
 
 }

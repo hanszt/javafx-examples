@@ -37,27 +37,38 @@ import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import javafx.scene.image.Image;
 
 import java.util.Locale;
+import java.util.Optional;
 
 import static com.gluonhq.charm.glisten.afterburner.AppView.Flag.*;
 
-public class AppViewManager {
+public final class AppViewManager {
 
     public static final AppViewRegistry REGISTRY = new AppViewRegistry();
 
-    public static final AppView MAIN_VIEW = view("Home", MainPresenter.class, MaterialDesignIcon.BLUETOOTH_SEARCHING, SHOW_IN_DRAWER, HOME_VIEW, SKIP_VIEW_STACK);
-    public static final AppView BEACON_VIEW = view("Beacon", BeaconPresenter.class, MaterialDesignIcon.BLUETOOTH_CONNECTED);
-    public static final AppView BEACONS_VIEW = view("Scan Beacons", BeaconsPresenter.class, MaterialDesignIcon.BLUETOOTH_SEARCHING, SHOW_IN_DRAWER);
-    public static final AppView BROADCAST_VIEW = view("Broadcast Beacon", BroadcastPresenter.class, MaterialDesignIcon.BLUETOOTH_SEARCHING, SHOW_IN_DRAWER);
-    public static final AppView SETTINGS_VIEW = view("Settings", SettingsPresenter.class, MaterialDesignIcon.SETTINGS);
+    static {
+        view("Home", MainPresenter.class, MaterialDesignIcon.BLUETOOTH_SEARCHING, SHOW_IN_DRAWER, HOME_VIEW, SKIP_VIEW_STACK);
+    }
+    public static final AppView BEACON_VIEW = view("Beacon", BeaconPresenter.class,
+            MaterialDesignIcon.BLUETOOTH_CONNECTED);
+    public static final AppView BEACONS_VIEW = view("Scan Beacons", BeaconsPresenter.class,
+            MaterialDesignIcon.BLUETOOTH_SEARCHING, SHOW_IN_DRAWER);
+    public static final AppView BROADCAST_VIEW = view("Broadcast Beacon", BroadcastPresenter.class,
+            MaterialDesignIcon.BLUETOOTH_SEARCHING, SHOW_IN_DRAWER);
+    public static final AppView SETTINGS_VIEW = view("Settings", SettingsPresenter.class,
+            MaterialDesignIcon.SETTINGS);
 
-    private static AppView view(String title, Class<? extends GluonPresenter<?>> presenterClass, MaterialDesignIcon menuIcon, AppView.Flag... flags ) {
+    private AppViewManager() {
+    }
+
+    private static AppView view(
+            String title, Class<? extends GluonPresenter<?>> presenterClass, MaterialDesignIcon menuIcon, AppView.Flag... flags ) {
         return REGISTRY.createView(name(presenterClass), title, presenterClass, menuIcon, flags);
     }
 
     private static String name(Class<? extends GluonPresenter<?>> presenterClass) {
         return presenterClass.getSimpleName().toUpperCase(Locale.ROOT).replace("PRESENTER", "");
     }
-    
+
     public static void registerViews(MobileApplication app) {
         for (AppView view : REGISTRY.getViews()) {
             view.registerView(app);
@@ -65,9 +76,13 @@ public class AppViewManager {
     }
 
     public static void registerDrawer(MobileApplication app) {
-        NavigationDrawer.Header header = new NavigationDrawer.Header("Gluon Mobile",
-                "The Beacons App",
-                new Avatar(21, new Image(AppViewManager.class.getResourceAsStream("/icon.png"))));
+        NavigationDrawer.Header header = new NavigationDrawer.Header("Gluon Mobile", "The Beacons App");
+
+        Optional.ofNullable(AppViewManager.class.getResourceAsStream("/icon.png"))
+                .map(Image::new)
+                .map(image -> new Avatar(21, image))
+                .ifPresent(header::setGraphic);
+
         Utils.buildDrawer(app.getDrawer(), header, REGISTRY.getViews()); 
     }
 }

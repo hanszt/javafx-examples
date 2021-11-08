@@ -16,6 +16,7 @@ public class BubbleChartSample extends Application {
     private static final int LOWER_BOUND_X = 1;
     private static final int UPPER_BOUND_X = 53;
     private static final int SCALE_X = 4;
+    private static final int MAX_CHANGE_RANGE = 10;
 
     private static final int LOWER_BOUND_Y = 0;
     private static final int UPPER_BOUND_Y = 80;
@@ -47,7 +48,7 @@ public class BubbleChartSample extends Application {
         FxSetup.configureStage(stage, scene, "Bubble Chart Sample").show();
     }
 
-    private void fillSeries1(XYChart.Series<Number, Number> series1) {
+    private static void fillSeries1(XYChart.Series<Number, Number> series1) {
         series1.getData().add(new XYChart.Data<>(3, 35, 2));
         series1.getData().add(new XYChart.Data<>(12, 60, 1.8));
         series1.getData().add(new XYChart.Data<>(15, 15, 7));
@@ -58,7 +59,7 @@ public class BubbleChartSample extends Application {
         series1.getData().add(new XYChart.Data<>(49, 30, 1.8));
     }
 
-    private void fillSeries2(XYChart.Series<Number, Number> series2) {
+    private static void fillSeries2(XYChart.Series<Number, Number> series2) {
         series2.getData().add(new XYChart.Data<>(8, 15, 2));
         series2.getData().add(new XYChart.Data<>(13, 23, 1));
         series2.getData().add(new XYChart.Data<>(15, 45, 3));
@@ -69,9 +70,7 @@ public class BubbleChartSample extends Application {
         series2.getData().add(new XYChart.Data<>(47, 23, 3.8));
     }
 
-    private static final int MAX_CHANGE_RANGE = 10;
-
-    private void updateData(BubbleChart<Number, Number> bubbleChart) {
+    private static void updateData(BubbleChart<Number, Number> bubbleChart) {
         for (XYChart.Series<Number, Number> series : bubbleChart.getData()) {
             for (XYChart.Data<Number, Number> data : series.getData()) {
                 data.setXValue(data.getXValue().doubleValue() + MAX_CHANGE_RANGE * Math.random() - (MAX_CHANGE_RANGE / 2.));

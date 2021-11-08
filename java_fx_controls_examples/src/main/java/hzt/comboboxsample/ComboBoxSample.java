@@ -4,11 +4,16 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import org.jetbrains.annotations.NotNull;
 
 public class ComboBoxSample extends Application {
@@ -81,12 +86,35 @@ public class ComboBoxSample extends Application {
     }
 
     @NotNull
-    private ComboBox<String> buildPriorityBox() {
+    private static ComboBox<String> buildPriorityBox() {
         final ComboBox<String> priorityComboBox = new ComboBox<>();
         priorityComboBox.getItems().addAll(HIGHEST,HIGH, NORMAL, LOW, LOWEST);
         priorityComboBox.setValue(NORMAL);
-        priorityComboBox.setCellFactory(getCallback());
+        priorityComboBox.valueProperty().addListener((o, c, n) -> priorityComboBox.setButtonCell(buildColoredListCell()));
+        priorityComboBox.setCellFactory(listView -> buildColoredListCell());
         return priorityComboBox;
+    }
+
+    private static ListCell<String> buildColoredListCell() {
+        return new ListCell<>() {
+
+            @Override
+            public void updateItem(String text, boolean empty) {
+                super.updateItem(text, empty);
+                if (text != null) {
+                    setText(text);
+                    if (text.contains("High")) {
+                        setTextFill(Color.RED);
+                    } else if (text.contains("Low")) {
+                        setTextFill(Color.GREEN);
+                    } else {
+                        setTextFill(Color.BLACK);
+                    }
+                } else {
+                    setText(null);
+                }
+            }
+        };
     }
 
     private void sendButtonAction(ComboBox<String> emailComboBox, ComboBox<String> priorityComboBox) {
@@ -107,35 +135,6 @@ public class ComboBoxSample extends Application {
             alert.setContentText(message);
             alert.showAndWait();
         }
-    }
-
-    @NotNull
-    private Callback<ListView<String>, ListCell<String>> getCallback() {
-        return new Callback<>() {
-            @Override
-            public ListCell<String> call(ListView<String> param) {
-                return getListCell();
-            }
-
-            @NotNull
-            private ListCell<String> getListCell() {
-                ListCell<String> listCell = new ListCell<>() {
-
-                    @Override
-                    public void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item != null) {
-                            setText(item);
-                            if (item.contains("High")) setTextFill(Color.RED);
-                            else if (item.contains("Low")) setTextFill(Color.GREEN);
-                            else setTextFill(Color.BLACK);
-                        } else setText(null);
-                    }
-                };
-                listCell.setPrefWidth(100);
-                return listCell;
-            }
-        };
     }
 
 }

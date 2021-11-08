@@ -180,7 +180,7 @@ public class LayoutSizingAligning extends Application {
      * Creates a column of buttons and makes them all the same width as the
      * largest button.
      */
-    private VBox createButtonColumn() {
+    private static VBox createButtonColumn() {
 
         Button btnAdd = new Button("Add");
         Button btnDelete = new Button("Delete");
@@ -222,18 +222,5 @@ public class LayoutSizingAligning extends Application {
         tileButtons.getChildren().addAll(btnApply, btnContinue, btnExit);
 
         return tileButtons;
-    }
-
-    /*
-     * Creates a row of buttons with the default sizes.
-     */
-    private HBox createButtonBox() {
-
-        HBox hbButtons = new HBox();
-        hbButtons.setSpacing(10);
-        hbButtons.setPadding(new Insets(20, 10, 20, 0));
-        hbButtons.getChildren().addAll(btnApply, btnContinue, btnExit);
-
-        return hbButtons;
     }
 }

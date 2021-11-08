@@ -35,7 +35,10 @@ import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
@@ -60,9 +63,13 @@ public class BroadcastPresenter extends GluonPresenter<Beacons> {
     private Label labelId;
 
     @Inject
-    Settings settings;
+    private Settings settings;
 
     private final BooleanProperty scanning = new SimpleBooleanProperty();
+
+    public BroadcastPresenter() {
+        super();
+    }
 
     public void initialize() {
         labelUUID.textProperty().bind(settings.uuidProperty());
@@ -70,35 +77,45 @@ public class BroadcastPresenter extends GluonPresenter<Beacons> {
         labelMinor.textProperty().bind(settings.minorProperty());
         labelId.textProperty().bind(settings.idProperty());
 
-        Button playButton = MaterialDesignIcon.PLAY_ARROW.button(e -> {
-            BleService.create().ifPresent(ble -> ble.startBroadcasting(UUID.fromString(labelUUID.getText()),
-                    Integer.parseInt(labelMajor.getText()),
-                    Integer.parseInt(labelMinor.getText()),
-                    labelId.getText()));
-            scanning.set(true);
-        });
+        Button playButton = MaterialDesignIcon.PLAY_ARROW.button(this::startScanning);
         playButton.disableProperty().bind(scanning);
-        Button stopButton = MaterialDesignIcon.STOP.button(e -> {
-            scanning.set(false);
-            BleService.create().ifPresent(BleService::stopBroadcasting);
-        });
+        Button stopButton = MaterialDesignIcon.STOP.button(e -> stopBroadCasting());
         stopButton.disableProperty().bind(scanning.not());
-        Button settingsButton = MaterialDesignIcon.SETTINGS.button(e -> {
-            if (scanning.get()) {
-                stopButton.fire();
-            }
-            AppViewManager.SETTINGS_VIEW.switchView()
-                    .ifPresent(p -> ((SettingsPresenter) p).setupBroadcastBeacon());
-        });
-        broadcastView.showingProperty().addListener((obs, oldValue, newValue) -> {
-            AppBar appBar = getApp().getAppBar();
-            appBar.setNavIcon(MaterialDesignIcon.CHEVRON_LEFT.button(e ->
-                    getApp().goHome()));
-            appBar.setTitleText("Broadcast Beacon");
-            BleService.create()
-                .map(ble -> appBar.getActionItems().setAll(settingsButton, playButton, stopButton))
-                .orElseGet(() -> appBar.getActionItems().setAll(settingsButton));
-        });
+        Button settingsButton = MaterialDesignIcon.SETTINGS.button(e -> goToSettings(stopButton));
+        broadcastView.showingProperty()
+                .addListener((obs, oldValue, newValue) -> extracted(playButton, stopButton, settingsButton));
     }
-    
+
+    private void extracted(Button playButton, Button stopButton, Button settingsButton) {
+        AppBar appBar = getApp().getAppBar();
+        appBar.setNavIcon(MaterialDesignIcon.CHEVRON_LEFT.button(e -> getApp().goHome()));
+        appBar.setTitleText("Broadcast Beacon");
+        final ObservableList<Node> actionItems = appBar.getActionItems();
+        BleService.create()
+            .ifPresentOrElse(
+                    ble -> actionItems.setAll(settingsButton, playButton, stopButton),
+                    () -> actionItems.setAll(settingsButton));
+    }
+
+    private void goToSettings(Button stopButton) {
+        if (scanning.get()) {
+            stopButton.fire();
+        }
+        AppViewManager.SETTINGS_VIEW.switchView()
+                .map(SettingsPresenter.class::cast)
+                .ifPresent(SettingsPresenter::setupBroadcastBeacon);
+    }
+
+    private void stopBroadCasting() {
+        scanning.set(false);
+        BleService.create().ifPresent(BleService::stopBroadcasting);
+    }
+
+    private void startScanning(ActionEvent e) {
+        BleService.create().ifPresent(ble -> ble.startBroadcasting(UUID.fromString(labelUUID.getText()),
+                Integer.parseInt(labelMajor.getText()),
+                Integer.parseInt(labelMinor.getText()),
+                labelId.getText()));
+        scanning.set(true);
+    }
 }

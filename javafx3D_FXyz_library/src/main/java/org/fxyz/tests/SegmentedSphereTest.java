@@ -1,5 +1,7 @@
 package org.fxyz.tests;
 
+import java.net.URL;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javafx.animation.AnimationTimer;
@@ -81,7 +83,9 @@ public class SegmentedSphereTest extends Application {
     // NONE
 //        torus.setTextureModeNone(Color.FORESTGREEN);
     // IMAGE
-        torus.setTextureModeImage(getClass().getResource("res/share-carousel_In.png").toExternalForm());
+        Optional.ofNullable(getClass().getResource("res/share-carousel_In.png"))
+                .map(URL::toExternalForm)
+                .ifPresentOrElse(torus::setTextureModeImage, () -> torus.setDiffuseColor(Color.BLACK));
     // PATTERN
 //       torus.setTextureModePattern(20.0d);
     // DENSITY

@@ -6,7 +6,10 @@
 
 package org.fxyz.tests;
 
+import java.util.Optional;
 import java.util.Random;
+import java.util.function.Consumer;
+
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -43,16 +46,7 @@ public class SkyBoxTest extends Application {
     private Skybox skyBox;
     private PerspectiveCamera camera;
     private final CameraTransformer cameraTransform = new CameraTransformer();
-    
-    // Supply Image Paths or a NullPointer will occur
-    private final Image 
-            top = new Image(SkyBoxTest.class.getResource("res/top.png").toExternalForm()),
-            bottom = new Image(SkyBoxTest.class.getResource("res/bottom.png").toExternalForm()),
-            left = new Image(SkyBoxTest.class.getResource("res/left.png").toExternalForm()),
-            right = new Image(SkyBoxTest.class.getResource("res/right.png").toExternalForm()),
-            front = new Image(SkyBoxTest.class.getResource("res/front.png").toExternalForm()),
-            back = new Image(SkyBoxTest.class.getResource("res/back.png").toExternalForm());
-    
+
     @Override
     public void start(Stage primaryStage) throws NonInvertibleTransformException {
                         
@@ -76,28 +70,26 @@ public class SkyBoxTest extends Application {
         light.setTranslateZ(camera.getTranslateZ());
                 
         root.getChildren().add(cameraTransform);
-        
+
         // Load Skybox AFTER camera is initialized
         double size = 100000D;
-        skyBox = new Skybox(
-                top,
-                bottom,
-                left,
-                right,
-                front,
-                back,
-                size,
-                camera
-        );
-        
+        skyBox = new Skybox(size, camera, Skybox.SkyboxImageType.MULTIPLE);
+
+        setImageIfPresent("res/top.png", skyBox::setImageTop);
+        setImageIfPresent("res/bottom.png", skyBox::setImageBottom);
+        setImageIfPresent("res/left.png", skyBox::setImageLeft);
+        setImageIfPresent("res/right.png", skyBox::setImageRight);
+        setImageIfPresent("res/front.png", skyBox::setImageFront);
+        setImageIfPresent("res/back.png", skyBox::setImageBack);
+
         //Make a bunch of semi random Torusesessses(toroids?) and stuff : from torustest
         Group torusGroup = new Group();
         torusGroup.getChildren().add(cameraTransform);
         for (int i = 0; i < 30; i++) {
             Random r = new Random();
             //A lot of magic numbers in here that just artificially constrain the math
-            float randomRadius = (float) ((r.nextFloat() * 300) + 50);
-            float randomTubeRadius = (float) ((r.nextFloat() * 100) + 1);
+            float randomRadius = (r.nextFloat() * 300) + 50;
+            float randomTubeRadius = (r.nextFloat() * 100) + 1;
             int randomTubeDivisions = (int) ((r.nextFloat() * 64) + 1);
             int randomRadiusDivisions = (int) ((r.nextFloat() * 64) + 1);
             Color randomColor = new Color(r.nextDouble(), r.nextDouble(), r.nextDouble(), r.nextDouble());
@@ -190,6 +182,12 @@ public class SkyBoxTest extends Application {
                 
         root.getChildren().addAll(skyBox, torusGroup);
         root.setAutoSizeChildren(true);
+    }
+
+    private static void setImageIfPresent(String name, Consumer<Image> imageConsumer) {
+        Optional.ofNullable(SkyBoxTest.class.getResourceAsStream(name))
+                .map(Image::new)
+                .ifPresent(imageConsumer);
     }
 
     /**

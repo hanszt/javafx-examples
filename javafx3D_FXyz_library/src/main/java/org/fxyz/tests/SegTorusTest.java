@@ -19,6 +19,9 @@ import javafx.stage.Stage;
 import org.fxyz.cameras.CameraTransformer;
 import org.fxyz.shapes.primitives.SegmentedTorusMesh;
 
+import java.net.URL;
+import java.util.Optional;
+
 /**
  *
  * @author usuario
@@ -68,8 +71,12 @@ public class SegTorusTest extends Application {
         
         torus = new SegmentedTorusMesh(20, 16, 0, 500d, 250d); 
 //        torus.setDrawMode(DrawMode.LINE);
-        
-        torus.setTextureModeImage(getClass().getResource("res/grid.png").toExternalForm());
+
+        Optional.ofNullable(getClass().getResource("res/grid.png"))
+                .map(URL::toExternalForm)
+                .ifPresentOrElse(torus::setTextureModeImage, () -> torus.setDiffuseColor(Color.BLACK));
+
+
         torus.getTransforms().addAll(new Rotate(90,Rotate.X_AXIS),rotateY);
         
         group.getChildren().add(torus);

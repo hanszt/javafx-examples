@@ -1,11 +1,14 @@
 package com.gluonhq.samples.cloudfirst;
 
-import com.gluonhq.samples.cloudfirst.views.AppViewManager;
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.visual.Swatch;
+import com.gluonhq.samples.cloudfirst.views.AppViewManager;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+
+import java.util.Optional;
+
 /**
   Copyright (c) 2017, 2020 Gluon
   All rights reserved.
@@ -43,7 +46,10 @@ public class CloudFirstStorage extends MobileApplication {
     public void postInit(Scene scene) {
         Swatch.LIGHT_GREEN.assignTo(scene);
 
-        ((Stage) scene.getWindow()).getIcons().add(new Image(CloudFirstStorage.class.getResourceAsStream("/icon.png")));
+        final var icons = ((Stage) scene.getWindow()).getIcons();
+        Optional.ofNullable(CloudFirstStorage.class.getResourceAsStream("/icon.png"))
+                .map(Image::new)
+                .ifPresent(icons::add);
     }
 
     public static void main(String[] args) {

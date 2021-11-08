@@ -17,6 +17,7 @@ import org.fxyz.geometry.Face3;
 import org.fxyz.geometry.Point3D;
 import org.fxyz.utils.DensityFunction;
 import org.fxyz.shapes.primitives.helper.TriangleMeshHelper;
+
 import static org.fxyz.shapes.primitives.helper.TriangleMeshHelper.DEFAULT_COLORS;
 import static org.fxyz.shapes.primitives.helper.TriangleMeshHelper.DEFAULT_COLOR_PALETTE;
 import static org.fxyz.shapes.primitives.helper.TriangleMeshHelper.DEFAULT_DENSITY_FUNCTION;
@@ -43,7 +44,7 @@ import org.fxyz.utils.Palette.COLOR_PALETTE;
  */
 public abstract class TexturedMesh extends MeshView {
     
-    private TriangleMeshHelper helper = new TriangleMeshHelper();
+    private final TriangleMeshHelper helper = new TriangleMeshHelper();
     protected TriangleMesh mesh;
     
     protected final List<Point3D> listVertices = new ArrayList<>();
@@ -54,17 +55,8 @@ public abstract class TexturedMesh extends MeshView {
     
     protected final Rectangle rectMesh=new Rectangle(0,0);
     protected final Rectangle areaMesh=new Rectangle(0,0);
-    
-    protected TexturedMesh(){
-        sectionType.set(SectionType.CIRCLE);
-        textureType.set(TextureType.NONE);
-        textureType.addListener((ob,o,o1)->{
-            if(mesh!=null){
-                updateTexture();
-                updateTextureOnFaces();
-            }
-        });
-    }
+
+    private final ObjectProperty<TextureType> textureType = new SimpleObjectProperty<>();
     private final ObjectProperty<SectionType> sectionType = new SimpleObjectProperty<>() {
 
         @Override
@@ -75,6 +67,18 @@ public abstract class TexturedMesh extends MeshView {
         }
 
     };
+
+    protected TexturedMesh(){
+        sectionType.set(SectionType.CIRCLE);
+        textureType.set(TextureType.NONE);
+        textureType.addListener((ob,o,o1)->{
+            if(mesh!=null){
+                updateTexture();
+                updateTextureOnFaces();
+            }
+        });
+    }
+
 
     public SectionType getSectionType() {
         return sectionType.get();
@@ -87,8 +91,6 @@ public abstract class TexturedMesh extends MeshView {
     public ObjectProperty<SectionType> sectionTypeProperty() {
         return sectionType;
     }
-    
-    private final ObjectProperty<TextureType> textureType = new SimpleObjectProperty<>();
 
     public void setTextureModeNone() {
         helper.setTextureType(TextureType.NONE);
@@ -276,9 +278,10 @@ public abstract class TexturedMesh extends MeshView {
         return density;
     }
     
-    private final ObjectProperty<DensityFunction<Double>> function = new SimpleObjectProperty<DensityFunction<Double>>(DEFAULT_UNIDIM_FUNCTION){
-        
-        @Override protected void invalidated() {
+    private final ObjectProperty<DensityFunction<Double>> function = new SimpleObjectProperty<>(DEFAULT_UNIDIM_FUNCTION) {
+
+        @Override
+        protected void invalidated() {
             helper.setFunction(function.get());
             updateTextureOnFaces();
         }
@@ -345,17 +348,8 @@ public abstract class TexturedMesh extends MeshView {
                 case IMAGE: 
                     mesh.getTexCoords().setAll(textureCoords);
                     break;
-                case PATTERN: 
-                    if(areaMesh.getHeight()>0 && areaMesh.getWidth()>0){
-                        mesh.getTexCoords().setAll(
-                            helper.updateTexCoordsWithPattern((int)rectMesh.getWidth(),
-                                    (int)rectMesh.getHeight(),patternScale.get(),
-                                    areaMesh.getHeight()/areaMesh.getWidth()));
-                    } else {
-                        mesh.getTexCoords().setAll(
-                            helper.updateTexCoordsWithPattern((int)rectMesh.getWidth(),
-                                    (int)rectMesh.getHeight(),patternScale.get()));
-                    }
+                case PATTERN:
+                    patternCase(mesh);
                     break;
                 case COLORED_VERTICES_1D:
                     mesh.getTexCoords().setAll(helper.getTexturePaletteArray());
@@ -369,7 +363,20 @@ public abstract class TexturedMesh extends MeshView {
             }
         }
     }
-    
+
+    private void patternCase(TriangleMesh mesh) {
+        if (areaMesh.getHeight() > 0 && areaMesh.getWidth() > 0) {
+            mesh.getTexCoords().setAll(
+                    helper.updateTexCoordsWithPattern((int) rectMesh.getWidth(),
+                            (int) rectMesh.getHeight(), patternScale.get(),
+                            areaMesh.getHeight() / areaMesh.getWidth()));
+        } else {
+            mesh.getTexCoords().setAll(
+                    helper.updateTexCoordsWithPattern((int) rectMesh.getWidth(),
+                            (int) rectMesh.getHeight(), patternScale.get()));
+        }
+    }
+
     private void updateTextureOnFaces(){
         // textures for level
         if(mesh!=null){
@@ -434,26 +441,12 @@ public abstract class TexturedMesh extends MeshView {
                 triangleMesh.getTexCoords().setAll(textureCoords);
                 triangleMesh.getFaces().setAll(helper.updateFacesWithTextures(listFaces,listTextures));
                 break;
-            case PATTERN: 
-                if(areaMesh.getHeight()>0 && areaMesh.getWidth()>0){
-                    triangleMesh.getTexCoords().setAll(
-                        helper.updateTexCoordsWithPattern((int)rectMesh.getWidth(),
-                                (int)rectMesh.getHeight(),patternScale.get(),
-                                areaMesh.getHeight()/areaMesh.getWidth()));
-                } else {
-                    triangleMesh.getTexCoords().setAll(
-                        helper.updateTexCoordsWithPattern((int)rectMesh.getWidth(),
-                                (int)rectMesh.getHeight(),patternScale.get()));
-                }
+            case PATTERN:
+                patternCase(triangleMesh);
                 triangleMesh.getFaces().setAll(helper.updateFacesWithTextures(listFaces,listTextures));
                 break;
-            case IMAGE: 
-                triangleMesh.getTexCoords().setAll(textureCoords);
-                if(listTextures.size()>0){
-                    triangleMesh.getFaces().setAll(helper.updateFacesWithTextures(listFaces,listTextures));
-                } else { 
-                    triangleMesh.getFaces().setAll(helper.updateFacesWithVertices(listFaces));
-                }
+            case IMAGE:
+                imageCase(triangleMesh);
                 break;
             case COLORED_VERTICES_1D:
                 triangleMesh.getTexCoords().setAll(helper.getTexturePaletteArray());
@@ -484,7 +477,16 @@ public abstract class TexturedMesh extends MeshView {
 //        System.out.println("area: "+helper.getMeshArea(listVertices, listFaces));
         return triangleMesh;
     }
-    
+
+    private void imageCase(TriangleMesh triangleMesh) {
+        triangleMesh.getTexCoords().setAll(textureCoords);
+        if(listTextures.size()>0){
+            triangleMesh.getFaces().setAll(helper.updateFacesWithTextures(listFaces,listTextures));
+        } else {
+            triangleMesh.getFaces().setAll(helper.updateFacesWithVertices(listFaces));
+        }
+    }
+
     protected double polygonalSection(double angle){
         if(sectionType.get().equals(SectionType.CIRCLE)){
             return 1d;

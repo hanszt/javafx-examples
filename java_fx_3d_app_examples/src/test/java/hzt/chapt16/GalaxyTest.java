@@ -33,7 +33,6 @@ class GalaxyTest {
     private ColorPicker colorPicker;
     private XYChart<Number, Number> lineChart;
 
-    @SuppressWarnings("unused")
     @Start
     private void start(Stage stage) {
         colorPicker = new ColorPicker();

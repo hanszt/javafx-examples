@@ -1,5 +1,7 @@
 package org.fxyz.tests;
 
+import java.net.URL;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -39,9 +41,7 @@ public class FrustumTest extends Application {
     private double mouseDeltaY;
     private FrustumMesh cylinder;
     private Rotate rotateY;
-    
-    private DensityFunction<Point3D> dens = p-> (double)p.x;
-    
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         Group sceneRoot = new Group();
@@ -76,7 +76,9 @@ public class FrustumTest extends Application {
     // NONE
         cylinder.setTextureModeNone(Color.ROYALBLUE);
     // IMAGE
-        cylinder.setTextureModeImage(getClass().getResource("res/netCylinder.png").toExternalForm());
+        Optional.ofNullable(getClass().getResource("res/netCylinder.png"))
+                .map(URL::toExternalForm)
+                .ifPresent(cylinder::setTextureModeImage);
 //        cylinder.setTextureModeVertices1D(1530, t->t);
 //        cylinder.setColorPalette(COLOR_PALETTE.GREEN);
     // DENSITY
@@ -184,7 +186,7 @@ public class FrustumTest extends Application {
         };
 //        timerEffect.start();
     }
-    private DensityFunction<Double> func = t->(double)t;
+    private DensityFunction<Double> func = t-> t;
     private long lastEffect;
     /**
      * @param args the command line arguments

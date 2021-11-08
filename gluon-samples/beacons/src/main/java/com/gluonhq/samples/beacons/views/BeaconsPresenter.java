@@ -38,19 +38,24 @@ import com.gluonhq.charm.glisten.control.CharmListView;
 import com.gluonhq.charm.glisten.control.ListTile;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.util.function.Consumer;
 
+import static utils.FxUtils.*;
+
 public class BeaconsPresenter extends GluonPresenter<Beacons> {
 
     @Inject
-    Settings settings;
+    private Settings settings;
 	
     @FXML
     private View beacons;
@@ -58,40 +63,36 @@ public class BeaconsPresenter extends GluonPresenter<Beacons> {
     @FXML
     private CharmListView<ScanDetection, String> beaconsList;
 
-    public void initialize() {
-        Consumer<ScanDetection> callback = (ScanDetection t) -> {
-            // update beacon view
-            AppViewManager.BEACON_VIEW.getPresenter().ifPresent(p -> {
-                BeaconPresenter presenter = (BeaconPresenter) p;
-                ScanDetection currentBeacon = presenter.getCurrentBeacon();
-                if (currentBeacon != null && currentBeacon.getUuid().equals(t.getUuid()) &&
-                        currentBeacon.getMajor() == t.getMajor() &&
-                        currentBeacon.getMinor() == t.getMinor()) {
-                    presenter.setBeacon(t);
-                }
-            });
-            // update list
-            if (t.getUuid().equalsIgnoreCase(settings.getUuid()) &&
-                    beaconsList.itemsProperty().stream().noneMatch(s ->
-                            s.getMajor() == t.getMajor() && s.getMinor() == t.getMinor())) {
-                javafx.application.Platform.runLater(() ->
-                        beaconsList.itemsProperty().add(t));
-            }
-        };
+    private static void setupScanBeaconIfPresent(ActionEvent e) {
+        AppViewManager.SETTINGS_VIEW.switchView()
+                .map(SettingsPresenter.class::cast)
+                .ifPresent(SettingsPresenter::setupScanBeacon);
+    }
 
-        beaconsList.setPlaceholder(new Label("No beacons found"));
-        beaconsList.setCellFactory(p -> new CharmListCell<>() {
+    private static ObservableList<Button> buildScanBeaconButton() {
+        final Button button = MaterialDesignIcon.SETTINGS.button(BeaconsPresenter::setupScanBeaconIfPresent);
+        return FXCollections.singletonObservableList(button);
+    }
+
+    private static CharmListCell<ScanDetection> buildScanDetectionListCell(CharmListView<ScanDetection, String> charmListView) {
+
+        class ScanDetectionListCell extends CharmListCell<ScanDetection> {
 
             private ScanDetection scan;
             private final ListTile tile;
 
-            {
+            private ScanDetectionListCell() {
                 tile = new ListTile();
                 tile.setPrimaryGraphic(MaterialDesignIcon.BLUETOOTH.graphic());
                 tile.setSecondaryGraphic(MaterialDesignIcon.CHEVRON_RIGHT.graphic());
-                tile.setOnMouseClicked(e ->
-                        AppViewManager.BEACON_VIEW.switchView().ifPresent(presenter ->
-                        ((BeaconPresenter) presenter).setBeacon(scan)));
+                tile.setOnMouseClicked(e -> presenterSetBeaconIfPresent());
+            }
+
+            private void presenterSetBeaconIfPresent() {
+                AppViewManager.BEACON_VIEW.switchView()
+                                .filter(BeaconPresenter.class::isInstance)
+                                .map(BeaconPresenter.class::cast)
+                                .ifPresent(presenter -> presenter.setBeacon(scan));
             }
 
             @Override
@@ -107,47 +108,83 @@ public class BeaconsPresenter extends GluonPresenter<Beacons> {
                     setGraphic(null);
                 }
             }
-        });
-
-        ObservableList<Button> actions =
-                BleService.create()
-                        .map(bleService -> {
-                            final Button buttonScan = MaterialDesignIcon.BLUETOOTH_SEARCHING.button();
-                            final Button buttonStop = MaterialDesignIcon.STOP.button();
-                            buttonScan.setOnAction(e -> {
-                                bleService.stopScanning();
-                                Configuration conf = new Configuration(settings.getUuid());
-                                bleService.startScanning(conf, callback);
-                                buttonStop.setDisable(false);
-                            });
-                            buttonStop.setOnAction(e -> {
-                                bleService.stopScanning();
-                                buttonStop.setDisable(true);
-                                beaconsList.itemsProperty().clear();
-                            });
-                            buttonScan.disableProperty().bind(buttonStop.disableProperty().not());
-                            buttonStop.setDisable(true);
-
-                            return FXCollections.observableArrayList(
-                                    MaterialDesignIcon.SETTINGS.button(e ->
-                                            AppViewManager.SETTINGS_VIEW.switchView()
-                                                    .ifPresent(p -> ((SettingsPresenter) p).setupScanBeacon())),
-                                    buttonScan, buttonStop);
-                        })
-                        .orElseGet(() -> FXCollections.singletonObservableList(
-                                MaterialDesignIcon.SETTINGS.button(e ->
-                                        AppViewManager.SETTINGS_VIEW.switchView()
-                                                .ifPresent(p -> ((SettingsPresenter) p).setupScanBeacon()))));
-
-        beacons.showingProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue) {
-                AppBar appBar = getApp().getAppBar();
-                appBar.setNavIcon(MaterialDesignIcon.CHEVRON_LEFT.button(e ->
-                        getApp().goHome()));
-                appBar.setTitleText("Scan Beacons");
-                appBar.getActionItems().setAll(actions);
-            }
-        });
+        }
+        return new ScanDetectionListCell();
     }
-    
+
+    public void initialize() {
+
+        beaconsList.setPlaceholder(new Label("No beacons found"));
+        beaconsList.setCellFactory(BeaconsPresenter::buildScanDetectionListCell);
+
+        ObservableList<Button> actions = BleService.create()
+                        .map(bleService -> createButtons(this::accept, bleService))
+                        .orElseGet(BeaconsPresenter::buildScanBeaconButton);
+
+        beacons.showingProperty().addListener(forNewValue(newValue -> scanBeacons(actions, newValue)));
+    }
+
+    private void scanBeacons(ObservableList<Button> actions, boolean newValue) {
+        if (newValue) {
+            AppBar appBar = getApp().getAppBar();
+            appBar.setNavIcon(MaterialDesignIcon.CHEVRON_LEFT.button(e -> getApp().goHome()));
+            appBar.setTitleText("Scan Beacons");
+            appBar.getActionItems().setAll(actions);
+        }
+    }
+
+    @NotNull
+    private ObservableList<Button> createButtons(Consumer<ScanDetection> callback, BleService bleService) {
+        final Button buttonScan = MaterialDesignIcon.BLUETOOTH_SEARCHING.button();
+        final Button buttonStop = MaterialDesignIcon.STOP.button();
+        buttonScan.setOnAction(e -> stopAndRestartScan(callback, bleService, buttonStop));
+        buttonStop.setOnAction(e -> stopScanning(bleService, buttonStop));
+        buttonScan.disableProperty().bind(buttonStop.disableProperty().not());
+        buttonStop.setDisable(true);
+
+        final Button button = MaterialDesignIcon.SETTINGS.button(BeaconsPresenter::setupScanBeaconIfPresent);
+
+        return FXCollections.observableArrayList(button, buttonScan, buttonStop);
+    }
+
+    private void stopScanning(BleService bleService, Button buttonStop) {
+        bleService.stopScanning();
+        buttonStop.setDisable(true);
+        beaconsList.itemsProperty().clear();
+    }
+
+    private void stopAndRestartScan(Consumer<ScanDetection> callback, BleService bleService, Button buttonStop) {
+        bleService.stopScanning();
+        Configuration conf = new Configuration(settings.getUuid());
+        bleService.startScanning(conf, callback);
+        buttonStop.setDisable(false);
+    }
+
+    private void accept(ScanDetection scanDetection) {
+        // update beacon view
+        AppViewManager.BEACON_VIEW.getPresenter()
+                .filter(BeaconPresenter.class::isInstance)
+                .map(BeaconPresenter.class::cast)
+                .ifPresent(presenter -> setBeaconIfPresent(scanDetection, presenter));
+        // update list
+        final boolean noneMatchMajorAndMinorEqual = beaconsList.itemsProperty().stream()
+                .noneMatch(detection -> majorAndMinorEqual(scanDetection, detection));
+
+        if (scanDetection.getUuid().equalsIgnoreCase(settings.getUuid()) && noneMatchMajorAndMinorEqual) {
+            Platform.runLater(() -> beaconsList.itemsProperty().add(scanDetection));
+        }
+    }
+
+    private static boolean majorAndMinorEqual(ScanDetection scanDetection, ScanDetection currentBeacon) {
+        return currentBeacon.getMajor() == scanDetection.getMajor() &&
+                currentBeacon.getMinor() == scanDetection.getMinor();
+    }
+
+    private static void setBeaconIfPresent(ScanDetection scanDetection, BeaconPresenter presenter) {
+        ScanDetection currentBeacon = presenter.getCurrentBeacon();
+        if (currentBeacon != null && currentBeacon.getUuid().equals(scanDetection.getUuid()) &&
+                majorAndMinorEqual(scanDetection, currentBeacon)) {
+            presenter.setBeacon(scanDetection);
+        }
+    }
 }

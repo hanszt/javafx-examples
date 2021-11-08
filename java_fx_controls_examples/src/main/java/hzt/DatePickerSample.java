@@ -7,10 +7,14 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.format.DateTimeFormatter;
 
 public class DatePickerSample extends Application {
+
+    private static final Logger LOGGER = LogManager.getLogger(DatePickerSample.class);
 
     @Override
     public void start(final Stage stage) throws Exception {
@@ -33,12 +37,12 @@ public class DatePickerSample extends Application {
 
     }
 
-    private void displayPickedDateTime(Label label1, DateTimePicker dateTimePicker) {
+    private static void displayPickedDateTime(Label label1, DateTimePicker dateTimePicker) {
         label1.setText(dateTimePicker.getDateTimeValue().format(DateTimeFormatter.ISO_DATE_TIME));
     }
 
-    private void displayPickedDate(Label label, DatePicker datePicker) {
+    private static void displayPickedDate(Label label, DatePicker datePicker) {
         label.setText(datePicker.getValue().toString());
-        System.out.println(datePicker.getValue().toString());
+        LOGGER.info(() -> datePicker.getValue().toString());
     }
 }

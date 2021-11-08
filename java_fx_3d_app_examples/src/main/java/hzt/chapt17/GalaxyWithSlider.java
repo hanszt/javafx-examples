@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utils.FxUtils;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.stream.Collectors;
 
@@ -35,15 +36,20 @@ public class GalaxyWithSlider extends Application {
     public static final int EARTH_RADIUS = 150;
     private final Application3D application3D = new Application3D();
 
+    @VisibleForTesting
+    Slider slider;
+    @VisibleForTesting
+    Group world;
+
     @Override
     public void start(Stage primaryStage) {
         Camera camera = configuredCamera();
 
-        Group world = new Group();
+        world = new Group();
         final var earth = preparedEarth();
         world.getChildren().add(earth);
 
-        Slider slider = prepareSlider();
+        slider = prepareSlider();
         world.translateZProperty().bindBidirectional(slider.valueProperty());
 
         Group root = new Group();

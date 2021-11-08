@@ -2,6 +2,8 @@ package strechygrid;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -31,6 +33,19 @@ public class Grid extends Group {
 
         Group lineGroup = buildLineGroup();
         super.getChildren().addAll(rectangle, lineGroup);
+    }
+
+    private void resetWhenRPressed(KeyEvent keyEvent) {
+        if (keyEvent.getCode() == KeyCode.R) {
+            for (var cell : cells) {
+                cell.setVelocityVector(0, 0);
+            }
+        }
+        if (keyEvent.getCode() == KeyCode.D) {
+            for (var cell : cells) {
+                cell.damp(.5);
+            }
+        }
     }
 
     @NotNull
@@ -81,11 +96,11 @@ public class Grid extends Group {
     private static Line cellLine(Cell cell, Cell neighbor) {
         Line line = new Line();
         line.setSmooth(false);
-        line.setStroke(Color.WHITE);
         line.startXProperty().bind(cell.xProperty());
         line.startYProperty().bind(cell.yProperty());
         line.endXProperty().bind(neighbor.xProperty());
         line.endYProperty().bind(neighbor.yProperty());
+        line.strokeProperty().bind(cell.colorProperty());
         return line;
     }
 
@@ -133,5 +148,9 @@ public class Grid extends Group {
 
     public double getCellSize() {
         return cellSize;
+    }
+
+    public void configure() {
+        getScene().setOnKeyPressed(this::resetWhenRPressed);
     }
 }

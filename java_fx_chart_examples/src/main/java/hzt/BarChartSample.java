@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static java.util.stream.Collectors.toList;
 import static javafx.util.Duration.seconds;
 
 public class BarChartSample extends Application {
@@ -118,7 +117,7 @@ public class BarChartSample extends Application {
         yearSeries.setName(String.valueOf(year));
         List<XYChart.Data<Number, String>> dataList = ALL_LISTED_COUNTRIES.stream()
                 .map(country -> toDataPoint(country, yearSeries))
-                .collect(toList());
+                .toList();
         seriesToDataPointListMap.put(yearSeries, dataList);
         allYearsToSeriesMap.put(year, yearSeries);
     }
@@ -156,7 +155,8 @@ public class BarChartSample extends Application {
         String country = dataPointToCountryMap.get(dataPoint);
         if (change.getAddedSubList().contains(country)) {
             dataPoints.add(dataPoint);
-        } else if (!change.getList().contains(country)) {
+        }
+        if (!change.getList().contains(country)) {
             dataPoints.remove(dataPoint);
         }
     }
@@ -165,7 +165,8 @@ public class BarChartSample extends Application {
         if (change.next()) {
             if (change.wasAdded()) {
                 addYearsToBarChart(barChart, change.getAddedSubList());
-            } else if (change.wasRemoved()) {
+            }
+            if (change.wasRemoved()) {
                 removeYearFromBarChart(barChart, change);
             }
         }
@@ -175,7 +176,7 @@ public class BarChartSample extends Application {
     private void addYearsToBarChart(XYChart<Number, String> barChart, List<? extends Integer> addedYears) {
         barChart.getData().addAll(addedYears.stream()
                 .map(this::toUpdatedYearSeries)
-                .collect(toList()));
+                .toList());
     }
 
     private XYChart.Series<Number,String> toUpdatedYearSeries(Integer year) {
@@ -186,7 +187,9 @@ public class BarChartSample extends Application {
 
     private void removeYearFromBarChart(XYChart<Number, String> barChart, ListChangeListener.Change<? extends Integer> change) {
         List<XYChart.Series<Number, String>> leftOver = change.getList().stream()
-                .map(allYearsToSeriesMap::get).collect(toList());
+                .map(allYearsToSeriesMap::get)
+                        .toList();
+
         barChart.getData().retainAll(leftOver);
     }
 

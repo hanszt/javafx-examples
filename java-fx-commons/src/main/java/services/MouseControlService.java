@@ -1,8 +1,13 @@
-package hzt.service;
+package services;
 
+import interfaces.IMouseControlService;
+import interfaces.MouseTarget;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Point3D;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.transform.Rotate;
@@ -23,6 +28,9 @@ public class MouseControlService implements IMouseControlService {
     private double targetShearAnchor = 0;
     private double targetScaleAnchor = 0;
 
+    private final BooleanProperty moveWhenTargetPressedProperty = new SimpleBooleanProperty(true);
+    private final DoubleProperty translationFactorProperty = new SimpleDoubleProperty(1);
+
     private final Rotate xRotate = new Rotate(0, Rotate.X_AXIS);
     private final Rotate yRotate = new Rotate(0, Rotate.Y_AXIS);
     private final Shear shear = new Shear();
@@ -30,23 +38,18 @@ public class MouseControlService implements IMouseControlService {
 
     private Node target;
 
-    public MouseControlService(Node target) {
-        this();
-        this.target = target;
-    }
-
     public MouseControlService() {
         super();
     }
 
-    public void initMouseControl(Node target, Scene reference) {
+    public void initMouseControl(Node target, MouseTarget reference) {
         this.target = target;
         target.getTransforms().addAll(xRotate, yRotate, shear, scale);
 
-        target.setOnMousePressed(this::mousePressedEvent);
-        target.setOnMouseDragged(this::mouseDraggedEvent);
-        target.setOnMouseReleased(event -> target.setMouseTransparent(false));
-        reference.addEventHandler(ScrollEvent.SCROLL, this::mouseScrollEvent);
+        reference.setOnMousePressed(this::mousePressedEvent);
+        reference.setOnMouseDragged(this::mouseDraggedEvent);
+        reference.setOnMouseReleased(event -> target.setMouseTransparent(false));
+        reference.setOnScroll(this::mouseScrollEvent);
     }
 
     private void mousePressedEvent(MouseEvent event) {
@@ -60,16 +63,14 @@ public class MouseControlService implements IMouseControlService {
         targetTranslateAnchorY = target.getTranslateY();
     }
 
-    private static final double FACTOR = .1;
-
     private void mouseDraggedEvent(MouseEvent event) {
-//        if (!target.isPressed()) {
+        if (!target.isPressed() || moveWhenTargetPressedProperty.get()) {
             double deltaX = mouseAnchorX - event.getSceneX();
             double deltaY = mouseAnchorY - event.getSceneY();
             if (event.isControlDown()) {
-                shear.setX(targetShearAnchor - (deltaX * FACTOR));
+                shear.setX(targetShearAnchor - (deltaX * .01));
             } else if (event.isAltDown()) {
-                double newScale = targetScaleAnchor - (deltaY * FACTOR);
+                double newScale = targetScaleAnchor - (deltaY * .01);
                 scale.setX(newScale);
                 scale.setY(newScale);
                 scale.setZ(newScale);
@@ -77,10 +78,12 @@ public class MouseControlService implements IMouseControlService {
                 xRotate.setAngle(targetAngleAnchorX - deltaY);
                 yRotate.setAngle(targetAngleAnchorY + deltaX);
             } else if (event.isPrimaryButtonDown()) {
-                target.setTranslateX(targetTranslateAnchorX - (deltaX * FACTOR));
-                target.setTranslateY(targetTranslateAnchorY - (deltaY * FACTOR));
+                target.setTranslateX(targetTranslateAnchorX - (deltaX * translationFactorProperty.get()));
+                target.setTranslateY(targetTranslateAnchorY - (deltaY * translationFactorProperty.get()));
+            } else {
+                // do nothing...
             }
-//        }
+        }
     }
 
     private void mouseScrollEvent(ScrollEvent event) {
@@ -94,9 +97,42 @@ public class MouseControlService implements IMouseControlService {
     }
 
     public void setTargetTranslation(Point3D point3D) {
-        target.setTranslateX(point3D.getX());
-        target.setTranslateY(point3D.getY());
-        target.setTranslateZ(point3D.getZ());
+        setTargetTranslation(point3D.getX(), point3D.getY(), point3D.getZ());
+    }
+
+    public void setTargetTranslation(double x, double y, double z) {
+        target.setTranslateX(x);
+        target.setTranslateY(y);
+        target.setTranslateZ(z);
+    }
+
+    public void setShear(double shearX, double shearY) {
+        shear.setX(shearX);
+        shear.setY(shearY);
+    }
+
+    public boolean isMoveWhenTargetPressedProperty() {
+        return moveWhenTargetPressedProperty.get();
+    }
+
+    public BooleanProperty moveWhenTargetPressedPropertyProperty() {
+        return moveWhenTargetPressedProperty;
+    }
+
+    public void setMoveWhenTargetPressedProperty(boolean moveWhenTargetPressed) {
+        this.moveWhenTargetPressedProperty.set(moveWhenTargetPressed);
+    }
+
+    public double getTranslationFactorProperty() {
+        return translationFactorProperty.get();
+    }
+
+    public DoubleProperty translationFactorPropertyProperty() {
+        return translationFactorProperty;
+    }
+
+    public void setTranslationFactorProperty(double translationFactorProperty) {
+        this.translationFactorProperty.set(translationFactorProperty);
     }
 
     public double getTargetTranslateX() {
@@ -111,20 +147,11 @@ public class MouseControlService implements IMouseControlService {
         return target.getTranslateZ();
     }
 
-    public void resetShear() {
-        shear.setX(0);
-        shear.setY(0);
+    public double getTargetAngleX() {
+        return xRotate.getAngle();
     }
 
-    public void resetScale() {
-        scale.setX(1);
-        scale.setY(1);
-        scale.setZ(1);
-    }
-
-    public void resetTranslation() {
-        target.setTranslateX(0);
-        target.setTranslateY(0);
-        target.setTranslateZ(0);
+    public double getTargetAngleY() {
+        return yRotate.getAngle();
     }
 }

@@ -54,13 +54,15 @@ import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import service.IMouseControlService;
 import service.MouseControlService;
 import utils.FxUtils;
 
-import static java.lang.System.*;
-
 public final class MeshViewer extends Application {
+
+    private static final Logger LOGGER = LogManager.getLogger(MeshViewer.class);
 
     private static final int INIT_ANGLE_X = 30;
     private static final int INIT_AMPLITUDE = -10;
@@ -91,7 +93,7 @@ public final class MeshViewer extends Application {
         var controlsPane = buildControls(scene, new WaveMesh(), new ParabolaMesh(), new DiscreteWaveMesh());
         controlsPane.setOpacity(.8);
 
-        planeMeshContainer.getChildren().add(planeZMeshComboBox.getValue().getPlaneZMesh());
+        planeMeshContainer.getChildren().add(planeZMeshComboBox.getValue().planeZMesh());
 
         final var subScene = configuredSubScene();
         subScene.widthProperty().bind(scene.widthProperty());
@@ -99,7 +101,7 @@ public final class MeshViewer extends Application {
 
         root.getChildren().addAll(subScene, controlsPane);
 
-        scene.setOnKeyTyped(e -> keyTypedAction(e, planeZMeshComboBox.getValue().getPlaneZMesh()));
+        scene.setOnKeyTyped(e -> keyTypedAction(e, planeZMeshComboBox.getValue().planeZMesh()));
         configurePlaneZMeshes(planeZMeshComboBox.getItems());
         mouseControlService.setOrientation(INIT_ANGLE_X, 0);
         mouseControlService.initMouseControl(planeMeshContainer, scene);
@@ -108,7 +110,7 @@ public final class MeshViewer extends Application {
 
     private void configurePlaneZMeshes(ObservableList<PlaneMeshPicker> planeZMeshPickers) {
         planeZMeshPickers.stream()
-                .map(PlaneMeshPicker::getPlaneZMesh)
+                .map(PlaneMeshPicker::planeZMesh)
                 .forEach(this::configureMesh);
     }
 
@@ -199,14 +201,14 @@ public final class MeshViewer extends Application {
         if (diffuseMapInputStream != null) {
             planeZMesh.setDiffuseMap(new Image(diffuseMapInputStream));
         } else {
-            err.println(diffuseMapLocation + " not found");
+            LOGGER.error("{} not found", diffuseMapLocation);
         }
         var bumpMapLocation = "images/cup_normalMap_1024.png";
         var bumpMapInputStream = getClass().getResourceAsStream(bumpMapLocation);
         if (bumpMapInputStream != null) {
             planeZMesh.setBumpMap(new Image(bumpMapInputStream));
         } else {
-            err.println(bumpMapLocation + " not found");
+            LOGGER.error("{} not found", bumpMapLocation);
         }
     }
 
@@ -244,23 +246,11 @@ public final class MeshViewer extends Application {
 
     private void updatePlaneZMeshView(ObservableValue<? extends PlaneMeshPicker> o,
                                       PlaneMeshPicker curVal, PlaneMeshPicker newVal) {
-        planeMeshContainer.getChildren().remove(curVal.getPlaneZMesh());
-        planeMeshContainer.getChildren().add(newVal.getPlaneZMesh());
+        planeMeshContainer.getChildren().remove(curVal.planeZMesh());
+        planeMeshContainer.getChildren().add(newVal.planeZMesh());
     }
 
-    private static class PlaneMeshPicker {
-
-        private final String displayText;
-        private final PlaneZMesh planeZMesh;
-
-        protected PlaneMeshPicker(String displayText, PlaneZMesh planeZMesh) {
-            this.displayText = displayText;
-            this.planeZMesh = planeZMesh;
-        }
-
-        public PlaneZMesh getPlaneZMesh() {
-            return planeZMesh;
-        }
+    private record PlaneMeshPicker(String displayText, PlaneZMesh planeZMesh) {
 
         @Override
         public String toString() {

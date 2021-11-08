@@ -3,12 +3,13 @@ package hzt;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
-import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class Application3D {
 
@@ -26,10 +27,10 @@ public class Application3D {
         super();
     }
 
-    public void initMouseControl(Group group, Scene scene) {
+    public void initMouseControl(Node node, Scene scene) {
         Rotate xRotate = new Rotate(0, Rotate.X_AXIS);
         Rotate yRotate = new Rotate(0, Rotate.Y_AXIS);
-        group.getTransforms().addAll(xRotate ,yRotate);
+        node.getTransforms().addAll(xRotate ,yRotate);
 
         xRotate.angleProperty().bind(angleX);
         yRotate.angleProperty().bind(angleY);
@@ -48,35 +49,24 @@ public class Application3D {
 
         scene.addEventHandler(ScrollEvent.SCROLL, event -> {
             double delta = event.getDeltaY();
-            group.translateZProperty().set(group.getTranslateZ() + delta);
+            node.translateZProperty().set(node.getTranslateZ() + delta);
         });
     }
 
-    public void initKeyControl(SmartGroup group, Stage primaryStage) {
-        primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            switch (event.getCode()) {
-                case W:
-                    group.translateZProperty().set(group.getTranslateZ() + 100);
-                    break;
-                case S:
-                    group.translateZProperty().set(group.getTranslateZ() - 100);
-                    break;
-                case Q:
-                    group.rotateByX(10);
-                    break;
-                case E:
-                    group.rotateByX(-10);
-                    break;
-                case NUMPAD6:
-                    group.rotateByY(10);
-                    break;
-                case NUMPAD4:
-                    group.rotateByY(-10);
-                    break;
-                default:
-                    break;
-            }
-        });
+    public void initKeyControl(SmartGroup group, Window window) {
+        window.addEventHandler(KeyEvent.KEY_PRESSED, event -> keyPressedAction(group, event));
+    }
+
+    private static void keyPressedAction(SmartGroup group, KeyEvent event) {
+        switch (event.getCode()) {
+            case W -> group.translateZProperty().set(group.getTranslateZ() + 100);
+            case S -> group.translateZProperty().set(group.getTranslateZ() - 100);
+            case Q -> group.rotateByX(10);
+            case E -> group.rotateByX(-10);
+            case NUMPAD6 -> group.rotateByY(10);
+            case NUMPAD4 -> group.rotateByY(-10);
+            default -> {}
+        }
     }
 
     public static class SmartGroup extends Group {

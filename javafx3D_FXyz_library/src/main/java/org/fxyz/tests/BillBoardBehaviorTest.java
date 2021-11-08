@@ -112,8 +112,8 @@ public class BillBoardBehaviorTest extends Application {
         
         initFirstPersonControls(subScene);
         
-        skyBox = new Skybox(new Image("http://www.zfight.com/misc/images/textures/envmaps/violentdays_large.jpg"), 100000, camera);      
-       
+        skyBox = new Skybox(100000, camera, Skybox.SkyboxImageType.SINGLE);
+        skyBox.setImageAllSides(new Image("http://www.zfight.com/misc/images/textures/envmaps/violentdays_large.jpg"));
         //Make a bunch of semi random Torusesessses(toroids?) and stuff : from torustest
         Group torusGroup = new Group();        
         for (int i = 0; i < 10; i++) {

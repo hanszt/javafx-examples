@@ -35,22 +35,11 @@ public class DateTimePicker extends DatePicker {
 
     public DateTimePicker() {
         getStyleClass().add("datetime-picker");
-        setFormat(DEFAULT_FORMAT);
+        this.format.set(DEFAULT_FORMAT);
         setConverter(new InternalConverter());
 
         // Syncronize changes to the underlying date value back to the dateTimeValue
-        valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null) {
-                dateTimeValue.set(null);
-            } else {
-                if (dateTimeValue.get() == null) {
-                    dateTimeValue.set(LocalDateTime.of(newValue, LocalTime.now()));
-                } else {
-                    LocalTime time = dateTimeValue.get().toLocalTime();
-                    dateTimeValue.set(LocalDateTime.of(newValue, time));
-                }
-            }
-        });
+        super.valueProperty().addListener(this::updateDateTimeValue);
 
         // Synchronize changes to dateTimeValue back to the underlying date value
         dateTimeValue.addListener((observable, oldValue, newValue) ->
@@ -81,15 +70,24 @@ public class DateTimePicker extends DatePicker {
         return format;
     }
 
-    public void setFormat(String format) {
-        this.format.set(format);
-    }
-
     private void simulateEnterPressed(ObservableValue<? extends Boolean> observable, Boolean oldValue, boolean newValue) {
         if (!newValue) {
             getEditor().fireEvent(new KeyEvent(getEditor(), getEditor(), KeyEvent.KEY_PRESSED,
                     null, null, KeyCode.ENTER, false, false, false, false));
 
+        }
+    }
+
+    private void updateDateTimeValue(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
+        if (newValue == null) {
+            dateTimeValue.set(null);
+        } else {
+            if (dateTimeValue.get() == null) {
+                dateTimeValue.set(LocalDateTime.of(newValue, LocalTime.now()));
+            } else {
+                LocalTime time = dateTimeValue.get().toLocalTime();
+                dateTimeValue.set(LocalDateTime.of(newValue, time));
+            }
         }
     }
 

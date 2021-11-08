@@ -9,7 +9,11 @@ package org.fxyz.tests;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -22,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author Sean
  */
-public class SurfacePlotTest extends Application {
+public final class SurfacePlotTest extends Application {
 
     private double scenex;
     private double sceney;
@@ -33,6 +37,10 @@ public class SurfacePlotTest extends Application {
     private final DoubleProperty angleX = new SimpleDoubleProperty(0);
     private final DoubleProperty angleY = new SimpleDoubleProperty(0);
     private final DoubleProperty angleZ = new SimpleDoubleProperty(0);
+
+    public SurfacePlotTest() {
+        super();
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -61,7 +69,7 @@ public class SurfacePlotTest extends Application {
     }
 
     @NotNull
-    private SurfacePlot buildSurfacePlot() {
+    private static SurfacePlot buildSurfacePlot() {
         int sombreroSize = 10;
         int sombreroHeight = 100;
         float[][] arrayY = createSombreroShape(sombreroSize, sombreroHeight);
@@ -81,7 +89,7 @@ public class SurfacePlotTest extends Application {
     }
 
     @NotNull
-    private PerspectiveCamera buildCamera() {
+    private static PerspectiveCamera buildCamera() {
         var camera = new PerspectiveCamera(true);
         camera.setNearClip(0.1);
         camera.setFarClip(10000.0);
@@ -90,14 +98,14 @@ public class SurfacePlotTest extends Application {
     }
 
     @NotNull
-    private PointLight buildPointLight(double translateY, double translateZ) {
+    private static PointLight buildPointLight(double translateY, double translateZ) {
         PointLight light = new PointLight(Color.WHITE);
         light.setTranslateZ(translateZ);
         light.setTranslateY(translateY);
         return light;
     }
 
-    private float[][] createSombreroShape(int sombreroSize, int sombreroHeight) {
+    private static float[][] createSombreroShape(int sombreroSize, int sombreroHeight) {
         float[][] arrayXY = new float[2 * sombreroSize][2 * sombreroSize];
         for (int x = -sombreroSize; x < sombreroSize; x++) {
             for (int y = -sombreroSize; y < sombreroSize; y++) {
@@ -109,7 +117,7 @@ public class SurfacePlotTest extends Application {
         return arrayXY;
     }
 
-    private double distance(double x, double y) {
+    private static double distance(double x, double y) {
         return Math.sqrt((x * x) + (y * y));
     }
 
@@ -120,7 +128,7 @@ public class SurfacePlotTest extends Application {
         launch(args);
     }
 
-    private void keyPressedAction(KeyEvent event, PerspectiveCamera camera) {
+    private static void keyPressedAction(KeyEvent event, PerspectiveCamera camera) {
         double change = 10.0;
         //Add shift modifier to simulate "Running Speed"
         if (event.isShiftDown()) {
@@ -157,10 +165,11 @@ public class SurfacePlotTest extends Application {
     }
 
     private void mouseDraggedAction(MouseEvent event) {
-        if (event.isMiddleButtonDown())
+        if (event.isMiddleButtonDown()) {
             angleZ.set(fixedZAngle - (scenez - event.getSceneY()));
-        else
+        } else {
             angleX.set(fixedXAngle - (scenex - event.getSceneY()));
+        }
         angleY.set(fixedYAngle + sceney - event.getSceneX());
     }
 }

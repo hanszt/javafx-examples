@@ -34,6 +34,8 @@ import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
+import static utils.FxUtils.*;
+
 public class MainPresenter extends GluonPresenter<Beacons> {
 
     @FXML
@@ -46,16 +48,18 @@ public class MainPresenter extends GluonPresenter<Beacons> {
     private Button broadcast;
 
     public void initialize() {
-        main.showingProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue) {
-                AppBar appBar = getApp().getAppBar();
-                appBar.setNavIcon(MaterialDesignIcon.MENU.button(e -> getApp().getDrawer().open()));
-                appBar.setTitleText("Home");
-            }
-        });
+        main.showingProperty().addListener(forNewValue(this::configureIfShowing));
 
         scan.setOnAction(e -> AppViewManager.BEACONS_VIEW.switchView());
         broadcast.setOnAction(e -> AppViewManager.BROADCAST_VIEW.switchView());
+    }
+
+    private void configureIfShowing(boolean showing) {
+        if (showing) {
+            AppBar appBar = getApp().getAppBar();
+            appBar.setNavIcon(MaterialDesignIcon.MENU.button(e -> getApp().getDrawer().open()));
+            appBar.setTitleText("Home");
+        }
     }
 }
 

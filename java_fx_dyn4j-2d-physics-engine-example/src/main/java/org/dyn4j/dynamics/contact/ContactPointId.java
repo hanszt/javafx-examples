@@ -26,6 +26,8 @@ package org.dyn4j.dynamics.contact;
 
 import org.dyn4j.collision.manifold.ManifoldPointId;
 
+import java.util.Objects;
+
 /**
  * Represents a contact point id to identify contacts from frame to frame.
  * @author William Bittle
@@ -53,16 +55,10 @@ public class ContactPointId {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(Object other) {
-		if (other == null) return false;
-		if (other == this) return true;
-		if (other instanceof ContactPointId) {
-			ContactPointId id = (ContactPointId)other;
-			if (id.contactConstraintId.equals(this.contactConstraintId) && id.manifoldPointId.equals(this.manifoldPointId)) {
-				return true;
-			}
-		}
-		return false;
+	public boolean equals(Object o) {
+		return o == this || (o instanceof ContactPointId other &&
+				Objects.equals(contactConstraintId, other.contactConstraintId) &&
+				Objects.equals(manifoldPointId, other.manifoldPointId));
 	}
 	
 	/* (non-Javadoc)
@@ -70,10 +66,7 @@ public class ContactPointId {
 	 */
 	@Override
 	public int hashCode() {
-		int hash = 1;
-		hash = hash * 31 + this.contactConstraintId.hashCode();
-		hash = hash * 31 + this.manifoldPointId.hashCode();
-		return hash;
+		return Objects.hash(contactConstraintId, manifoldPointId);
 	}
 	
 	/* (non-Javadoc)
@@ -81,11 +74,9 @@ public class ContactPointId {
 	 */
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("ContactPointId[ContactConstraintId=").append(this.contactConstraintId)
-		.append("|ManifoldPointId=").append(this.manifoldPointId)
-		.append("]");
-		return sb.toString();
+		return "ContactPointId[ContactConstraintId=" + this.contactConstraintId +
+				"|ManifoldPointId=" + this.manifoldPointId +
+				"]";
 	}
 
 	/**

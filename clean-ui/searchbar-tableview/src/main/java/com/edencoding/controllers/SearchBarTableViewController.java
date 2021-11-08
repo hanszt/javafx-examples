@@ -18,13 +18,15 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import utils.FxUtils;
 
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class SearchBarTableViewController implements Initializable {
+
+    private static final String NEW_YORK = "New York";
 
     @FXML
     private TableView<Order> exampleTable;
@@ -36,6 +38,7 @@ public class SearchBarTableViewController implements Initializable {
     private TableColumn<Order, String> cityColumn;
     @FXML
     private TextField searchBox;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         orderIdColumn.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
@@ -47,13 +50,11 @@ public class SearchBarTableViewController implements Initializable {
         exampleTable.setItems(filteredData);
         exampleTable.setRowFactory(tableView -> getOrderTableRow(filteredData));
 
-        searchBox.textProperty().addListener((observable, oldValue, newValue) ->
-                exampleTable.setItems(filterList(orders, newValue.toLowerCase())));
+        searchBox.textProperty().addListener(FxUtils.forNewValue(n ->
+                exampleTable.setItems(filterList(orders, n.toLowerCase()))));
     }
 
-    private static final String NEW_YORK = "New York";
-
-    private List<Order> getOrders() {
+    private static List<Order> getOrders() {
         return List.of(
                 new Order(1, NEW_YORK, NEW_YORK), //8,323,340
                 new Order(2, "Colorado", "Denver"),
@@ -77,7 +78,7 @@ public class SearchBarTableViewController implements Initializable {
         return row;
     }
 
-    private void changeRowAppearance(FilteredList<Order> filteredData, TableRow<Order> row, Order newOrder) {
+    private static void changeRowAppearance(FilteredList<Order> filteredData, TableRow<Order> row, Order newOrder) {
         boolean assignClass = filteredData.contains(newOrder) &&
                 (newOrder.getCity().equals(NEW_YORK) ||
                         newOrder.getCity().equals("Boston"));
@@ -88,12 +89,12 @@ public class SearchBarTableViewController implements Initializable {
     private ObservableList<Order> filterList(List<Order> list, String searchText) {
         List<Order> filteredList = list.stream()
                 .filter(order -> searchFindsOrder(order, searchText))
-                .collect(Collectors.toList());
+                .toList();
 
         return FXCollections.observableList(filteredList);
     }
 
-    private boolean searchFindsOrder(Order order, String searchText) {
+    private static boolean searchFindsOrder(Order order, String searchText) {
         return (order.getCity().toLowerCase().contains(searchText)) ||
                 (order.getState().toLowerCase().contains(searchText)) ||
                 Integer.toString(order.getId()).equals(searchText);

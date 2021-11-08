@@ -1,5 +1,6 @@
 package hzt;
 
+import fx_customs.MyScene;
 import hzt.model.CylinderHead;
 import hzt.model.Duck;
 import hzt.model.LunarLander;
@@ -8,8 +9,8 @@ import hzt.model.PropellerAssembly;
 import hzt.model.Pyramid;
 import hzt.model.Scooter;
 import hzt.model.TuxRotation;
-import hzt.service.IMouseControlService;
-import hzt.service.MouseControlService;
+import interfaces.IMouseControlService;
+import services.MouseControlService;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -22,6 +23,8 @@ import javafx.scene.shape.MeshView;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 import utils.FxUtils;
+
+import java.util.function.Consumer;
 
 import static java.util.function.Predicate.not;
 
@@ -50,12 +53,12 @@ public class ModelLoadApp extends Application {
         return buildScene(root);
     }
 
-    private static Scene buildScene(Group root) {
-        Scene scene = new Scene(root, 1280, 720, true);
+    private static MyScene buildScene(Group root) {
+        MyScene scene = new MyScene(root, 1280, 720, true);
         scene.setOnKeyTyped(keyEvent -> keyTypedAction(keyEvent, root));
         root.getChildren().stream()
                 .filter(not(Slider.class::isInstance))
-                .forEach(model -> addMouseControl(model, scene));
+                .forEach(addMouseControl(scene));
 
         PerspectiveCamera camera = getPerspectiveCamera();
         camera.setTranslateZ(-300);
@@ -63,10 +66,12 @@ public class ModelLoadApp extends Application {
         return scene;
     }
 
-    private static void addMouseControl(Node model3D, Scene scene) {
-        IMouseControlService planeMouseControlService = new MouseControlService();
-        planeMouseControlService.initMouseControl(model3D, scene);
-        planeMouseControlService.setOrientation(20, 20);
+    private static Consumer<Node> addMouseControl(MyScene scene) {
+        return node -> {
+            IMouseControlService planeMouseControlService = new MouseControlService();
+            planeMouseControlService.initMouseControl(node, scene);
+            planeMouseControlService.setOrientation(20, 20);
+        };
     }
 
     private static void keyTypedAction(KeyEvent keyEvent, Group root) {

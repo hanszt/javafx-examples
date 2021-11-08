@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.javafx.examples</groupId>
-    <artifactId>javafx-examples</artifactId>
+    <artifactId>a-javafx-examples-project</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -30,6 +30,8 @@
         <module>clean-ui</module>
         <module>java-fx-commons</module>
         <module>gluon-samples</module>
+        <module>examples-open-jfx</module>
+        <module>java-fx-bindings</module>
     </modules>
 
     <properties>
@@ -40,15 +42,15 @@
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
         <!--        dependencies-->
-        <javafx.version>16</javafx.version>
+        <javafx.version>17.0.0.1</javafx.version>
         <commons-math3.version>3.6.1</commons-math3.version>
         <guava.version>29.0-jre</guava.version>
-        <annotations.version>17.0.0</annotations.version>
+        <annotations.version>22.0.0</annotations.version>
         <log4j-api.version>2.14.1</log4j-api.version>
         <!--        test-->
         <archunit-junit5.version>0.21.0</archunit-junit5.version>
-        <mockito.version>3.12.4</mockito.version>
-        <junit-jupiter.version>5.8.0</junit-jupiter.version>
+        <mockito.version>4.0.0</mockito.version>
+        <junit-jupiter.version>5.8.1</junit-jupiter.version>
         <hamcrest.version>2.2</hamcrest.version>
         <testfx.version>4.0.16-alpha</testfx.version>
     </properties>
@@ -212,6 +214,7 @@
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <argLine>
+<!--                        To make org.testfx work within a module project, this needs to be added-->
                         --add-exports javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
                     </argLine>
                 </configuration>

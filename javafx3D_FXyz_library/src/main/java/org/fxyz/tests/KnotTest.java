@@ -2,7 +2,12 @@ package org.fxyz.tests;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.scene.*;
+import javafx.scene.AmbientLight;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -11,10 +16,8 @@ import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.fxyz.cameras.CameraTransformer;
-import org.fxyz.geometry.Point3D;
 import org.fxyz.shapes.primitives.KnotMesh;
 import org.fxyz.shapes.primitives.helper.TriangleMeshHelper.SectionType;
-import org.fxyz.utils.DensityFunction;
 import org.fxyz.utils.OBJWriter;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,28 +27,24 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author jpereda
  */
 public class KnotTest extends Application {
-    private PerspectiveCamera camera;
-    private final double sceneWidth = 600;
-    private final double sceneHeight = 600;
+
     private final CameraTransformer cameraTransform = new CameraTransformer();
     
     private double mousePosX;
     private double mousePosY;
     private double mouseOldX;
     private double mouseOldY;
-    private double mouseDeltaX;
-    private double mouseDeltaY;
     private KnotMesh knot;
-    private Rotate rotateY;
-    private DensityFunction<Point3D> dens = p->(double)p.x;
     private long lastEffect;
     
     @Override
     public void start(Stage primaryStage) throws Exception {
         Group sceneRoot = new Group();
-        Scene scene = new Scene(sceneRoot, sceneWidth, sceneHeight, true, SceneAntialiasing.BALANCED);
+        final double SCENE_WIDTH = 600;
+        final double SCENE_HEIGHT = 600;
+        Scene scene = new Scene(sceneRoot, SCENE_WIDTH, SCENE_HEIGHT, true, SceneAntialiasing.BALANCED);
         scene.setFill(Color.WHEAT);
-        camera = new PerspectiveCamera(true);        
+        PerspectiveCamera camera = new PerspectiveCamera(true);
      
         //setup camera transform for rotational support
         cameraTransform.setTranslate(0, 0, 0);
@@ -63,8 +62,8 @@ public class KnotTest extends Application {
         light.setTranslateY(camera.getTranslateY());
         light.setTranslateZ(camera.getTranslateZ());        
         scene.setCamera(camera);
-        
-        rotateY = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
+
+        Rotate rotateY = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
         Group group = new Group();
         group.getChildren().add(cameraTransform);    
         
@@ -87,7 +86,7 @@ public class KnotTest extends Application {
     // FACES
 //        knot.setTextureModeFaces(256*256);
  
-        knot.getTransforms().addAll(new Rotate(0,Rotate.X_AXIS),rotateY);
+        knot.getTransforms().addAll(new Rotate(0,Rotate.X_AXIS), rotateY);
         
         group.getChildren().add(knot);
         
@@ -114,69 +113,15 @@ public class KnotTest extends Application {
             mouseOldX = me.getSceneX();
             mouseOldY = me.getSceneY();
         });
-        scene.setOnMouseDragged((MouseEvent me) -> {
-            mouseOldX = mousePosX;
-            mouseOldY = mousePosY;
-            mousePosX = me.getSceneX();
-            mousePosY = me.getSceneY();
-            mouseDeltaX = (mousePosX - mouseOldX);
-            mouseDeltaY = (mousePosY - mouseOldY);
-            
-            double modifier = 10.0;
-            double modifierFactor = 0.1;
-            
-            if (me.isControlDown()) {
-                modifier = 0.1;
-            }
-            if (me.isShiftDown()) {
-                modifier = 50.0;
-            }
-            if (me.isPrimaryButtonDown()) {
-                cameraTransform.rotateY.setAngle(((cameraTransform.rotateY.getAngle() + mouseDeltaX * modifierFactor * modifier * 2.0) % 360 + 540) % 360 - 180);  // +
-                cameraTransform.rotateX.setAngle(((cameraTransform.rotateX.getAngle() - mouseDeltaY * modifierFactor * modifier * 2.0) % 360 + 540) % 360 - 180);  // -
-            } else if (me.isSecondaryButtonDown()) {
-                double z = camera.getTranslateZ();
-                double newZ = z + mouseDeltaX * modifierFactor * modifier;
-                camera.setTranslateZ(newZ);
-            } else if (me.isMiddleButtonDown()) {
-                cameraTransform.translate.setX(cameraTransform.translate.getX() + mouseDeltaX * modifierFactor * modifier * 0.3);  // -
-                cameraTransform.translate.setY(cameraTransform.translate.getY() + mouseDeltaY * modifierFactor * modifier * 0.3);  // -
-            }
-        });
+        scene.setOnMouseDragged(me -> updatePosition(camera, me));
         
         lastEffect = System.nanoTime();
         AtomicInteger count=new AtomicInteger();
-        AnimationTimer timerEffect = new AnimationTimer() {
+        new AnimationTimer() {
 
             @Override
             public void handle(long now) {
-                if (now > lastEffect + 100_000_000l) {
-//                    Point3D loc = knot.getPositionAt((count.get()%100)*2d*Math.PI/100d);
-//                    Point3D dir = knot.getTangentAt((count.get()%100)*2d*Math.PI/100d);
-//                    cameraTransform.t.setX(loc.x);
-//                    cameraTransform.t.setY(loc.y);
-//                    cameraTransform.t.setZ(-loc.z);
-//                    javafx.geometry.Point3D axis = cameraTransform.rx.getAxis();
-//                    javafx.geometry.Point3D cross = axis.crossProduct(-dir.x,-dir.y,-dir.z);
-//                    double angle = axis.angle(-dir.x,-dir.y,-dir.z);
-//                    cameraTransform.rx.setAngle(angle);
-//                    cameraTransform.rx.setAxis(new javafx.geometry.Point3D(cross.getX(),-cross.getY(),cross.getZ()));
-//                    dens = p->(float)(p.x*Math.cos(count.get()%100d*2d*Math.PI/50d)+p.y*Math.sin(count.get()%100d*2d*Math.PI/50d));
-//                    knot.setDensity(dens);
-//                    knot.setP(1+(count.get()%5));
-//                    knot.setQ(2+(count.get()%15));
-                    
-//                    if(count.get()%100<50){
-//                        knot.setDrawMode(DrawMode.LINE);
-//                    } else {
-//                        knot.setDrawMode(DrawMode.FILL);
-//                    }
-//                    knot.setColors((int)Math.pow(2,count.get()%16));
-//                    knot.setMajorRadius(0.5d+(count.get()%10));
-//                    knot.setMinorRadius(2d+(count.get()%60));
-//                    knot.setWireRadius(0.1d+(count.get()%6)/10d);
-//                    knot.setPatternScale(1d+(count.get()%10)*3d);
-//                    knot.setSectionType(SectionType.values()[count.get()%SectionType.values().length]);
+                if (now > lastEffect + 100_000_000L) {
                     count.getAndIncrement();
                     lastEffect = now;
                 }
@@ -191,9 +136,42 @@ public class KnotTest extends Application {
         OBJWriter writer=new OBJWriter((TriangleMesh) knot.getMesh(),"knot");
         writer.setMaterialColor(Color.BROWN);
         writer.exportMesh();
-//        timerEffect.start();
-        
     }
+
+    private void updatePosition(PerspectiveCamera camera, MouseEvent me) {
+        mouseOldX = mousePosX;
+        mouseOldY = mousePosY;
+        mousePosX = me.getSceneX();
+        mousePosY = me.getSceneY();
+        double mouseDeltaX = (mousePosX - mouseOldX);
+        double mouseDeltaY = (mousePosY - mouseOldY);
+
+        double modifier = 10.0;
+        double modifierFactor = 0.1;
+
+        if (me.isControlDown()) {
+            modifier = 0.1;
+        }
+        if (me.isShiftDown()) {
+            modifier = 50.0;
+        }
+        if (me.isPrimaryButtonDown()) {
+            cameraTransform.rotateY
+                    .setAngle(((cameraTransform.rotateY.getAngle() +
+                            mouseDeltaX * modifierFactor * modifier * 2.0) % 360 + 540) % 360 - 180);  // +
+            cameraTransform.rotateX
+                    .setAngle(((cameraTransform.rotateX.getAngle() -
+                            mouseDeltaY * modifierFactor * modifier * 2.0) % 360 + 540) % 360 - 180);  // -
+        } else if (me.isSecondaryButtonDown()) {
+            double z = camera.getTranslateZ();
+            double newZ = z + mouseDeltaX * modifierFactor * modifier;
+            camera.setTranslateZ(newZ);
+        } else if (me.isMiddleButtonDown()) {
+            cameraTransform.translate.setX(cameraTransform.translate.getX() + mouseDeltaX * modifierFactor * modifier * 0.3);  // -
+            cameraTransform.translate.setY(cameraTransform.translate.getY() + mouseDeltaY * modifierFactor * modifier * 0.3);  // -
+        }
+    }
+
     /**
      * @param args the command line arguments
      */

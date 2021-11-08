@@ -15,15 +15,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 public class TitledPaneSample extends Application {
 
     private static final String RELATIVE_RESOURCES_DIR = "/titledpanesample/";
 
-    final String[] imageNames = {"Apples", "Flowers", "Leaves"};
-    final Image[] images = new Image[imageNames.length];
-    final ImageView[] pics = new ImageView[imageNames.length];
-    final TitledPane[] tps = new TitledPane[imageNames.length];
-    final Label label = new Label("N/A");
+    private final String[] imageNames = {"Apples", "Flowers", "Leaves"};
+    private final Label label = new Label("N/A");
 
     @Override public void start(Stage stage) {
         stage.setTitle("TitledPane");
@@ -45,17 +45,12 @@ public class TitledPaneSample extends Application {
         gridTitlePane.setText("Grid");
         gridTitlePane.setContent(grid);
 
-        final Accordion accordion = new Accordion ();
-        
-        for (int i = 0; i < imageNames.length; i++) {
-            images[i] = 
-                new Image(getClass().getResourceAsStream(RELATIVE_RESOURCES_DIR + imageNames[i]+".jpg"));
-            pics[i] = new ImageView(images[i]);
-            tps[i] = new TitledPane(imageNames[i],pics[i]); 
-        }   
-        accordion.getPanes().addAll(tps);
-        
+        final Accordion accordion = new Accordion();
 
+        accordion.getPanes().addAll(Arrays.stream(imageNames)
+                .map(this::toTitledPane)
+                .toList());
+        
         accordion.expandedPaneProperty().addListener((ov, oldVal, newVal) -> setText(accordion, newVal));
         
         HBox hbox = new HBox(10);
@@ -68,7 +63,17 @@ public class TitledPaneSample extends Application {
         stage.show();
     }
 
+    private TitledPane toTitledPane(String imageName) {
+        var pic = Optional.ofNullable(getClass().getResourceAsStream(RELATIVE_RESOURCES_DIR + imageName + ".jpg"))
+                .map(Image::new)
+                .map(ImageView::new)
+                .orElse(new ImageView());
+        return new TitledPane(imageName, pic);
+    }
+
     private void setText(Accordion accordion, TitledPane newVal) {
-        if (newVal != null) label.setText(accordion.getExpandedPane().getText() + ".jpg");
+        if (newVal != null) {
+            label.setText(accordion.getExpandedPane().getText() + ".jpg");
+        }
     }
 }

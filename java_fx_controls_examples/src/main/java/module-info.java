@@ -7,6 +7,8 @@ module Main.app {
     requires java.desktop;
     requires java.logging;
     requires javafx.web;
+    requires org.apache.logging.log4j;
+    requires javafx.utils;
 
     exports hzt.htmleditorsample;
 

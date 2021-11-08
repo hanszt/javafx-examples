@@ -184,10 +184,10 @@ public class FrustumMesh extends TexturedMesh {
         return level;
     }
     
-    private final ObjectProperty<Point3D> axisOrigin = new SimpleObjectProperty<Point3D>(){
+    private final ObjectProperty<Point3D> axisOrigin = new SimpleObjectProperty<>() {
         @Override
         protected void invalidated() {
-            if(getAxisOrigin()!=null && getAxisEnd()!=null){
+            if (getAxisOrigin() != null && getAxisEnd() != null) {
                 setHeight(getAxisEnd().subtract(getAxisOrigin()).magnitude());
             }
         }
@@ -204,10 +204,10 @@ public class FrustumMesh extends TexturedMesh {
     public ObjectProperty axisOriginProperty() {
         return axisOrigin;
     }
-    private final ObjectProperty<Point3D> axisEnd = new SimpleObjectProperty<Point3D>(){
+    private final ObjectProperty<Point3D> axisEnd = new SimpleObjectProperty<>() {
         @Override
         protected void invalidated() {
-            if(getAxisOrigin()!=null && getAxisEnd()!=null){
+            if (getAxisOrigin() != null && getAxisEnd() != null) {
                 setHeight(getAxisEnd().subtract(getAxisOrigin()).magnitude());
             }
         }

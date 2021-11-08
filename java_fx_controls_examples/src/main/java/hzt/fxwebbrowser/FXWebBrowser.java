@@ -7,12 +7,15 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class FXWebBrowser extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxwebbrowser/fxWebBrowser.fxml"));
+        final var url = Optional.ofNullable(getClass().getResource("/fxwebbrowser/fxWebBrowser.fxml"))
+                .orElseThrow();
+        Parent root = FXMLLoader.load(url);
         Scene scene = new Scene(root);
         stage.setTitle("FX Web browser");
         stage.setScene(scene);

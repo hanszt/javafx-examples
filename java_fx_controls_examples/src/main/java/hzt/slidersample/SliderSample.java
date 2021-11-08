@@ -1,7 +1,6 @@
 package hzt.slidersample;
 
 import javafx.application.Application;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -11,6 +10,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+
+import static utils.FxUtils.forNewValue;
 
 public class SliderSample extends Application {
 
@@ -60,7 +61,7 @@ public class SliderSample extends Application {
         GridPane.setConstraints(sepiaCaption, 0, 2);
         grid.getChildren().add(sepiaCaption);
 
-        sepiaTone.valueProperty().addListener(this::setSepiaLevel);
+        sepiaTone.valueProperty().addListener(forNewValue(this::setSepiaLevel));
         GridPane.setConstraints(sepiaTone, 1, 2);
         grid.getChildren().add(sepiaTone);
 
@@ -94,7 +95,7 @@ public class SliderSample extends Application {
         opacityValue.setText(String.format("%.2f", newVal.doubleValue()));
     }
 
-    private void setSepiaLevel(ObservableValue<? extends Number> ov, Number oldVal, Number newVal) {
+    private void setSepiaLevel(Number newVal) {
         SEPIA_EFFECT.setLevel(newVal.doubleValue());
         sepiaValue.setText(String.format("%.2f", newVal.doubleValue()));
     }

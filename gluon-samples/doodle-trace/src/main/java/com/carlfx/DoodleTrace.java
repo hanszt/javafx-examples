@@ -45,6 +45,7 @@ import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.*;
 import javafx.util.Duration;
+import utils.FxUtils;
 
 /**
  * Doodle Trace is a Gluon based cross platform
@@ -288,15 +289,15 @@ public class DoodleTrace extends View {
         // Checkbox Menu item to show or hide floating button controls
         CheckMenuItem showControlsMenuItem = new CheckMenuItem("Show/Hide Controls");
         showControlsMenuItem.setSelected(true);
-        showControlsMenuItem.selectedProperty().addListener((obv, ov, nv) -> {
-            if (nv) {
+        showControlsMenuItem.selectedProperty().addListener(FxUtils.forNewValue(show -> {
+            if (show) {
                 animateButton.show();
                 clearButton.show();
             } else {
                 animateButton.hide();
                 clearButton.hide();
             }
-        });
+        }));
 
         // Menu item to animate
         MenuItem animateMenuItem = new MenuItem("Animate", MaterialDesignIcon.PLAY_ARROW.graphic());

@@ -10,9 +10,23 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public final class MouseEventFilterExample extends Application {
@@ -108,7 +122,7 @@ public final class MouseEventFilterExample extends Application {
         final ChoiceBox<String> choiceBox = new ChoiceBox<>(
                 FXCollections.observableArrayList(
                         "English", "\u0420\u0443\u0441\u0441\u043a\u0438\u0439",
-                        "Fran\u00E7ais"));
+                        "Français"));
         choiceBox.setTooltip(new Tooltip("Your language"));
         choiceBox.getSelectionModel().select(0);
 
@@ -199,5 +213,8 @@ public final class MouseEventFilterExample extends Application {
         private double mouseAnchorY;
         private double initialTranslateX;
         private double initialTranslateY;
+
+        private DragContext() {
+        }
     }
 }

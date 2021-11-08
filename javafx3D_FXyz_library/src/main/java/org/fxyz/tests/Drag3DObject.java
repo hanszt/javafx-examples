@@ -7,7 +7,12 @@ package org.fxyz.tests;
 
 import javafx.application.Application;
 import javafx.geometry.Point3D;
-import javafx.scene.*;
+import javafx.scene.AmbientLight;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;

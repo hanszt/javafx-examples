@@ -1,14 +1,14 @@
 package hzt.model;
 
-import hzt.service.IMouseControlService;
-import hzt.service.MouseControlService;
+import fx_customs.MyScene;
+import interfaces.IMouseControlService;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Scene;
+import services.MouseControlService;
 
 public abstract class Model3D extends Group {
 
-    public void addMouseControl(Scene scene) {
+    public void addMouseControl(MyScene scene) {
         IMouseControlService planeMouseControlService = new MouseControlService();
         planeMouseControlService.initMouseControl(this, scene);
         planeMouseControlService.setOrientation(20, 20);

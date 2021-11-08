@@ -18,20 +18,20 @@ public class ConsumeEventTest extends Application {
 
         rect.addEventFilter(MouseEvent.MOUSE_CLICKED, evt -> {
             System.out.println("rect click(filter)");
-            evt.consume();
+//            evt.consume();
         });
         root.addEventFilter(MouseEvent.MOUSE_CLICKED, evt -> {
             System.out.println("root click(filter)");
-            evt.consume();
+//            evt.consume();
         });
 
         root.setOnMouseClicked(evt -> {
             System.out.println("root click(handler)");
-            evt.consume();
+//            evt.consume();
         });
         rect.setOnMouseClicked(evt -> {
             System.out.println("rect click(handler)");
-            evt.consume();
+//            evt.consume();
         });
 
         Scene scene = new Scene(root, 200, 200);

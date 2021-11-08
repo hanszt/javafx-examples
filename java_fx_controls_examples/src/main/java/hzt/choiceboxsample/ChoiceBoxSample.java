@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 
 public class ChoiceBoxSample extends Application {
 
-    final Label label = new Label("Hello");
+    private final Label label = new Label("Hello");
 
     @Override
     public void start(Stage stage) {

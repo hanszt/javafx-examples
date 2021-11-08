@@ -33,17 +33,19 @@ import com.gluonhq.charm.glisten.animation.BounceInRightTransition;
 import com.gluonhq.charm.glisten.control.AppBar;
 import com.gluonhq.charm.glisten.control.SettingsPane;
 import com.gluonhq.charm.glisten.control.settings.DefaultOption;
-import com.gluonhq.charm.glisten.control.settings.Option;
 import com.gluonhq.charm.glisten.control.settings.OptionBase;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import javafx.beans.property.StringProperty;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 
 import javax.inject.Inject;
 
-public class SettingsPresenter extends GluonPresenter<Beacons> {
+import static utils.FxUtils.*;
+
+public final class SettingsPresenter extends GluonPresenter<Beacons> {
 
     @FXML
     private View settings;
@@ -53,34 +55,24 @@ public class SettingsPresenter extends GluonPresenter<Beacons> {
     
     @FXML 
     private SettingsPane settingsPane;
-    
+
+    public SettingsPresenter() {
+        super();
+    }
+
     public void initialize() {
         settings.setShowTransitionFactory(BounceInRightTransition::new);
         
         settingsPane.setSearchBoxVisible(false);
         
-        settings.showingProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue) {
-                AppBar appBar = getApp().getAppBar();
-                appBar.setNavIcon(MaterialDesignIcon.CHEVRON_LEFT.button(e -> getApp().switchToPreviousView()));
-                appBar.setTitleText("Settings");
-                appBar.getActionItems().add(MaterialDesignIcon.SYNC.button(e -> {
-                    config.setUuid(Settings.UUID);
-                    config.setMajor(Settings.MAJOR);
-                    config.setMinor(Settings.MINOR);
-                    config.setId(Settings.ID);
-                }));
-                settingsPane.setTitleFilter("1");
-                settingsPane.getOptions().clear();
-            }
-        });
+        settings.showingProperty().addListener(forNewValue(this::configureIfShowing));
     }
 
     void setupScanBeacon() {
-        final Option<StringProperty> uuidOption = new DefaultOption<>(MaterialDesignIcon.BLUETOOTH_SEARCHING.graphic(),
+        final OptionBase<StringProperty> uuidOption = new DefaultOption<>(MaterialDesignIcon.BLUETOOTH_SEARCHING.graphic(),
                 "Set the UUID", "Set the UUID to be scanned", "Scan Beacon Settings", config.uuidProperty(), true);
 
-        ((OptionBase<StringProperty>) uuidOption).setLayout(Orientation.VERTICAL);
+        uuidOption.setLayout(Orientation.VERTICAL);
 
         settingsPane.getOptions().add(uuidOption);
         settingsPane.setTitleFilter("");
@@ -103,6 +95,25 @@ public class SettingsPresenter extends GluonPresenter<Beacons> {
 
         settingsPane.getOptions().addAll(uuidOption, majorOption, minorOption, idOption);
         settingsPane.setTitleFilter("");
+    }
+
+    private void configureIfShowing(boolean showing) {
+        if (showing) {
+            final Beacons app = getApp();
+            AppBar appBar = app.getAppBar();
+            appBar.setNavIcon(MaterialDesignIcon.CHEVRON_LEFT.button(e -> app.switchToPreviousView()));
+            appBar.setTitleText("Settings");
+            appBar.getActionItems().add(MaterialDesignIcon.SYNC.button(this::setConfigParams));
+            settingsPane.setTitleFilter("1");
+            settingsPane.getOptions().clear();
+        }
+    }
+
+    private void setConfigParams(ActionEvent e) {
+        config.setUuid(Settings.UUID);
+        config.setMajor(Settings.MAJOR);
+        config.setMinor(Settings.MINOR);
+        config.setId(Settings.ID);
     }
 }
 

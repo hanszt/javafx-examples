@@ -72,7 +72,6 @@ public class ToggleButtonSample extends Application {
     }
 
     private void setColor(ToggleGroup group, javafx.scene.control.Toggle newToggle) {
-        if (newToggle == null) rectangle.setFill(Color.WHITE);
-        else rectangle.setFill((Color) group.getSelectedToggle().getUserData());
+        rectangle.setFill(newToggle == null ? Color.WHITE : (Color) group.getSelectedToggle().getUserData());
     }
 }

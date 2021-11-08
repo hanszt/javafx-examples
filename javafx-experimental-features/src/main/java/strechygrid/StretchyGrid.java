@@ -52,9 +52,10 @@ public class StretchyGrid extends Application {
             }
         };
         timer.start();
-
         Scene scene = new Scene(grid);
+        grid.configure();
         primaryStage.setScene(scene);
+        primaryStage.setTitle(getClass().getSimpleName());
         primaryStage.show();
     }
 

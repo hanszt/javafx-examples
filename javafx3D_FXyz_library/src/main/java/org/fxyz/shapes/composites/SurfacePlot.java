@@ -38,7 +38,7 @@ public class SurfacePlot extends Group {
         setDepthTest(DepthTest.ENABLE);
     }
 
-    public void setHeightData(float[][] arrayY, int spacing, Color color, boolean ambient, boolean fill) {
+    public final void setHeightData(float[][] arrayY, int spacing, Color color, boolean ambient, boolean fill) {
         PhongMaterial material = new PhongMaterial();
         material.setSpecularColor(color);
         material.setDiffuseColor(color);

@@ -12,49 +12,54 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.Optional;
+import java.util.stream.IntStream;
+
 public class ScrollBarSample extends Application {
 
     private static final String RELATIVE_RESOURCES_DIR = "/scrollsample/";
 
-    final ScrollBar sc = new ScrollBar();
-    final Image[] images = new Image[5];
-    final ImageView[] pics = new ImageView[5];
-    final VBox vb = new VBox();
-    DropShadow shadow = new DropShadow();
-
     @Override
     public void start(Stage stage) {
-        Group root = new Group();
+        final ScrollBar scrollBar = new ScrollBar();
+        final VBox vBox = new VBox();
+
+        Group root = new Group(vBox, scrollBar);
         Scene scene = new Scene(root, 180, 180);
         scene.setFill(Color.BLACK);
         stage.setScene(scene);
         stage.setTitle("Scrollbar");
-        root.getChildren().addAll(vb, sc);
 
+        final DropShadow shadow = new DropShadow();
         shadow.setColor(Color.GREY);
         shadow.setOffsetX(2);
         shadow.setOffsetY(2);
 
-        vb.setLayoutX(5);
-        vb.setSpacing(10);
+        vBox.setLayoutX(5);
+        vBox.setSpacing(10);
 
-        sc.setLayoutX(scene.getWidth() - sc.getWidth());
-        sc.setMin(0);
-        sc.setOrientation(Orientation.VERTICAL);
-        sc.setPrefHeight(180);
-        sc.setMax(360);
+        scrollBar.setLayoutX(scene.getWidth() - scrollBar.getWidth());
+        scrollBar.setMin(0);
+        scrollBar.setOrientation(Orientation.VERTICAL);
+        scrollBar.setPrefHeight(180);
+        scrollBar.setMax(360);
 
-        for (int i = 0; i < 5; i++) {
-            images[i] = new Image(getClass()
-                    .getResourceAsStream(RELATIVE_RESOURCES_DIR + "fw" + (i + 1) + ".jpg"));
-            final ImageView pic = pics[i] = new ImageView(images[i]);
-            pic.setEffect(shadow);
-            vb.getChildren().add(pics[i]);
-        }
-
-        sc.valueProperty().addListener((ov, oldVal, newVal) -> vb.setLayoutY(-newVal.doubleValue()));
+        vBox.getChildren().addAll(IntStream.rangeClosed(1, 5)
+                .mapToObj(i -> toImageView(i, shadow))
+                .toList());
+        scrollBar.valueProperty().addListener((ov, oldVal, newVal) -> vBox.setLayoutY(-newVal.doubleValue()));
 
         stage.show();
+    }
+
+    private ImageView toImageView(int i, DropShadow dropShadow) {
+        final var pic = Optional.ofNullable(getClass()
+                .getResourceAsStream(RELATIVE_RESOURCES_DIR + "fw" + i + ".jpg"))
+                .map(Image::new)
+                .map(ImageView::new)
+                .orElse(new ImageView());
+        pic.setEffect(dropShadow);
+        return pic;
     }
 
 }

@@ -33,8 +33,8 @@ public class Palette {
     private int height;
     private Image imgPalette;
     
-    private final static COLOR_PALETTE DEFAULT_COLOR_PALETTE = COLOR_PALETTE.HSB;
-    private final static int DEFAULT_NUMCOLORS = 10000; // 100x100 palette image
+    private static final COLOR_PALETTE DEFAULT_COLOR_PALETTE = COLOR_PALETTE.HSB;
+    private static final int DEFAULT_NUMCOLORS = 10000; // 100x100 palette image
     
     public Palette(){
         this(DEFAULT_NUMCOLORS, DEFAULT_COLOR_PALETTE);
@@ -49,7 +49,7 @@ public class Palette {
         this.colorPalette = colorPalette;
     }
     
-    public Image createPalette(boolean save){
+    public final Image createPalette(boolean save){
         if(numColors<1){
             return null;
         }
@@ -93,14 +93,12 @@ public class Palette {
     */
     private Color getColor(int iColor){
         double fact=(double) iColor / (double) numColors;
-        switch(colorPalette){
-            case HSB:
-                // There are 6*255=1530 distinct pure colors, 255 colors every 60º, with 100% saturation and value
-                return Color.hsb(360d*fact, 1d, 1d);
-            case GREEN:
-                return GREEN_COLORS.get((int)(fact*GREEN_COLORS.size()));
-        } 
-        return Color.rgb((iColor >> 16) & 0xFF, (iColor >> 8) & 0xFF, iColor & 0xFF);
+        return switch (colorPalette) {
+            case HSB ->
+                    // There are 6*255=1530 distinct pure colors, 255 colors every 60º, with 100% saturation and value
+                    Color.hsb(360d * fact, 1d, 1d);
+            case GREEN -> GREEN_COLORS.get((int) (fact * GREEN_COLORS.size()));
+        };
     }
     
     public int getNumColors() {

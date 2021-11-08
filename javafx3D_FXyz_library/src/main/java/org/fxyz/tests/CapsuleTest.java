@@ -26,28 +26,24 @@ import org.fxyz.shapes.Capsule;
  * @author Dub
  */
 public class CapsuleTest extends Application {
-        
-        
-    private AdvancedCamera camera;
-    private FPSController controller;
-    
+
+    public static final Random RANDOM = new Random();
     private final Group root = new Group();
    
     @Override
     public void start(Stage stage) {
-        
+
         Group capsuleGroup = new Group();        
         for (int i = 0; i < 50; i++) {
-            Random r = new Random();
             //A lot of magic numbers in here that just artificially constrain the math
-            float randomRadius = (float) ((r.nextFloat() * 100) + 25);
-            float randomHeight = (float) ((r.nextFloat() * 300) + 75);
-            Color randomColor = new Color(r.nextDouble(), r.nextDouble(), r.nextDouble(), r.nextDouble());
+            float randomRadius = (RANDOM.nextFloat() * 100) + 25;
+            float randomHeight = (RANDOM.nextFloat() * 300) + 75;
+            Color randomColor = new Color(RANDOM.nextDouble(), RANDOM.nextDouble(), RANDOM.nextDouble(), RANDOM.nextDouble());
             
             Capsule cap = new Capsule(randomRadius, randomHeight, randomColor);               
             cap.setEmissiveLightingColor(randomColor);
-            cap.setEmissiveLightingOn(r.nextBoolean());
-            cap.setDrawMode(r.nextBoolean() ? DrawMode.FILL : DrawMode.LINE);
+            cap.setEmissiveLightingOn(RANDOM.nextBoolean());
+            cap.setDrawMode(RANDOM.nextBoolean() ? DrawMode.FILL : DrawMode.LINE);
             
             double translationX = Math.random() * 1024 * 1.95;
             if (Math.random() >= 0.5) {
@@ -72,9 +68,9 @@ public class CapsuleTest extends Application {
         }
         
         root.getChildren().add(capsuleGroup);
-                
-        camera = new AdvancedCamera();
-        controller = new FPSController();
+
+        AdvancedCamera camera = new AdvancedCamera();
+        FPSController controller = new FPSController();
         
         camera.setNearClip(0.1);
         camera.setFarClip(10000.0);

@@ -14,16 +14,18 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.Optional;
 
 public class CheckboxSample extends Application {
 
+    private static final Logger LOGGER = LogManager.getLogger(CheckboxSample.class);
     private static final String RELATIVE_RESOURCES_DIR = "/checkboxsample/";
 
-    final Rectangle rect = new Rectangle(90, 30);
-    final String[] names = {"Security", "Project", "Chart"};
-    final Image[] images = new Image[names.length];
-    final ImageView[] icons = new ImageView[names.length];
-    final CheckBox[] cbs = new CheckBox[names.length];
+    private final Rectangle rect = new Rectangle(90, 30);
+    private final String[] names = {"Security", "Project", "Chart"};
 
     public static void main(String[] args) {
         launch(args);
@@ -40,20 +42,21 @@ public class CheckboxSample extends Application {
         rect.setArcWidth(10);
         rect.setFill(Color.rgb(41, 41, 41));
 
-        for (int i = 0; i < names.length; i++) {
-            final Image image = images[i] =
-                new Image(getClass().getResourceAsStream(RELATIVE_RESOURCES_DIR + names[i] + ".png"));
-            final ImageView icon = icons[i] = new ImageView();
-            final CheckBox checkBox = cbs[i] = new CheckBox(names[i]);
-            checkBox.selectedProperty().addListener((o, c, n) -> icon.setImage(Boolean.TRUE.equals(n) ? image : null));
+        VBox vbox = new VBox();
+        HBox hbox = new HBox();
+        for (String name : names) {
+            final var LOCATION = RELATIVE_RESOURCES_DIR + name + ".png";
+            final ImageView icon = Optional.ofNullable(getClass().getResourceAsStream(LOCATION))
+                    .map(Image::new)
+                    .map(ImageView::new)
+                    .orElseGet(() -> logAndEmptyImageView(LOCATION));
+            final CheckBox checkBox = new CheckBox(name);
+            icon.visibleProperty().bind(checkBox.selectedProperty());
+            vbox.getChildren().add(checkBox);
+            hbox.getChildren().add(icon);
         }
 
-        VBox vbox = new VBox();
-        vbox.getChildren().addAll(cbs);
         vbox.setSpacing(5);
-
-        HBox hbox = new HBox();
-        hbox.getChildren().addAll(icons);
         hbox.setPadding(new Insets(0, 0, 0, 5));
 
         StackPane stack = new StackPane();
@@ -72,5 +75,10 @@ public class CheckboxSample extends Application {
 
         stage.setScene(scene);
         stage.show();
+    }
+
+    private static ImageView logAndEmptyImageView(String string) {
+        LOGGER.error("Could not find {}", string);
+        return new ImageView();
     }
 }
