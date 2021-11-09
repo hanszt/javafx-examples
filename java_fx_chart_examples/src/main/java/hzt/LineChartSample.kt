@@ -1,53 +1,53 @@
-package hzt;
+package hzt
 
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import fxutils.firstCharUpperCase
+import hzt.utils.FxSetup
+import javafx.application.Application
+import javafx.scene.Scene
+import javafx.scene.chart.LineChart
+import javafx.scene.chart.XYChart
+import javafx.scene.layout.VBox
+import javafx.scene.paint.Color
+import javafx.stage.Stage
+import java.time.LocalDate
+import java.time.Month
+import java.util.*
+import java.util.function.Consumer
 
-import java.time.LocalDate;
-import java.util.Random;
+fun main() = LineChartSample().start()
 
-import static hzt.utils.FxSetup.*;
-import static javafx.scene.paint.Color.GREY;
+class LineChartSample : Application() {
 
-public class LineChartSample extends Application {
+    fun start() = launch()
 
-    private static final int MAX = 60;
-    private static final String[] MONTHS =
-            {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    override fun start(stage: Stage) {
+        val lineChart = LineChart(FxSetup.categoryAxis("Month"), FxSetup.numberAxis("Amount")).apply {
+            title = "Stock Monitoring, " + LocalDate.now().year
+            createSymbols = false
+            isAlternativeRowFillVisible = false
+            data.addAll(
+                FxSetup.series("Portfolio 1"),
+                FxSetup.series("Portfolio 2"),
+                FxSetup.series("Portfolio 3")
+            )
+            data.forEach(Consumer { series: XYChart.Series<String, Number> -> getRandomData(series) })
+            effect = FxSetup.preparedShadow(Color.GREY)
+        }
 
-    @Override
-    public void start(Stage stage) {
-        final LineChart<String, Number> lineChart = new LineChart<>(categoryAxis("Month"), numberAxis("Amount"));
-
-        lineChart.setTitle("Stock Monitoring, " + LocalDate.now().getYear());
-        lineChart.setCreateSymbols(false);
-        lineChart.setAlternativeRowFillVisible(false);
-        //noinspection unchecked
-        lineChart.getData().addAll(series("Portfolio 1"), series("Portfolio 2"), series("Portfolio 3"));
-        lineChart.getData().forEach(LineChartSample::getRandomData);
-        lineChart.setEffect(preparedShadow(GREY));
-
-        final Button updateButton = configuredButton("Update", e -> update(lineChart));
-        Scene scene = new Scene(new VBox(lineChart, configuredHBox(updateButton)));
-        configureStage(stage, scene, "Line Chart Sample").show();
+        val updateButton = FxSetup.configuredButton("Update") { update(lineChart) }
+        val scene = Scene(VBox(lineChart, FxSetup.configuredHBox(updateButton)))
+        FxSetup.configureStage(stage, scene, "Line Chart Sample").show()
     }
 
-    private static void update(LineChart<String, Number> lineChart) {
-        for (XYChart.Series<String, Number> series : lineChart.getData()) {
-            getRandomData(series);
+    companion object {
+
+        private const val MAX = 60
+
+        private fun update(lineChart: LineChart<String, Number>) = lineChart.data.forEach { getRandomData(it) }
+
+        private fun getRandomData(series: XYChart.Series<String, Number>) {
+            val data = series.data.apply { clear() }
+            Month.values().mapTo(data) { XYChart.Data(it.name.firstCharUpperCase(), Random().nextInt(MAX)) }
         }
     }
-
-    private static void getRandomData(XYChart.Series<String, Number> series) {
-        series.getData().clear();
-        for (String month : MONTHS) {
-            series.getData().add(new XYChart.Data<>(month, new Random().nextInt(MAX)));
-        }
-    }
-
 }

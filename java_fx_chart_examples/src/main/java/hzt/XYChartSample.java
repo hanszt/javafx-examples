@@ -20,7 +20,8 @@ import javafx.stage.Stage;
 import java.time.Month;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.function.Predicate.not;
 
 public class XYChartSample extends Application {
 
@@ -71,8 +72,11 @@ public class XYChartSample extends Application {
             XYChart.Series<Number, Number> series = new XYChart.Series<>();
             series.setName(data.formattedName());
             tempDataSeriesBiMap.put(data, series);
-            if (initData.contains(data)) multiListView.addRightListView(data);
-            else multiListView.addLeftListView(data);
+            if (initData.contains(data)) {
+                multiListView.addRightListView(data);
+            } else {
+                multiListView.addLeftListView(data);
+            }
             for (int day = 1; day <= data.month.length(false); day++) {
                 if (day % 3 == 1 || day == data.month.maxLength()) {
                     series.getData().add(new XYChart.Data<>(day, data.getRandomTemperature()));
@@ -84,17 +88,17 @@ public class XYChartSample extends Application {
     private void updateXYChart(
             XYChart<Number, Number> areaChart, ListChangeListener.Change<? extends TempData> change) {
         if (change.next()) {
+            final var data = areaChart.getData();
             if (change.wasAdded()) {
-                change.getAddedSubList().stream()
+                data.addAll(change.getAddedSubList().stream()
                         .map(tempDataSeriesBiMap::get)
-                        .filter(s -> !areaChart.getData().contains(s))
-                        .forEach(s -> areaChart.getData().add(s));
+                        .filter(not(data::contains))
+                        .toList());
             }
             if (change.wasRemoved()) {
-                List<XYChart.Series<Number, Number>> leftOver = change.getList().stream()
+                data.retainAll(change.getList().stream()
                         .map(tempDataSeriesBiMap::get)
-                        .collect(Collectors.toList());
-                areaChart.getData().retainAll(leftOver);
+                        .toList());
             }
         }
     }
@@ -123,7 +127,7 @@ public class XYChartSample extends Application {
         NOVEMBER(Month.NOVEMBER, -2, 15),
         DECEMBER(Month.DECEMBER, -10, 10);
 
-        private final Month month;
+        private final transient Month month;
         private final double minTemp;
         private final double maxTemp;
 
