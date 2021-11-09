@@ -1,139 +1,118 @@
-package strechygrid;
+package strechygrid
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
+import fxutils.onNewValue
+import javafx.beans.property.DoubleProperty
+import javafx.beans.property.ObjectProperty
+import javafx.beans.property.SimpleDoubleProperty
+import javafx.beans.property.SimpleObjectProperty
+import javafx.geometry.Point2D
+import javafx.scene.paint.Color
+import java.util.HashMap
 
-import java.util.HashMap;
-import java.util.Map;
+class Cell internal constructor(private val grid: Grid, private val row: Int, private val col: Int) {
 
-public class Cell {
+    private val cx: Double
+    private val cy: Double
+    private val x: DoubleProperty = SimpleDoubleProperty()
+    private val y: DoubleProperty = SimpleDoubleProperty()
+    private val xv: DoubleProperty = SimpleDoubleProperty()
+    private val yv: DoubleProperty = SimpleDoubleProperty()
+    private val color: ObjectProperty<Color> = SimpleObjectProperty(Color.hsb(HUE_REF, 1.0, 1.0))
+    private val cellToDirMapperMap: MutableMap<Cell?, Point2D> = HashMap()
 
-    private static final double HUE_REF = 180;
-    private static final double K_1 = 0.01;
-    private static final double K_2 = 0.20000000000000001;
-    private static final double DAMP = 0.74;
-
-    private final Grid grid;
-    private final int row;
-    private final int col;
-    private final double cx;
-    private final double cy;
-
-    private final DoubleProperty x = new SimpleDoubleProperty();
-    private final DoubleProperty y = new SimpleDoubleProperty();
-    private final DoubleProperty xv = new SimpleDoubleProperty();
-    private final DoubleProperty yv = new SimpleDoubleProperty();
-    private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.hsb(HUE_REF, 1, 1));
-
-    private final Map<Cell, Point2D> cellToDirMapperMap = new HashMap<>();
-
-    private Cell left;
-    private Cell right;
-    private Cell bottom;
-    private Cell top;
-
-    Cell(Grid grid, int row, int col) {
-        this.row = row;
-        this.col = col;
-        this.grid = grid;
-        x.set(col * grid.getCellSize());
-        y.set(row * grid.getCellSize());
-        cx = x.get();
-        cy = y.get();
-        xv.addListener((o, c, n) -> updateColor());
-        yv.addListener((o, c, n) -> updateColor());
-    }
+    private var left: Cell? = null
+    var right: Cell? = null
+        private set
+    var bottom: Cell? = null
+        private set
+    private var top: Cell? = null
 
     // called after the whole grid.getCells() sequence has been initialized/filled
-    void initAdjacencyRelations() {
-        left = (col > 0) ? grid.getCellByIndex(row * grid.getNumCellSide() + col - 1) : null;
-        cellToDirMapperMap.put(left, new Point2D(1, 0));
-        right = (col < grid.getNumCellSide() - 1) ? grid.getCellByIndex(row * grid.getNumCellSide() + col + 1) : null;
-        cellToDirMapperMap.put(right, new Point2D(-1, 0));
-        top = (row > 0) ? grid.getCellByIndex((row - 1) * grid.getNumCellSide() + col) : null;
-        cellToDirMapperMap.put(top, new Point2D(0, 1));
-        bottom = (row < grid.getNumCellSide() - 1) ? grid.getCellByIndex((row + 1) * grid.getNumCellSide() + col) : null;
-        cellToDirMapperMap.put(bottom, new Point2D(0, -1));
+    fun initAdjacencyRelations() {
+        left = if (col > 0) grid.getCellByIndex(row * grid.numCellSide + col - 1) else null
+        cellToDirMapperMap[left] = Point2D(1.0, 0.0)
+        right = if (col < grid.numCellSide - 1) grid.getCellByIndex(row * grid.numCellSide + col + 1) else null
+        cellToDirMapperMap[right] = Point2D(-1.0, 0.0)
+        top = if (row > 0) grid.getCellByIndex((row - 1) * grid.numCellSide + col) else null
+        cellToDirMapperMap[top] = Point2D(0.0, 1.0)
+        bottom = if (row < grid.numCellSide - 1) grid.getCellByIndex((row + 1) * grid.numCellSide + col) else null
+        cellToDirMapperMap[bottom] = Point2D(0.0, -1.0)
     }
 
-    public Point2D getCellSizeMapper(Cell neighbor) {
-        return cellToDirMapperMap.get(neighbor);
+    private fun getCellSizeMapper(neighbor: Cell?): Point2D? {
+        return cellToDirMapperMap[neighbor]
     }
 
-    void update() {
-        xv.set(xv.get() + (cx - x.get()) * K_1);
-        yv.set(yv.get() + (cy - y.get()) * K_1);
-        updateCellXvAndYvIfNeighborNotNull(left);
-        updateCellXvAndYvIfNeighborNotNull(right);
-        updateCellXvAndYvIfNeighborNotNull(top);
-        updateCellXvAndYvIfNeighborNotNull(bottom);
-        xv.set(xv.get() * DAMP);
-        yv.set(yv.get() * DAMP);
-        x.set(x.get() + (int) xv.get());
-        y.set(y.get() + (int) yv.get());
+    fun update() {
+        xv.set(xv.get() + (cx - x.get()) * K_1)
+        yv.set(yv.get() + (cy - y.get()) * K_1)
+        updateCellXvAndYvIfNeighborNotNull(left)
+        updateCellXvAndYvIfNeighborNotNull(right)
+        updateCellXvAndYvIfNeighborNotNull(top)
+        updateCellXvAndYvIfNeighborNotNull(bottom)
+        xv.set(xv.get() * DAMP)
+        yv.set(yv.get() * DAMP)
+        x.set(x.get() + xv.get().toInt())
+        y.set(y.get() + yv.get().toInt())
     }
 
-    private void updateColor() {
-        final var dX = cx - x.get();
-        final var dY = cy - y.get();
-        this.color.set(Color.hsb(HUE_REF + (dX * dX + dY * dY), 1, 1));
+    private fun updateColor() {
+        val dX = cx - x.get()
+        val dY = cy - y.get()
+        color.set(Color.hsb(HUE_REF + (dX * dX + dY * dY), 1.0, 1.0))
     }
 
-    private void updateCellXvAndYvIfNeighborNotNull(Cell neighbor) {
+    private fun updateCellXvAndYvIfNeighborNotNull(neighbor: Cell?) {
         if (neighbor != null) {
-            Point2D mapper = getCellSizeMapper(neighbor);
-            xv.set(xv.get() + (neighbor.x.get() + mapper.getX() * grid.getCellSize() - x.get()) * K_2);
-            yv.set(yv.get() + (neighbor.y.get() + mapper.getY() * grid.getCellSize() - y.get()) * K_2);
+            val mapper = getCellSizeMapper(neighbor)
+            xv.set(xv.get() + (neighbor.x.get() + mapper!!.x * grid.cellSize - x.get()) * K_2)
+            yv.set(yv.get() + (neighbor.y.get() + mapper.y * grid.cellSize - y.get()) * K_2)
         }
     }
 
-    public void setVelocityVector(double vX, double vY) {
-        xv.set(vX);
-        yv.set(vY);
+    fun setVelocityVector(vX: Double, vY: Double) {
+        xv.set(vX)
+        yv.set(vY)
     }
 
-    public void damp(double factor) {
-        xv.set(xv.get() * factor);
-        yv.set(yv.get() * factor);
+    fun damp(factor: Double) {
+        xv.set(xv.get() * factor)
+        yv.set(yv.get() * factor)
     }
 
-    public double getX() {
-        return x.get();
+    fun xProperty(): DoubleProperty {
+        return x
     }
 
-    public DoubleProperty xProperty() {
-        return x;
+    fun setX(x: Double) {
+        this.x.set(x)
     }
 
-    public void setX(double x) {
-        this.x.set(x);
+    fun yProperty(): DoubleProperty {
+        return y
     }
 
-    public double getY() {
-        return y.get();
+    fun setY(y: Double) {
+        this.y.set(y)
     }
 
-    public DoubleProperty yProperty() {
-        return y;
+    fun colorProperty(): ObjectProperty<Color> {
+        return color
     }
 
-    public void setY(double y) {
-        this.y.set(y);
+    companion object {
+        private const val HUE_REF = 180.0
+        private const val K_1 = 0.01
+        private const val K_2 = 0.20000000000000001
+        private const val DAMP = 0.74
     }
 
-    public ObjectProperty<Color> colorProperty() {
-        return color;
-    }
-
-    public Cell getRight() {
-        return right;
-    }
-
-    public Cell getBottom() {
-        return bottom;
+    init {
+        x.set(col * grid.cellSize)
+        y.set(row * grid.cellSize)
+        cx = x.get()
+        cy = y.get()
+        xv.onNewValue { updateColor() }
+        yv.onNewValue { updateColor() }
     }
 }

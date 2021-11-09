@@ -22,64 +22,70 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+package shapethreedtest
 
-package shapethreedtest;
+import javafx.animation.Animation
+import javafx.animation.Interpolator
+import javafx.animation.RotateTransition
+import javafx.application.Application
+import javafx.application.ConditionalFeature
+import javafx.application.Platform
+import javafx.scene.Group
+import javafx.scene.PerspectiveCamera
+import javafx.scene.Scene
+import javafx.scene.paint.Color
+import javafx.scene.shape.Ellipse
+import javafx.scene.transform.Rotate
+import javafx.stage.Stage
+import javafx.util.Duration
 
-import javafx.animation.Interpolator;
-import javafx.animation.RotateTransition;
-import javafx.application.Application;
-import javafx.application.ConditionalFeature;
-import javafx.application.Platform;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Ellipse;
-import javafx.scene.transform.Rotate;
-import javafx.stage.Stage;
-import javafx.util.Duration;
+fun main() = EllipsesT3D().start()
 
-public class EllipsesT3D extends Application {
+class EllipsesT3D : Application() {
 
-    @Override public void start(Stage stage) {
-        final double sceneWidth = 640;
-        final double sceneHeight = 480;
+    fun start() = launch()
 
-        final Ellipse ellipse = new Ellipse(sceneWidth / 2, sceneHeight / 2, 200, 100);
-        ellipse.setFill(Color.BLUE);
-        ellipse.setTranslateX(-100);
-        ellipse.setTranslateY(-100);
-        ellipse.setTranslateZ(-100);
-        final Ellipse ellipse2 = new Ellipse(sceneWidth / 2, sceneHeight / 2, 200, 100);
-        ellipse2.setFill(Color.GREEN);
-        final Ellipse ellipse3 = new Ellipse(sceneWidth / 2, sceneHeight / 2, 200, 100);
-        ellipse3.setFill(Color.RED);
-        ellipse3.setTranslateX(100);
-        ellipse3.setTranslateY(100);
-        ellipse3.setTranslateZ(100);
-        final Group group = new Group(ellipse, ellipse2, ellipse3);
-        group.setRotationAxis(Rotate.Y_AXIS);
-        final Scene scene = new Scene(group, 640, 480, true);
-        scene.setFill(Color.BLACK);
-        scene.setCamera(new PerspectiveCamera());
-        stage.setScene(scene);
-        stage.sizeToScene();
-        stage.show();
+    override fun start(stage: Stage) {
+        val sceneWidth = 640.0
+        val sceneHeight = 480.0
 
-        if (!Platform.isSupported(ConditionalFeature.SCENE3D)) {
-            System.out.println("*************************************************************");
-            System.out.println("*    WARNING: common conditional SCENE3D isn't supported    *");
-            System.out.println("*************************************************************");
+        val ellipse = Ellipse(sceneWidth / 2, sceneHeight / 2, 200.0, 100.0).apply {
+            fill = Color.BLUE
+            translateX = -100.0
+            translateY = -100.0
+            translateZ = -100.0
         }
-
-        final RotateTransition tx = new RotateTransition(Duration.seconds(20), group);
-        tx.setToAngle(360);
-        tx.setCycleCount(RotateTransition.INDEFINITE);
-        tx.setInterpolator(Interpolator.LINEAR);
-        tx.play();
-    }
-
-    public static void main(String[] args) {
-        Application.launch(args);
+        val ellipse2 = Ellipse(sceneWidth / 2, sceneHeight / 2, 200.0, 100.0).apply {
+            fill = Color.GREEN
+        }
+        val ellipse3 = Ellipse(sceneWidth / 2, sceneHeight / 2, 200.0, 100.0).apply {
+            fill = Color.RED
+            translateX = 100.0
+            translateY = 100.0
+            translateZ = 100.0
+        }
+        val group = Group(ellipse, ellipse2, ellipse3).apply {
+            rotationAxis = Rotate.Y_AXIS
+        }
+        val scene = Scene(group, 640.0, 480.0, true).apply {
+            fill = Color.BLACK
+            camera = PerspectiveCamera()
+        }
+        stage.apply {
+            this.scene = scene
+            sizeToScene()
+            show()
+        }
+        if (!Platform.isSupported(ConditionalFeature.SCENE3D)) {
+            println("*************************************************************")
+            println("*    WARNING: common conditional SCENE3D isn't supported    *")
+            println("*************************************************************")
+        }
+        RotateTransition(Duration.seconds(20.0), group).apply {
+            toAngle = 360.0
+            cycleCount = Animation.INDEFINITE
+            interpolator = Interpolator.LINEAR
+            play()
+        }
     }
 }

@@ -25,7 +25,11 @@
 
 package shapethreedtest;
 
-import javafx.animation.*;
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.PauseTransition;
+import javafx.animation.RotateTransition;
+import javafx.animation.SequentialTransition;
 import javafx.application.Application;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;

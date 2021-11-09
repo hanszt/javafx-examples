@@ -43,8 +43,8 @@ public class Main extends Application {
     private static final int WIDTH = 380;
     private static final int HEIGHT = 500;
 
-    VBox launcher = new VBox(15);
-    Info info = new Info();
+    private final VBox launcher = new VBox(15);
+    private final Info info = new Info();
 
     @Override public void start(Stage stage) {
         stage.setTitle("Touch Suite");
@@ -64,7 +64,7 @@ public class Main extends Application {
         stage.show();
     }
 
-    private Node createLauncher(final String name, final Class<?> app) {
+    private static Node createLauncher(final String name, final Class<?> app) {
         Text text = new Text(name);
         text.setFont(new Font(25));
         text.setFill(Color.DARKBLUE);
@@ -75,12 +75,12 @@ public class Main extends Application {
         return text;
     }
 
-    private void textOnMouseClicked(Class<?> app) {
+    private static void textOnMouseClicked(Class<?> app) {
         Stage stage = new Stage();
         try {
             ((Application) app.getDeclaredConstructor().newInstance()).start(stage);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e);
         }
     }
 
@@ -151,7 +151,7 @@ public class Main extends Application {
             close.setOnMouseClicked(event -> Info.this.setVisible(false));
 
             vb.getChildren().addAll(n, t, runText, close);
-            getChildren().addAll(bg, vb);
+            super.getChildren().addAll(bg, vb);
         }
 
         public void show(final String name, final Class<?> app, final String info) {
@@ -167,7 +167,7 @@ public class Main extends Application {
             try {
                 ((Application) app.getDeclaredConstructor().newInstance()).start(stage);
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new IllegalStateException(e);
             }
         }
 

@@ -25,10 +25,10 @@
 
 package strechygrid;
 
-import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import utils.FxUtils;
 
 /**
  * A fabric made up of a bunch of lines. When using the application, you use the
@@ -44,15 +44,10 @@ public class StretchyGrid extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        final Grid grid = new Grid(100, 8);
-        AnimationTimer timer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                grid.update();
-            }
-        };
-        timer.start();
-        Scene scene = new Scene(grid);
+        final var grid = new Grid(100, 8);
+        FxUtils.animationTimer(grid::update).start();
+
+        var scene = new Scene(grid);
         grid.configure();
         primaryStage.setScene(scene);
         primaryStage.setTitle(getClass().getSimpleName());

@@ -1,5 +1,6 @@
 package utils;
 
+import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -9,6 +10,7 @@ import javafx.scene.Parent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.LongConsumer;
 
 public final class FxUtils {
 
@@ -48,5 +50,18 @@ public final class FxUtils {
             runnable.run();
             event.consume();
         };
+    }
+
+    public static AnimationTimer animationTimer(LongConsumer animationConsumer) {
+        return new AnimationTimer() {
+            @Override
+            public void handle(long l) {
+                animationConsumer.accept(l);
+            }
+        };
+    }
+
+    public static AnimationTimer animationTimer(Runnable runnable) {
+        return animationTimer(l -> runnable.run());
     }
 }

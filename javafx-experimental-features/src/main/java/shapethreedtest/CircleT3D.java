@@ -48,6 +48,7 @@ import org.apache.logging.log4j.Logger;
 public class CircleT3D extends Application {
 
     private static final Logger LOGGER = LogManager.getLogger(CircleT3D.class);
+
     @Override
     public void start(Stage stage) {
         LOGGER.info("{} starting...", CircleT3D.class.getSimpleName());

@@ -37,6 +37,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
+        <kotlin.version>1.5.31</kotlin.version>
         <!--        plugins-->
         <javafx-maven-plugin.version>0.0.6</javafx-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
@@ -74,6 +75,17 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-math3</artifactId>
                 <version>${commons-math3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-jdk8</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-test</artifactId>
+                <version>${kotlin.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -198,6 +210,22 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>testCompile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.openjfx</groupId>
@@ -220,6 +248,41 @@
                 </configuration>
             </plugin>
         </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-maven-plugin</artifactId>
+                    <version>${kotlin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>compile</id>
+                            <phase>process-sources</phase>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                            <configuration>
+                                <sourceDirs>
+                                    <source>src/main/java</source>
+                                    <source>src/main/kotlin</source>
+                                </sourceDirs>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>test-compile</id>
+                            <phase>test-compile</phase>
+                            <goals>
+                                <goal>test-compile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <jvmTarget>1.8</jvmTarget>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
 </project>

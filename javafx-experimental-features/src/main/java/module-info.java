@@ -7,6 +7,7 @@ module Main.app {
     requires org.jetbrains.annotations;
     requires org.apache.logging.log4j;
     requires javafx.utils;
+    requires kotlin.stdlib;
 
     opens shapethreedtest to javafx.graphics;
     opens strechygrid to javafx.graphics;
