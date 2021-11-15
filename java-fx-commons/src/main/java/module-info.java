@@ -10,4 +10,5 @@ open module javafx.utils {
     exports interfaces;
     exports services;
     exports fx_customs;
+    exports utils.stream;
 }
