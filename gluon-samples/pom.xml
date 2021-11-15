@@ -7,7 +7,7 @@
 
     <parent>
         <groupId>org.javafx.examples</groupId>
-        <artifactId>a-javafx-examples-project</artifactId>
+        <artifactId>javafx-examples</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
@@ -29,10 +29,10 @@
         <module>comments</module>
         <module>doodle-trace</module>
         <module>fiftystates</module>
-        <module>gluon-connect-basic-usage</module>
-        <module>gluon-connect-file-provider</module>
-        <module>gluon-connect-rest-provider</module>
-        <module>hello-tribuo</module>
+        <module>connect-basic-usage</module>
+        <module>connect-file-provider</module>
+        <module>connect-rest-provider</module>
+        <module>hellotribuo</module>
         <module>notes</module>
         <module>pushnotes</module>
     </modules>

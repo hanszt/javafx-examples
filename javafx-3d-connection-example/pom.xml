@@ -11,6 +11,6 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>javafx3d-connection-example</artifactId>
+    <artifactId>javafx-3d-connection-example</artifactId>
 
 </project>

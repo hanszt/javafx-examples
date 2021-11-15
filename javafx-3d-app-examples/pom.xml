@@ -11,7 +11,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>java-fx-3d-app-examples</artifactId>
+    <artifactId>javafx-3d-app-examples</artifactId>
 
     <dependencies>
         <dependency>

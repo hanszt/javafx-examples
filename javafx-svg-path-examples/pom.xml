@@ -11,14 +11,26 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>java-fx-svg-path-examples</artifactId>
+    <artifactId>javafx-svg-path-examples</artifactId>
+
+    <properties>
+        <batik-transcoder.version>1.14</batik-transcoder.version>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-transcoder</artifactId>
-            <version>1.13</version>
+            <version>${batik-transcoder.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
 
 </project>

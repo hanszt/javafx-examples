@@ -11,6 +11,6 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>popup-example</artifactId>
+    <artifactId>javafx-popup-example</artifactId>
 
 </project>

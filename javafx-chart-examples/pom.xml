@@ -11,7 +11,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>java-fx-chart-examples</artifactId>
+    <artifactId>javafx-chart-examples</artifactId>
 
     <dependencies>
         <dependency>

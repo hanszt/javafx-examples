@@ -11,7 +11,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>java-fx-layout-examples</artifactId>
+    <artifactId>javafx-layout-examples</artifactId>
 
     <properties>
         <bootstrapfx-core.version>0.4.0</bootstrapfx-core.version>
@@ -25,4 +25,11 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
 </project>

@@ -6,32 +6,34 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.javafx.examples</groupId>
-    <artifactId>a-javafx-examples-project</artifactId>
+    <artifactId>javafx-examples</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <name>A javafx examples project</name>
+
     <modules>
-        <module>java_fx_3d_app_examples</module>
-        <module>java_fx_animations_using_keyframes_example</module>
-        <module>java_fx_chart_examples</module>
-        <module>java_fx_controls_examples</module>
-        <module>java_fx_dyn4j-2d-physics-engine-example</module>
-        <module>java_fx_filechooser_examples</module>
-        <module>java_fx_layout_examples</module>
-        <module>java_fx_popup-example</module>
-        <module>java_fx_svg_path_examples</module>
-        <module>java_fx_transformation_examples</module>
-        <module>javafx3D_connection_example</module>
-        <module>javafx3D_FXyz_library</module>
+        <module>javafx-3d-app-examples</module>
+        <module>javafx-animations-using-keyframes-example</module>
+        <module>javafx-chart-examples</module>
+        <module>javafx-controls-examples</module>
+        <module>javafx-dyn4j-2d-physics-engine-example</module>
+        <module>javafx-filechooser-examples</module>
+        <module>javafx-layout-examples</module>
+        <module>javafx-popup-example</module>
+        <module>javafx-svg-path-examples</module>
+        <module>javafx-3d-transformation-example</module>
+        <module>javafx-3d-connection-example</module>
+        <module>javafx-3d-fxyz-library</module>
         <module>javafx-2d-shapes-examples</module>
-        <module>java_fx_3d_shapes_examples</module>
-        <module>java_fx_3d_motion_examples</module>
+        <module>javafx-3d-shapes-examples</module>
+        <module>javafx-3d-motion-examples</module>
         <module>javafx-experimental-features</module>
         <module>clean-ui</module>
-        <module>java-fx-commons</module>
+        <module>javafx-commons</module>
         <module>gluon-samples</module>
         <module>examples-open-jfx</module>
-        <module>java-fx-bindings</module>
+        <module>javafx-bindings</module>
     </modules>
 
     <properties>

@@ -11,6 +11,6 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>java-fx-filechooser-examples</artifactId>
+    <artifactId>javafx-filechooser-examples</artifactId>
 
 </project>

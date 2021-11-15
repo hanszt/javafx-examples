@@ -11,12 +11,7 @@ Please see [LICENSE-ObjModelImporterJFX.txt](LICENSE-ObjModelImporterJFX.txt) fo
 Scooter model used under license: CCA 3.0. Please see [LICENSE-Scooter.txt](LICENSE-Scooter.txt) for more details.
 
 # Setup
-Before you run the program, make sure you modify the following in Intellij:
-- Go to File -->  hzt.Settings --> Appearance and Behaviour --> Path Variables
-- Add a new path variable by clicking on the + sign and name it PATH_TO_FX and browse to the lib folder of the JavaFX SDK to set its value, and click apply.
-- Go to Run --> Edit Configurations
-- Type the following in the VM Options section: `--module-path ${PATH_TO_FX} --add-modules javafx.controls,javafx.fxml`
-- Click Apply and Run the application. It should work now.
+- add the lib folder as library. Right click on lib and choose `Add as library...`
 
 [Source](https://openjfx.io/openjfx-docs/#IDE-Intellij)
 

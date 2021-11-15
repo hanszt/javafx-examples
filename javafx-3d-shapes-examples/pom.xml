@@ -11,7 +11,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>java-fx-3d-shapes-examples</artifactId>
+    <artifactId>javafx-3d-shapes-examples</artifactId>
 
     <dependencies>
         <dependency>
@@ -21,4 +21,13 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
+
 </project>

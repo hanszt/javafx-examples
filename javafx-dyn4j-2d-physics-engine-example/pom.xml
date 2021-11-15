@@ -11,6 +11,6 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>physics-engine</artifactId>
+    <artifactId>javafx-dyn4j-2d-physics-engine-example</artifactId>
 
 </project>
