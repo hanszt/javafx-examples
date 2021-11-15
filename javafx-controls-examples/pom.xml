@@ -11,7 +11,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>fx-controls-examples</artifactId>
+    <artifactId>javafx-controls-examples</artifactId>
 
     <dependencies>
         <dependency>

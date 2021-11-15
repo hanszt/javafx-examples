@@ -9,6 +9,6 @@ class GaussianChartApp : Application() {
 
     fun start() = launch()
 
-    override fun start(stage: Stage) = GaussianChart().start(stage)
+    override fun start(stage: Stage) = GaussianLineChart().start(stage)
 
 }

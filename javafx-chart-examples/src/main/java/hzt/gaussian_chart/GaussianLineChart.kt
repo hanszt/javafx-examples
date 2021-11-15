@@ -24,8 +24,7 @@ import java.math.RoundingMode
 import java.util.*
 import java.util.stream.IntStream
 
-
-class GaussianChart {
+open class GaussianLineChart {
 
     private val stdDevSlider: Slider = Slider()
 
@@ -42,7 +41,8 @@ class GaussianChart {
         val toggleButton = ToggleButton("Line dashed")
         toggleButton.onPressed(series::setLineDashed)
 
-        val chart = createLineChart()
+        series.data.addAll(createDataPoints(meanSlider.value, stdDevSlider.value))
+        val chart = createChart().apply { data.addAll(series) }
 
         val colorPicker = ColorPicker().apply {
             onChange(series::setColor)
@@ -82,9 +82,8 @@ class GaussianChart {
         isShowTickMarks = true
     }
 
-    private fun createLineChart(): XYChart<Number, Number> {
-        series.data.addAll(createDataPoints(meanSlider.value, stdDevSlider.value))
-        return LineChart(NumberAxis(), NumberAxis()).apply { data.addAll(series) }
+    open fun createChart(): XYChart<Number, Number> {
+        return LineChart(NumberAxis(), NumberAxis())
     }
 
     private fun createDataPoints(mean: Double, stdDev: Double): List<XYChart.Data<Number, Number>> {
