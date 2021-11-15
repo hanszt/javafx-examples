@@ -25,7 +25,7 @@
         <module>javafx-3d-transformation-example</module>
         <module>javafx-3d-connection-example</module>
         <module>javafx-3d-fxyz-library</module>
-        <module>javafx-2d-shapes-examples</module>
+        <module>javafx-2d-shape-examples</module>
         <module>javafx-3d-shapes-examples</module>
         <module>javafx-3d-motion-examples</module>
         <module>javafx-experimental-features</module>
