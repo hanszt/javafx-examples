@@ -12,7 +12,9 @@ public class Fx2D9DrawingCubicCurves extends Application {
     @Override
     public void start(Stage stage) {
         // Create the CubicCurves
-//        CubicCurve(double startX, double startY, double controlX1, double controlY1, double controlX2, double controlY2, double endX, double endY)
+//        CubicCurve(double startX, double startY, double controlX1,
+//        double controlY1, double controlX2, double controlY2, double endX,
+//        double endY)
         CubicCurve cubicCurve1 = new CubicCurve(0, 50, 20, 0, 50, 80, 50, 0);
         cubicCurve1.setFill(Color.TRANSPARENT);
         cubicCurve1.setStroke(Color.BLACK);

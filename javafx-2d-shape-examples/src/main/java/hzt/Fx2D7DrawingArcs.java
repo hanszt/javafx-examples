@@ -16,7 +16,7 @@ public class Fx2D7DrawingArcs extends Application {
     public void start(Stage stage)
     {
         // Create an open arc with a fill
-//        Arc(double centerX, double centerY, double radiusX, double radiusY, double startAngle, double length)
+        //        centerX, centerY, radiusX, radiusY, startAngle, length
         Arc arc1 = new Arc(0, 0, 50, 100, 0, 90);
         arc1.setFill(Color.LIGHTGRAY);
 
