@@ -6,7 +6,10 @@ import javafx.scene.chart.XYChart
 
 class GaussianAreaChart : GaussianLineChart() {
 
-    override fun createChart(): XYChart<Number, Number> {
-        return AreaChart(NumberAxis(), NumberAxis())
+    override fun createChart(): XYChart<Number, Number> = AreaChart(NumberAxis(), NumberAxis())
+
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) = launch(GaussianAreaChart::class.java)
     }
 }

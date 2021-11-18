@@ -1,10 +1,7 @@
 package hzt.gaussian_chart
 
-import fxutils.ifImagePresent
-import fxutils.onChange
-import fxutils.onPressed
-import fxutils.setColor
-import fxutils.setLineDashed
+import fxutils.*
+import javafx.application.Application
 import javafx.scene.Scene
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
@@ -24,25 +21,22 @@ import java.math.RoundingMode
 import java.util.*
 import java.util.stream.IntStream
 
-open class GaussianLineChart {
+open class GaussianLineChart : Application() {
 
-    private val stdDevSlider: Slider = Slider()
-
-    private val meanSlider: Slider = Slider()
-
-    private val groupingSlider: Slider = Slider()
-
+    private val stdDevSlider: Slider = Slider().configure(5.0, 20.0)
+    private val meanSlider: Slider = Slider().configure(-100.0, 5.0, 100.0)
+    private val groupingSlider: Slider = Slider().configure(-1.0, 1.0, 1.0)
     private val series = XYChart.Series<Number, Number>().apply { name = "Gaussian distribution" }
 
-    fun start(stage: Stage) {
+    override fun start(stage: Stage) {
         val titleLabel = Label("Gaussian Chart").apply { font = Font.font(20.0) }
         val sliderBox = configuredSliderBox()
 
         val toggleButton = ToggleButton("Line dashed")
         toggleButton.onPressed(series::setLineDashed)
 
-        series.data.addAll(createDataPoints(meanSlider.value, stdDevSlider.value))
-        val chart = createChart().apply { data.addAll(series) }
+        series.addGaussianDataPoints(meanSlider.value, stdDevSlider.value)
+        val chart = createChart().apply { data.add(series) }
 
         val colorPicker = ColorPicker().apply {
             onChange(series::setColor)
@@ -51,62 +45,53 @@ open class GaussianLineChart {
 
         val root = VBox(titleLabel, chart, sliderBox, HBox(colorPicker, toggleButton)).apply { spacing = 10.0 }
         val scene = Scene(root, 800.0, 600.0)
-        val location = "/../icons/fx-icon.png"
+        val location = "/icons/fx-icon.png"
 
         stage.apply {
             this.scene = scene
-            javaClass.getResourceAsStream(location).ifImagePresent(icons::add)
-            show()
-        }
+            GaussianLineChart::class.java.getResourceAsStream(location).ifImagePresent(icons::add)
+        }.show()
     }
 
-    private fun configuredSliderBox(): HBox {
-        meanSlider.configure(-100.0, 5.0, 100.0)
-        stdDevSlider.configure(5.0, 20.0)
-        groupingSlider.configure(-1.0, .5, 1.0)
-        return HBox(
-            VBox(Label("standard deviation slider"), stdDevSlider),
-            VBox(Label("mean slider"), meanSlider),
-            VBox(Label("grouping slider"), groupingSlider)
-        )
-    }
+    private fun configuredSliderBox(): HBox = HBox(
+        VBox(Label("standard deviation slider"), stdDevSlider),
+        VBox(Label("mean slider"), meanSlider),
+        VBox(Label("grouping slider"), groupingSlider)
+    )
 
-    private fun Slider.configure(value: Double, max: Double) = configure(0.0, value, max)
+    private fun Slider.configure(value: Double, max: Double): Slider = configure(0.0, value, max)
 
-    private fun Slider.configure(min: Double, value: Double, max: Double) {
-        onChange { series.updateDataPoints() }
+    private fun Slider.configure(min: Double, value: Double, max: Double): Slider {
         this.min = min
         this.value = value
         this.max = max
         isShowTickLabels = true
         isShowTickMarks = true
+        onChange { series.updateDataPoints() }
+        return this
     }
 
-    open fun createChart(): XYChart<Number, Number> {
-        return LineChart(NumberAxis(), NumberAxis())
-    }
+    open fun createChart(): XYChart<Number, Number> = LineChart(NumberAxis(), NumberAxis())
 
-    private fun createDataPoints(mean: Double, stdDev: Double): List<XYChart.Data<Number, Number>> {
-        return IntStream.range(0, 100_000)
+    private fun XYChart.Series<Number, Number>.addGaussianDataPoints(mean: Double, stdDev: Double) {
+        data.addAll(IntStream.range(0, 100_000)
             .mapToObj { RANDOM.nextGaussian(mean, stdDev) }
             .groupBy(::roundedGaussian)
-            .map { XYChart.Data(it.key.toInt(), it.value.size) }
+            .map { XYChart.Data(it.key.toInt(), it.value.size) })
     }
 
     private fun XYChart.Series<Number, Number>.updateDataPoints() {
         data.clear()
-        val createDataPoints = createDataPoints(meanSlider.value, stdDevSlider.value)
-        data.addAll(createDataPoints)
+        addGaussianDataPoints(meanSlider.value, stdDevSlider.value)
     }
 
-    private fun roundedGaussian(gaussian: Double): BigDecimal {
-        return gaussian.toBigDecimal()
-            .multiply(BigDecimal.valueOf(groupingSlider.value))
-            .setScale(0, RoundingMode.HALF_UP)
-    }
+    private fun roundedGaussian(gaussian: Double): BigDecimal = gaussian.toBigDecimal()
+        .multiply(BigDecimal.valueOf(groupingSlider.value))
+        .setScale(0, RoundingMode.HALF_UP)
 
     companion object {
+        @JvmStatic
+        fun main(args: Array<String>) = launch(GaussianLineChart::class.java)
         val RANDOM = Random()
     }
-
 }

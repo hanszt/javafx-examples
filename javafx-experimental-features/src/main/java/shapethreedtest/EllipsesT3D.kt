@@ -49,24 +49,11 @@ class EllipsesT3D : Application() {
         val sceneWidth = 640.0
         val sceneHeight = 480.0
 
-        val ellipse = Ellipse(sceneWidth / 2, sceneHeight / 2, 200.0, 100.0).apply {
-            fill = Color.BLUE
-            translateX = -100.0
-            translateY = -100.0
-            translateZ = -100.0
-        }
-        val ellipse2 = Ellipse(sceneWidth / 2, sceneHeight / 2, 200.0, 100.0).apply {
-            fill = Color.GREEN
-        }
-        val ellipse3 = Ellipse(sceneWidth / 2, sceneHeight / 2, 200.0, 100.0).apply {
-            fill = Color.RED
-            translateX = 100.0
-            translateY = 100.0
-            translateZ = 100.0
-        }
-        val group = Group(ellipse, ellipse2, ellipse3).apply {
-            rotationAxis = Rotate.Y_AXIS
-        }
+        val ellipse = Ellipse(sceneWidth / 2, sceneHeight / 2, 200.0, 100.0).configure(-100.0, Color.BLUE)
+        val ellipse2 = Ellipse(sceneWidth / 2, sceneHeight / 2, 200.0, 100.0).apply { fill = Color.GREEN }
+        val ellipse3 = Ellipse(sceneWidth / 2, sceneHeight / 2, 200.0, 100.0).configure(100.0, Color.RED)
+
+        val group = Group(ellipse, ellipse2, ellipse3).apply { rotationAxis = Rotate.Y_AXIS }
         val scene = Scene(group, 640.0, 480.0, true).apply {
             fill = Color.BLACK
             camera = PerspectiveCamera()
@@ -85,7 +72,14 @@ class EllipsesT3D : Application() {
             toAngle = 360.0
             cycleCount = Animation.INDEFINITE
             interpolator = Interpolator.LINEAR
-            play()
-        }
+        }.play()
+    }
+
+    private fun Ellipse.configure(translate: Double, color: Color): Ellipse {
+        fill = color
+        translateX = translate
+        translateY = translate
+        translateZ = translate
+        return this
     }
 }

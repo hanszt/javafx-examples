@@ -1,111 +1,85 @@
-package hzt;
+package hzt
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.control.DatePicker;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.util.StringConverter;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import fxutils.onNewValue
+import javafx.beans.property.ObjectProperty
+import javafx.beans.property.SimpleObjectProperty
+import javafx.scene.control.DatePicker
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyEvent
+import javafx.util.StringConverter
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 /**
  * A DateTimePicker with configurable datetime format where both date and time can be changed
  * via the text field and the date can additionally be changed via the JavaFX default date picker.
  */
-@SuppressWarnings("unused")
-public class DateTimePicker extends DatePicker {
+class DateTimePicker : DatePicker() {
 
-    public static final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm";
-
-    private DateTimeFormatter formatter;
-    private final ObjectProperty<LocalDateTime> dateTimeValue = new SimpleObjectProperty<>(LocalDateTime.now());
-    private final ObjectProperty<String> format = new SimpleObjectProperty<>() {
-
-        @Override
-        public void set(String newValue) {
-            super.set(newValue);
-            formatter = DateTimeFormatter.ofPattern(newValue);
+    private var formatter: DateTimeFormatter? = null
+    private val dateTimeValue: ObjectProperty<LocalDateTime> = SimpleObjectProperty(LocalDateTime.now())
+    private val format: ObjectProperty<String> = object : SimpleObjectProperty<String>() {
+        override fun set(newValue: String) {
+            super.set(newValue)
+            formatter = DateTimeFormatter.ofPattern(newValue)
         }
-    };
-
-    public DateTimePicker() {
-        getStyleClass().add("datetime-picker");
-        this.format.set(DEFAULT_FORMAT);
-        setConverter(new InternalConverter());
-
-        // Syncronize changes to the underlying date value back to the dateTimeValue
-        super.valueProperty().addListener(this::updateDateTimeValue);
-
-        // Synchronize changes to dateTimeValue back to the underlying date value
-        dateTimeValue.addListener((observable, oldValue, newValue) ->
-                setValue(newValue == null ? null : newValue.toLocalDate()));
-
-        // Persist changes onblur
-        getEditor().focusedProperty().addListener(this::simulateEnterPressed);
-
     }
 
-    public LocalDateTime getDateTimeValue() {
-        return dateTimeValue.get();
+    fun getDateTimeValue(): LocalDateTime {
+        return dateTimeValue.get()
     }
 
-    public void setDateTimeValue(LocalDateTime dateTimeValue) {
-        this.dateTimeValue.set(dateTimeValue);
-    }
-
-    public ObjectProperty<LocalDateTime> dateTimeValueProperty() {
-        return dateTimeValue;
-    }
-
-    public String getFormat() {
-        return format.get();
-    }
-
-    public ObjectProperty<String> formatProperty() {
-        return format;
-    }
-
-    private void simulateEnterPressed(ObservableValue<? extends Boolean> observable, Boolean oldValue, boolean newValue) {
+    private fun simulateEnterPressed(newValue: Boolean) {
         if (!newValue) {
-            getEditor().fireEvent(new KeyEvent(getEditor(), getEditor(), KeyEvent.KEY_PRESSED,
-                    null, null, KeyCode.ENTER, false, false, false, false));
-
+            editor.fireEvent(
+                KeyEvent(
+                    editor, editor, KeyEvent.KEY_PRESSED,
+                    null, null, KeyCode.ENTER, false, false, false, false
+                )
+            )
         }
     }
 
-    private void updateDateTimeValue(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
+    private fun updateDateTimeValue(newValue: LocalDate?) {
         if (newValue == null) {
-            dateTimeValue.set(null);
+            dateTimeValue.set(null)
         } else {
             if (dateTimeValue.get() == null) {
-                dateTimeValue.set(LocalDateTime.of(newValue, LocalTime.now()));
+                dateTimeValue.set(LocalDateTime.of(newValue, LocalTime.now()))
             } else {
-                LocalTime time = dateTimeValue.get().toLocalTime();
-                dateTimeValue.set(LocalDateTime.of(newValue, time));
+                val time = dateTimeValue.get()!!.toLocalTime()
+                dateTimeValue.set(LocalDateTime.of(newValue, time))
             }
         }
     }
 
-    class InternalConverter extends StringConverter<LocalDate> {
-        public String toString(LocalDate object) {
-            LocalDateTime value = getDateTimeValue();
-            return (value != null) ? value.format(formatter) : "";
-        }
+    internal inner class InternalConverter : StringConverter<LocalDate?>() {
+        override fun toString(`object`: LocalDate?): String = getDateTimeValue().format(formatter)
 
-        public LocalDate fromString(String value) {
-            if (value == null) {
-                dateTimeValue.set(null);
-                return null;
-            }
-
-            dateTimeValue.set(LocalDateTime.parse(value, formatter));
-            return dateTimeValue.get().toLocalDate();
+        override fun fromString(value: String): LocalDate? {
+            dateTimeValue.set(LocalDateTime.parse(value, formatter))
+            return dateTimeValue.get()!!.toLocalDate()
         }
     }
 
+    companion object {
+        const val DEFAULT_FORMAT = "yyyy-MM-dd HH:mm"
+    }
+
+    init {
+        styleClass.add("datetime-picker")
+        format.set(DEFAULT_FORMAT)
+        converter = InternalConverter()
+
+        // Synchronize changes to the underlying date value back to the dateTimeValue
+        super.valueProperty().onNewValue(::updateDateTimeValue)
+
+        // Synchronize changes to dateTimeValue back to the underlying date value
+        dateTimeValue.onNewValue { value = it?.toLocalDate() }
+
+        // Persist changes onblur
+        editor.focusedProperty().onNewValue(::simulateEnterPressed)
+    }
 }
