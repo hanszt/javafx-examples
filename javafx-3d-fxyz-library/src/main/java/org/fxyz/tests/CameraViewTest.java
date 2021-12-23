@@ -1,10 +1,19 @@
 package org.fxyz.tests;
 
-import javafx.animation.*;
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -27,6 +36,10 @@ public class CameraViewTest extends Application {
     private double mousePosY;
     private double mouseOldX;
     private double mouseOldY;
+
+    public CameraViewTest() {
+        super();
+    }
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -69,7 +82,7 @@ public class CameraViewTest extends Application {
         return cameraTransformer;
     }
 
-    private CameraView buildSubSceneCameraView(SubScene subScene) {
+    private static CameraView buildSubSceneCameraView(SubScene subScene) {
         var cameraView = new CameraView(subScene);
         cameraView.setFirstPersonNavigationEnabled(true);
         cameraView.setFitWidth(350);
@@ -83,7 +96,7 @@ public class CameraViewTest extends Application {
         return cameraView;
     }
 
-    private PerspectiveCamera buildCamera() {
+    private static PerspectiveCamera buildCamera() {
         var camera = new PerspectiveCamera(true);
         camera.setNearClip(0.1);
         camera.setFarClip(10000.0);
@@ -122,7 +135,7 @@ public class CameraViewTest extends Application {
         }
     }
 
-    private void onKeyPressed(PerspectiveCamera camera, javafx.scene.input.KeyEvent event) {
+    private static void onKeyPressed(PerspectiveCamera camera, javafx.scene.input.KeyEvent event) {
         double change = 10.0;
         //Add shift modifier to simulate "Running Speed"
         if (event.isShiftDown()) {
@@ -147,7 +160,7 @@ public class CameraViewTest extends Application {
     }
 
     @NotNull
-    private PointLight buildCameraLight(PerspectiveCamera camera) {
+    private static PointLight buildCameraLight(PerspectiveCamera camera) {
         PointLight light = new PointLight(Color.WHITE);
         light.setTranslateX(camera.getTranslateX());
         light.setTranslateY(camera.getTranslateY());
@@ -155,7 +168,7 @@ public class CameraViewTest extends Application {
         return light;
     }
 
-    private void animateTorus(TorusMesh torus) {
+    private static void animateTorus(TorusMesh torus) {
         final Timeline t = new Timeline();
         t.getKeyFrames().addAll(new KeyFrame(Duration.seconds(5), // Frame End
                 new KeyValue(torus.tubeStartAngleOffsetProperty(), torus.getTubeStartAngleOffset() - 10, Interpolator.EASE_BOTH),
@@ -170,7 +183,7 @@ public class CameraViewTest extends Application {
         t.playFromStart();
     }
 
-    private TorusMesh buildTorus() {
+    private static TorusMesh buildTorus() {
         int rDivs = 32;
         int tDivs = 32;
         double rad = 600;

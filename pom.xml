@@ -196,6 +196,7 @@
 
 
     <build>
+
         <resources>
             <resource>
                 <directory>src/main/java</directory>
@@ -203,7 +204,11 @@
                     <include>**/*.fxml</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
         </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
