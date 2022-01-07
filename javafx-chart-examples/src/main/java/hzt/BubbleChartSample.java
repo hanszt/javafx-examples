@@ -11,6 +11,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class BubbleChartSample extends Application {
 
     private static final int LOWER_BOUND_X = 1;
@@ -49,25 +51,28 @@ public class BubbleChartSample extends Application {
     }
 
     private static void fillSeries1(XYChart.Series<Number, Number> series1) {
-        series1.getData().add(new XYChart.Data<>(3, 35, 2));
-        series1.getData().add(new XYChart.Data<>(12, 60, 1.8));
-        series1.getData().add(new XYChart.Data<>(15, 15, 7));
-        series1.getData().add(new XYChart.Data<>(22, 30, 2.5));
-        series1.getData().add(new XYChart.Data<>(28, 20, 1));
-        series1.getData().add(new XYChart.Data<>(35, 41, 5.5));
-        series1.getData().add(new XYChart.Data<>(42, 17, 9));
-        series1.getData().add(new XYChart.Data<>(49, 30, 1.8));
+        series1.getData().addAll(List.of(
+                new XYChart.Data<>(3, 35, 2),
+                new XYChart.Data<>(12, 60, 1.8),
+                new XYChart.Data<>(15, 15, 7),
+                new XYChart.Data<>(22, 30, 2.5),
+                new XYChart.Data<>(28, 20, 1),
+                new XYChart.Data<>(35, 41, 5.5),
+                new XYChart.Data<>(42, 17, 9),
+                new XYChart.Data<>(49, 30, 1.8)
+        ));
     }
 
     private static void fillSeries2(XYChart.Series<Number, Number> series2) {
-        series2.getData().add(new XYChart.Data<>(8, 15, 2));
-        series2.getData().add(new XYChart.Data<>(13, 23, 1));
-        series2.getData().add(new XYChart.Data<>(15, 45, 3));
-        series2.getData().add(new XYChart.Data<>(24, 30, 4.5));
-        series2.getData().add(new XYChart.Data<>(38, 78, 1));
-        series2.getData().add(new XYChart.Data<>(40, 41, 7.5));
-        series2.getData().add(new XYChart.Data<>(45, 57, 2));
-        series2.getData().add(new XYChart.Data<>(47, 23, 3.8));
+        series2.getData().addAll(List.of(
+                new XYChart.Data<>(8, 15, 2),
+                new XYChart.Data<>(13, 23, 1),
+                new XYChart.Data<>(15, 45, 3),
+                new XYChart.Data<>(24, 30, 4.5),
+                new XYChart.Data<>(38, 78, 1),
+                new XYChart.Data<>(40, 41, 7.5),
+                new XYChart.Data<>(45, 57, 2),
+                new XYChart.Data<>(47, 23, 3.8)));
     }
 
     private static void updateData(BubbleChart<Number, Number> bubbleChart) {

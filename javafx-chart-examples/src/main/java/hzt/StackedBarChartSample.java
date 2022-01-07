@@ -39,5 +39,4 @@ public class StackedBarChartSample extends BarChartSample {
     Pane populateControlsPane(Node... controls) {
         return new HBox(controls);
     }
-
 }

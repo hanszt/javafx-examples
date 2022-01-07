@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -70,7 +73,7 @@
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.json</artifactId>
-            <version>1.1.6</version>
+            <version>2.0.1</version>
             <classifier>module</classifier>
             <scope>runtime</scope>
         </dependency>
@@ -101,49 +104,12 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>desktop</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <clientTarget>host</clientTarget>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>com.gluonhq.attach</groupId>
-                    <artifactId>display</artifactId>
-                    <version>${attach.version}</version>
-                    <classifier>desktop</classifier>
-                </dependency>
-                <dependency>
-                    <groupId>com.gluonhq.attach</groupId>
-                    <artifactId>lifecycle</artifactId>
-                    <version>${attach.version}</version>
-                    <classifier>desktop</classifier>
-                </dependency>
-                <dependency>
-                    <groupId>com.gluonhq.attach</groupId>
-                    <artifactId>storage</artifactId>
-                    <version>${attach.version}</version>
-                    <classifier>desktop</classifier>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>android</id>
-            <properties>
-                <clientTarget>android</clientTarget>
-            </properties>
-        </profile>
-        <profile>
-            <id>ios</id>
-            <properties>
-                <clientTarget>ios</clientTarget>
-            </properties>
-        </profile>
-    </profiles>
+    <repositories>
+        <repository>
+            <id>gluon-releases</id>
+            <url>https://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
@@ -189,10 +155,48 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>gluon-releases</id>
-            <url>https://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
-        </repository>
-    </repositories>
+    <profiles>
+        <profile>
+            <id>desktop</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <clientTarget>host</clientTarget>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.gluonhq.attach</groupId>
+                    <artifactId>display</artifactId>
+                    <version>${attach.version}</version>
+                    <classifier>desktop</classifier>
+                </dependency>
+                <dependency>
+                    <groupId>com.gluonhq.attach</groupId>
+                    <artifactId>lifecycle</artifactId>
+                    <version>${attach.version}</version>
+                    <classifier>desktop</classifier>
+                </dependency>
+                <dependency>
+                    <groupId>com.gluonhq.attach</groupId>
+                    <artifactId>storage</artifactId>
+                    <version>${attach.version}</version>
+                    <classifier>desktop</classifier>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>android</id>
+            <properties>
+                <clientTarget>android</clientTarget>
+            </properties>
+        </profile>
+        <profile>
+            <id>ios</id>
+            <properties>
+                <clientTarget>ios</clientTarget>
+            </properties>
+        </profile>
+    </profiles>
+
 </project>

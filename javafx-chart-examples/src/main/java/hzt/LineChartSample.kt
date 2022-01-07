@@ -12,7 +12,6 @@ import javafx.stage.Stage
 import java.time.LocalDate
 import java.time.Month
 import java.util.*
-import java.util.function.Consumer
 
 fun main() = LineChartSample().start()
 
@@ -30,7 +29,7 @@ class LineChartSample : Application() {
                 FxSetup.series("Portfolio 2"),
                 FxSetup.series("Portfolio 3")
             )
-            data.forEach(Consumer { series: XYChart.Series<String, Number> -> getRandomData(series) })
+            data.forEach(::getRandomData)
             effect = FxSetup.preparedShadow(Color.GREY)
         }
 
@@ -43,7 +42,7 @@ class LineChartSample : Application() {
 
         private const val MAX = 60
 
-        private fun update(lineChart: LineChart<String, Number>) = lineChart.data.forEach { getRandomData(it) }
+        private fun update(lineChart: LineChart<String, Number>) = lineChart.data.forEach(::getRandomData)
 
         private fun getRandomData(series: XYChart.Series<String, Number>) {
             val data = series.data.apply { clear() }

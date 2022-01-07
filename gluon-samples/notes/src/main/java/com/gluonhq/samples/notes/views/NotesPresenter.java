@@ -49,12 +49,14 @@ import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 
 public class NotesPresenter extends GluonPresenter<Notes> {
 
@@ -71,53 +73,31 @@ public class NotesPresenter extends GluonPresenter<Notes> {
     @Inject private Service service;
 
     private FilteredList<Note> filteredList;
-    
+
+    public NotesPresenter() {
+        super();
+    }
+
     public void initialize() {
         Button filterButton = MaterialDesignIcon.FILTER_LIST.button(e ->
                 getApp().showLayer(Notes.POPUP_FILTER_NOTES));
         filterButton.getStyleClass().add("filter-button");
 
         notes.setShowTransitionFactory(BounceInLeftTransition::new);
-        notes.showingProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue) {
-                AppBar appBar = getApp().getAppBar();
-                appBar.setNavIcon(MaterialDesignIcon.MENU.button(e -> 
-                        getApp().getDrawer().open()));
-                appBar.setTitleText(resources.getString("appbar.title"));
-                appBar.getActionItems().add(filterButton);
-            }
-        });
+        notes.showingProperty().addListener((o, c, newValue) -> updateLook(filterButton, newValue));
         
         lstNotes.setCellFactory(p -> new NoteCell(service, this::edit, this::remove));
         lstNotes.setHeadersFunction(t -> t.getCreationDate().toLocalDate());
         lstNotes.setHeaderCellFactory(p -> new HeaderCell());
         lstNotes.setPlaceholder(new Label("There are no notes"));
         
-        service.notesProperty().addListener((ListChangeListener.Change<? extends Note> c) -> {
-            ObservableList<Note> notes = FXCollections.observableArrayList(new ArrayList<Note>(c.getList()));
-            filteredList = new FilteredList<>(notes);
-            lstNotes.setItems(filteredList);
-            lstNotes.setComparator(Comparator.comparing(Note::getCreationDate));
-        });
+        service.notesProperty().addListener(this::updateNotes);
         
         final FloatingActionButton floatingActionButton = new FloatingActionButton();
         floatingActionButton.setOnAction(e -> edit(null));
         floatingActionButton.showOn(notes);
         
-        getApp().addLayerFactory(Notes.POPUP_FILTER_NOTES, () -> {
-            GluonView filterView = new GluonView(FilterPresenter.class);
-            FilterPresenter filterPresenter = (FilterPresenter) filterView.getPresenter();
-            
-            SidePopupView sidePopupView = new SidePopupView(filterView.getView(), Side.TOP, true);
-            sidePopupView.showingProperty().addListener((obs, ov, nv) -> {
-                if (ov && !nv) {
-                    filteredList.setPredicate(filterPresenter.getPredicate());
-                    filterButton.pseudoClassStateChanged(PSEUDO_FILTER_ENABLED, filterPresenter.isFilterApplied());
-                }
-            });
-            
-            return sidePopupView; 
-        });
+        getApp().addLayerFactory(Notes.POPUP_FILTER_NOTES, () -> getSidePopupView(filterButton));
         
         service.retrieveNotes();
         
@@ -125,7 +105,38 @@ public class NotesPresenter extends GluonPresenter<Notes> {
         
         updateSettings();
     }
-    
+
+    private void updateLook(Button filterButton, boolean showing) {
+        if (showing) {
+            AppBar appBar = getApp().getAppBar();
+            appBar.setNavIcon(MaterialDesignIcon.MENU.button(e -> getApp().getDrawer().open()));
+            appBar.setTitleText(resources.getString("appbar.title"));
+            appBar.getActionItems().add(filterButton);
+        }
+    }
+
+    private void updateNotes(ListChangeListener.Change<? extends Note> c) {
+        ObservableList<Note> updatedNotes = FXCollections.observableArrayList(new ArrayList<Note>(c.getList()));
+        filteredList = new FilteredList<>(updatedNotes);
+        lstNotes.setItems(filteredList);
+        lstNotes.setComparator(Comparator.comparing(Note::getCreationDate));
+    }
+
+    @NotNull
+    private SidePopupView getSidePopupView(Button filterButton) {
+        GluonView filterView = new GluonView(FilterPresenter.class);
+        FilterPresenter filterPresenter = (FilterPresenter) filterView.getPresenter();
+
+        SidePopupView sidePopupView = new SidePopupView(filterView.getView(), Side.TOP, true);
+        sidePopupView.showingProperty().addListener((obs, ov, nv) -> {
+            if (ov && !nv) {
+                filteredList.setPredicate(filterPresenter.getPredicate());
+                filterButton.pseudoClassStateChanged(PSEUDO_FILTER_ENABLED, filterPresenter.isFilterApplied());
+            }
+        });
+        return sidePopupView;
+    }
+
     private void edit(Note note) {
         model.activeNote().set(note);
         AppViewManager.EDITION_VIEW.switchView();
@@ -137,34 +148,17 @@ public class NotesPresenter extends GluonPresenter<Notes> {
 
     private void updateSettings() {
         Settings settings = service.settingsProperty().get();
-        if (settings.isAscending()) {
-            lstNotes.setHeaderComparator(Comparator.naturalOrder());
-        } else {
-            lstNotes.setHeaderComparator(Comparator.reverseOrder());
-        }
-        
+        final var ascending = settings.isAscending();
+        lstNotes.setHeaderComparator(ascending ? Comparator.naturalOrder() : Comparator.reverseOrder());
         switch (settings.getSorting()) {
-            case DATE:  
-                if (settings.isAscending()) {
-                    lstNotes.setComparator(Comparator.comparing(Note::getCreationDate));
-                } else {
-                    lstNotes.setComparator((n1, n2) -> n2.getCreationDate().compareTo(n1.getCreationDate()));
-                }
-                break;
-            case TITLE: 
-                if (settings.isAscending()) {
-                    lstNotes.setComparator(Comparator.comparing(Note::getTitle));
-                } else {
-                    lstNotes.setComparator((n1, n2) -> n2.getTitle().compareTo(n1.getTitle()));
-                }
-                break;
-            case CONTENT: 
-                if (settings.isAscending()) {
-                    lstNotes.setComparator(Comparator.comparing(Note::getText));
-                } else {
-                    lstNotes.setComparator((n1, n2) -> n2.getText().compareTo(n1.getText()));
-                }
-                break;
+            case DATE -> lstNotes.setComparator(comparing(Note::getCreationDate, ascending));
+            case TITLE -> lstNotes.setComparator(comparing(Note::getTitle, ascending));
+            case CONTENT -> lstNotes.setComparator(comparing(Note::getText, ascending));
         }
+    }
+
+    private static <U extends Comparable<U>> Comparator<Note> comparing(
+            Function<Note, U> keyExtractor, boolean ascending) {
+        return ascending ? Comparator.comparing(keyExtractor) : Comparator.comparing(keyExtractor).reversed();
     }
 }

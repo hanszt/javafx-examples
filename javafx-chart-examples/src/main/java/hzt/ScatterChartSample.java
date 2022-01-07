@@ -16,6 +16,7 @@ import java.util.Random;
 
 public class ScatterChartSample extends Application {
 
+    private static final Random RANDOM = new Random();
     private static final int AMOUNT_DATA_POINTS_SERIES = 100;
     private static final int UPPER_BOUND_X = 10;
     private static final int UPPER_BOUND_Y = 500;
@@ -58,7 +59,7 @@ public class ScatterChartSample extends Application {
 
     private static void removeRandomSeries(ScatterChart<Number, Number> scatterChart) {
         if (!scatterChart.getData().isEmpty()) {
-            scatterChart.getData().remove(new Random().nextInt(scatterChart.getData().size()));
+            scatterChart.getData().remove(RANDOM.nextInt(scatterChart.getData().size()));
         }
     }
 

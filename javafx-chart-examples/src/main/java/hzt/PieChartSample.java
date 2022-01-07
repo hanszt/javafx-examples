@@ -14,7 +14,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -29,9 +28,8 @@ public class PieChartSample extends Application {
     private static final int INIT_AMOUNT = 5;
     private static final int UPPER_BOUND_AMOUNT = 100;
 
-    private static final List<String> POSSIBLE_FRUITS =
-            new ArrayList<>(Set.of("Grapefruit", "Oranges", "Plums", "Pears",
-                    "Apples", "Bananas", "Kiwis", "Mandarins", "Peaches", "Grapes", "Lemons", "Melons"));
+    private static final List<String> POSSIBLE_FRUITS = List.of("Grapefruit", "Oranges", "Plums", "Pears",
+                    "Apples", "Bananas", "Kiwis", "Mandarins", "Peaches", "Grapes", "Lemons", "Melons");
     private final Set<String> fruitsDisplayedSet = new HashSet<>();
 
     @Override

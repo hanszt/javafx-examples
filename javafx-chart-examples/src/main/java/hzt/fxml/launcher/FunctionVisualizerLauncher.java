@@ -9,10 +9,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
 public class FunctionVisualizerLauncher extends Application {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FunctionVisualizerLauncher.class);
 
     public static void main(String[] args) {
         Application.launch(FunctionVisualizerLauncher.class, args);
@@ -20,6 +24,7 @@ public class FunctionVisualizerLauncher extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        LOGGER.info("Starting {}...", FunctionVisualizerLauncher.class.getSimpleName());
         String resourceLocation = "/fxml/SizeApp.fxml";
         var resource = getClass().getResource(resourceLocation);
         final Parent root = resource != null ? FXMLLoader.load(resource) :
@@ -35,8 +40,9 @@ public class FunctionVisualizerLauncher extends Application {
         Optional.ofNullable(FxSetup.class.getResourceAsStream(location))
 				.map(Image::new)
 				.ifPresentOrElse(stage.getIcons()::add,
-						() -> System.err.println("Resource at " + location + " not found..."));
+						() -> LOGGER.error("Resource at {} not found...", location));
 
         stage.show();
+        LOGGER.info("{} started", FunctionVisualizerLauncher.class.getSimpleName());
     }
 }

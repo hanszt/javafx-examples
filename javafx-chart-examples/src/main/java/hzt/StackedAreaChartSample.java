@@ -5,11 +5,12 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.NotNull;
 
 public class StackedAreaChartSample extends XYChartSample {
 
     @Override
-    public void start(Stage stage) {
+    public void start(@NotNull Stage stage) {
         super.start(stage, "Stacked Area Chart Sample");
     }
 
@@ -19,7 +20,7 @@ public class StackedAreaChartSample extends XYChartSample {
     }
 
     @Override
-    protected XYChart<Number, Number> getChart(NumberAxis xAxis, NumberAxis yAxis) {
+    protected @NotNull XYChart<Number, Number> getChart(@NotNull NumberAxis xAxis, @NotNull NumberAxis yAxis) {
         return new StackedAreaChart<>(xAxis, yAxis);
     }
 }

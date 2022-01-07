@@ -10,6 +10,8 @@ import hzt.model.Pyramid;
 import hzt.model.Scooter;
 import hzt.model.TuxRotation;
 import interfaces.IMouseControlService;
+import javafx.scene.shape.Box;
+import javafx.scene.shape.Sphere;
 import services.MouseControlService;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -41,8 +43,8 @@ public class ModelLoadApp extends Application {
 
     private static Scene createScene() {
         Scooter scooter = getScooter();
-        Plane plane = getPlane();
-        LunarLander lunarLander = new LunarLander();
+        Node plane = scooter.isDisabled() ? getPlane() : new Sphere();
+        Node lunarLander =  scooter.isDisabled() ?  new LunarLander() : new Box();
         CylinderHead cylinderHead = getCylinderHead();
         PropellerAssembly propellerAssembly = getPropellerAssembly();
         Duck duck = getDuck();
@@ -54,7 +56,7 @@ public class ModelLoadApp extends Application {
     }
 
     private static MyScene buildScene(Group root) {
-        MyScene scene = new MyScene(root, 1280, 720, true);
+        var scene = new MyScene(root, 1280, 720, true);
         scene.setOnKeyTyped(keyEvent -> keyTypedAction(keyEvent, root));
         root.getChildren().stream()
                 .filter(not(Slider.class::isInstance))
@@ -68,9 +70,9 @@ public class ModelLoadApp extends Application {
 
     private static Consumer<Node> addMouseControl(MyScene scene) {
         return node -> {
-            IMouseControlService planeMouseControlService = new MouseControlService();
-            planeMouseControlService.initMouseControl(node, scene);
-            planeMouseControlService.setOrientation(20, 20);
+            IMouseControlService mouseControlService = new MouseControlService();
+            mouseControlService.initMouseControl(node, scene);
+            mouseControlService.setOrientation(20, 20);
         };
     }
 

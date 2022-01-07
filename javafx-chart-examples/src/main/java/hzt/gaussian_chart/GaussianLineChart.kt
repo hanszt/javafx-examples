@@ -53,7 +53,7 @@ open class GaussianLineChart : Application() {
         }.show()
     }
 
-    private fun configuredSliderBox(): HBox = HBox(
+    private fun configuredSliderBox() = HBox(
         VBox(Label("standard deviation slider"), stdDevSlider),
         VBox(Label("mean slider"), meanSlider),
         VBox(Label("grouping slider"), groupingSlider)
@@ -85,8 +85,7 @@ open class GaussianLineChart : Application() {
         addGaussianDataPoints(meanSlider.value, stdDevSlider.value)
     }
 
-    private fun roundedGaussian(gaussian: Double): BigDecimal = gaussian.toBigDecimal()
-        .multiply(BigDecimal.valueOf(groupingSlider.value))
+    private fun roundedGaussian(gaussian: Double): BigDecimal = (gaussian * groupingSlider.value).toBigDecimal()
         .setScale(0, RoundingMode.HALF_UP)
 
     companion object {

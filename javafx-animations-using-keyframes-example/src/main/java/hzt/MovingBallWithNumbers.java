@@ -20,7 +20,8 @@ public final class MovingBallWithNumbers extends Application {
 
     private int frameNr;
 
-    private MovingBallWithNumbers() {
+    public MovingBallWithNumbers() {
+        super();
     }
 
     @Override
@@ -77,7 +78,6 @@ public final class MovingBallWithNumbers extends Application {
         //reset counter
         frameNr = 0;
     }
-
 
     public static void main(String[] args) {
         Application.launch(args);

@@ -1,154 +1,123 @@
-package hzt;
+package hzt
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import hzt.controls.MultiListView;
-import hzt.utils.FxSetup;
-import javafx.application.Application;
-import javafx.collections.ListChangeListener;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import com.google.common.collect.BiMap
+import com.google.common.collect.HashBiMap
+import hzt.controls.MultiListView
+import hzt.utils.FxSetup
+import javafx.application.Application
+import javafx.collections.ListChangeListener
+import javafx.geometry.Insets
+import javafx.scene.Node
+import javafx.scene.Scene
+import javafx.scene.chart.LineChart
+import javafx.scene.chart.NumberAxis
+import javafx.scene.chart.XYChart
+import javafx.scene.control.SelectionMode
+import javafx.scene.layout.VBox
+import javafx.stage.Stage
+import java.time.Month
+import java.util.*
 
-import java.time.Month;
-import java.util.Comparator;
-import java.util.List;
+open class XYChartSample : Application() {
 
-import static java.util.function.Predicate.not;
+    private val tempDataSeriesBiMap: BiMap<TempData, XYChart.Series<Number, Number>> = HashBiMap.create()
 
-public class XYChartSample extends Application {
+    override fun start(stage: Stage) = start(stage, "Default XY Chart Sample")
 
-    private final BiMap<TempData, XYChart.Series<Number, Number>> tempDataSeriesBiMap = HashBiMap.create();
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        start(stage, "Default XY Chart Sample");
-    }
-
-    protected void start(Stage stage, String title) {
-        final NumberAxis xAxis = new NumberAxis("Days", 1, 31, 1);
-        xAxis.setForceZeroInRange(true);
-
-        final XYChart<Number, Number> chart = getChart(xAxis, FxSetup.numberAxis("Temperature (degrees C)"));
-        chart.setTitle("Temperature Monitoring (in Degrees C)");
-        chart.setHorizontalZeroLineVisible(true);
-        chart.setPrefHeight(500);
-        chart.setMinHeight(300);
-        final MultiListView<TempData> monthsMultiListView = new MultiListView<>(
-                "Undisplayed months", "Displayed months");
-        Comparator<TempData> comparator = Comparator.comparingInt(t -> t.month.getValue());
-
-        monthsMultiListView.setComparatorListViews(comparator, true);
-        monthsMultiListView.addRightListviewListener(change -> updateXYChart(chart, change));
-        monthsMultiListView.setSelectionMode(SelectionMode.MULTIPLE);
-
-        addInitData(monthsMultiListView,
-                List.of(TempData.MARCH, TempData.APRIL, TempData.MAY));
-
-        final Button updateButton = FxSetup.configuredButton("Update", 100, e -> updateData(chart));
-        final VBox vbox = new VBox(chart, FxSetup.configuredHBox(new Insets(10, 10, 10, 50), updateButton, monthsMultiListView));
-        setStyle(vbox);
-        Scene scene = new Scene(vbox, 1200, 780);
-        FxSetup.configureStage(stage, scene, title, 400, 500).show();
-    }
-
-    protected void setStyle(Node root) {
-        root.setStyle("");
-    }
-
-    protected XYChart<Number, Number> getChart(NumberAxis xAxis, NumberAxis yAxis) {
-        return new LineChart<>(xAxis, yAxis);
-    }
-
-    private void addInitData(MultiListView<TempData> multiListView, List<TempData> initData) {
-        for (TempData data : TempData.values()) {
-            XYChart.Series<Number, Number> series = new XYChart.Series<>();
-            series.setName(data.formattedName());
-            tempDataSeriesBiMap.put(data, series);
-            if (initData.contains(data)) {
-                multiListView.addRightListView(data);
-            } else {
-                multiListView.addLeftListView(data);
+    protected fun start(stage: Stage?, title: String?) {
+        val xAxis = NumberAxis("Days", 1.0, 31.0, 1.0).apply { isForceZeroInRange = true }
+        val chart = getChart(xAxis, FxSetup.numberAxis("Temperature (degrees C)")).apply {
+            this.title = "Temperature Monitoring (in Degrees C)"
+            isHorizontalZeroLineVisible = true
+            prefHeight = 500.0
+            minHeight = 300.0
+        }
+        val monthsMultiListView = MultiListView<TempData>("Undisplayed months", "Displayed months")
+            .apply {
+                setComparatorListViews(Comparator.comparingInt { t: TempData -> t.month.value }, true)
+                addRightListviewListener { change -> updateXYChart(chart, change) }
+                setSelectionMode(SelectionMode.MULTIPLE)
+                addInitData(listOf(TempData.MARCH, TempData.APRIL, TempData.MAY))
             }
-            for (int day = 1; day <= data.month.length(false); day++) {
+        val updateButton = FxSetup.configuredButton("Update", 100.0) { updateData(chart) }
+        val vbox = VBox(chart, FxSetup.configuredHBox(Insets(10.0, 10.0, 10.0, 50.0), updateButton, monthsMultiListView))
+        setStyle(vbox)
+        val scene = Scene(vbox, 1200.0, 780.0)
+        FxSetup.configureStage(stage, scene, title, 400.0, 500.0).show()
+    }
+
+    protected open fun setStyle(root: Node) {
+        root.style = ""
+    }
+
+    protected open fun getChart(xAxis: NumberAxis, yAxis: NumberAxis): XYChart<Number, Number> = LineChart(xAxis, yAxis)
+
+    private fun MultiListView<TempData>.addInitData(initData: List<TempData>) {
+        for (data in TempData.values()) {
+            val series = XYChart.Series<Number, Number>().apply { name = data.formattedName() }
+            tempDataSeriesBiMap[data] = series
+            if (data in initData) addRightListView(data) else addLeftListView(data)
+
+            for (day in 1..data.month.length(false)) {
                 if (day % 3 == 1 || day == data.month.maxLength()) {
-                    series.getData().add(new XYChart.Data<>(day, data.getRandomTemperature()));
+                    series.data.add(XYChart.Data(day, data.randomTemperature))
                 }
             }
         }
     }
 
-    private void updateXYChart(
-            XYChart<Number, Number> areaChart, ListChangeListener.Change<? extends TempData> change) {
+    private fun updateXYChart(areaChart: XYChart<Number, Number>, change: ListChangeListener.Change<out TempData>) {
         if (change.next()) {
-            final var data = areaChart.getData();
+            val data = areaChart.data
             if (change.wasAdded()) {
-                data.addAll(change.getAddedSubList().stream()
-                        .map(tempDataSeriesBiMap::get)
-                        .filter(not(data::contains))
-                        .toList());
+                data.addAll(change.addedSubList
+                    .map { key -> tempDataSeriesBiMap[key] }
+                    .filter { o -> o !in data }
+                )
             }
             if (change.wasRemoved()) {
-                data.retainAll(change.getList().stream()
-                        .map(tempDataSeriesBiMap::get)
-                        .toList());
+                data.retainAll(change.list.map { key -> tempDataSeriesBiMap[key] })
             }
         }
     }
 
-    private void updateData(XYChart<Number, Number> areaChart) {
-        for (XYChart.Series<Number, Number> series : areaChart.getData()) {
-            TempData temperatureData = tempDataSeriesBiMap.inverse().get(series);
-            for (XYChart.Data<Number, Number> data : series.getData()) {
-                data.setYValue(temperatureData.getRandomTemperature());
-            }
+    private fun updateData(areaChart: XYChart<Number, Number>) {
+        for (series in areaChart.data) {
+            val temperatureData = tempDataSeriesBiMap.inverse()[series]
+            series.data.forEach { data -> data.yValue = temperatureData?.randomTemperature ?: 0 }
         }
     }
 
+    private enum class TempData(
+        @field:Transient val month: Month,
+        private val minTemp: Double,
+        private val maxTemp: Double
+    ) {
+        JANUARY(Month.JANUARY, -15.0, 8.0),
+        FEBRUARY(Month.FEBRUARY, -15.0, 6.0),
+        MARCH(Month.MARCH, -2.0, 15.0),
+        APRIL(Month.APRIL, 3.0, 18.0),
+        MAY(Month.MAY, 10.0, 22.0),
+        JUNE(Month.JUNE, 16.0, 30.0),
+        JULY(Month.JULY, 18.0, 35.0),
+        AUGUST(Month.AUGUST, 24.0, 40.0),
+        SEPTEMBER(Month.SEPTEMBER, 16.0, 30.0),
+        OCTOBER(Month.OCTOBER, 14.0, 24.0),
+        NOVEMBER(Month.NOVEMBER, -2.0, 15.0),
+        DECEMBER(Month.DECEMBER, -10.0, 10.0);
 
-    private enum TempData {
-        JANUARY(Month.JANUARY, -15, 8),
-        FEBRUARY(Month.FEBRUARY, -15, 6),
-        MARCH(Month.MARCH, -2, 15),
-        APRIL(Month.APRIL, 3, 18),
-        MAY(Month.MAY, 10, 22),
-        JUNE(Month.JUNE, 16, 30),
-        JULY(Month.JULY, 18, 35),
-        AUGUST(Month.AUGUST, 24, 40),
-        SEPTEMBER(Month.SEPTEMBER, 16, 30),
-        OCTOBER(Month.OCTOBER, 14, 24),
-        NOVEMBER(Month.NOVEMBER, -2, 15),
-        DECEMBER(Month.DECEMBER, -10, 10);
+        val randomTemperature: Double
+            get() {
+                val difference = maxTemp - minTemp
+                return minTemp + difference * Math.random()
+            }
 
-        private final transient Month month;
-        private final double minTemp;
-        private final double maxTemp;
-
-        TempData(Month month, double minTemp, double maxTemp) {
-            this.month = month;
-            this.minTemp = minTemp;
-            this.maxTemp = maxTemp;
+        fun formattedName(): String {
+            return month.name[0].toString() + month.name.substring(1).lowercase(Locale.getDefault())
         }
 
-        private double getRandomTemperature() {
-            double difference = maxTemp - minTemp;
-            return minTemp + (difference * Math.random());
-        }
-
-        private String formattedName() {
-            return month.name().charAt(0) + month.name().substring(1).toLowerCase();
-        }
-
-        @Override
-        public String toString() {
-            return formattedName();
+        override fun toString(): String {
+            return formattedName()
         }
     }
 }

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.javafx.examples</groupId>
+        <artifactId>javafx-examples</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>javafx-3dmodel-samples</artifactId>
+
+    <properties>
+        <model-importer3d.version>1.0</model-importer3d.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.javafx.examples</groupId>
+            <artifactId>javafx-commons</artifactId>
+        </dependency>
+        <!--        https://www.baeldung.com/maven-dependency-scopes -->
+        <!--        scope `system` is deprecated but useful for this case-->
+        <dependency>
+            <groupId>com.modelimporter</groupId>
+            <artifactId>jim3d</artifactId>
+            <version>${model-importer3d.version}</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/jim3dsModelImporterJFX.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.modelimporter</groupId>
+            <artifactId>jimcol</artifactId>
+            <version>${model-importer3d.version}</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/jimColModelImporterJFX.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.modelimporter</groupId>
+            <artifactId>jimfxml</artifactId>
+            <version>${model-importer3d.version}</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/jimFxmlModelImporterJFX.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.modelimporter</groupId>
+            <artifactId>jimobj</artifactId>
+            <version>${model-importer3d.version}</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/jimObjModelImporterJFX.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.modelimporter</groupId>
+            <artifactId>jimstlmesh</artifactId>
+            <version>${model-importer3d.version}</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/jimStlMeshImporterJFX.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.modelimporter</groupId>
+            <artifactId>jimx3d</artifactId>
+            <version>${model-importer3d.version}</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/jimX3dModelImporterJFX.jar</systemPath>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
+
+</project>

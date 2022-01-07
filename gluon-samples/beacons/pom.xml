@@ -19,7 +19,6 @@
 
     <properties>
         <mainClassName>com.gluonhq.samples.beacons.Beacons</mainClassName>
-        <javafx-commons.version>1.0-SNAPSHOT</javafx-commons.version>
     </properties>
 
     <dependencies>
@@ -76,8 +75,6 @@
         <dependency>
             <groupId>org.javafx.examples</groupId>
             <artifactId>javafx-commons</artifactId>
-            <version>${javafx-commons.version}</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 

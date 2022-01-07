@@ -9,7 +9,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.DoubleUnaryOperator;
 
-public class MainAppController implements Initializable {
+public final class MainAppController implements Initializable {
 
 	@FXML
 	private LineChart<Double, Double> lineGraph;
@@ -19,6 +19,10 @@ public class MainAppController implements Initializable {
 
 	private FunctionGraph mathsGraph;
 	private FunctionGraph areaMathsGraph;
+
+	public MainAppController() {
+		super();
+	}
 
 	@Override
 	public void initialize(final URL url, final ResourceBundle rb) {
@@ -93,11 +97,6 @@ public class MainAppController implements Initializable {
 
 	@FXML
 	private void handleSemiCircleButtonAction() {
-		plotFunction(x -> Math.sqrt(100 - x * x));
-	}
-
-	@FXML
-	private void handleDynamicFunctionButtonAction() {
 		plotFunction(x -> Math.sqrt(100 - x * x));
 	}
 
