@@ -22,19 +22,17 @@ public class PropellerAssembly extends Model3D {
 
         for (Node node : importer.getImport()) {
             getChildren().add(node);
-            System.out.println(node.getId());
         }
     }
 
     private void animateWheels() {
         getChildren()
-                .stream()
                 /*.filter(this::isPropeller)*/
                 .forEach(this::animatePropeller);
     }
 
     public boolean isPropeller(Node view) {
-        return view.getId().equals("Propeller");
+        return "Propeller".equals(view.getId());
     }
 
     public void animatePropeller(Node node) {

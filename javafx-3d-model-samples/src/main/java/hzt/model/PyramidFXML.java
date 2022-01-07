@@ -18,7 +18,7 @@ public class PyramidFXML extends Model3D {
             MeshView pyramidModel = fxmlLoader.load();
             getChildren().add(pyramidModel);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e);
         }
     }
 }

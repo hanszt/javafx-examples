@@ -12,10 +12,9 @@ public class Duck extends Model3D {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(this.getClass().getResource("Duck-fxml-b94/Duck.fxml"));
             MeshView meshView = fxmlLoader.load();
-            getChildren().add(meshView);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
+            super.getChildren().add(meshView);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
     }
 }

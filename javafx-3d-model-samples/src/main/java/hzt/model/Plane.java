@@ -8,7 +8,7 @@ import java.net.URL;
 public class Plane extends Model3D {
 
     public Plane() {
-//        loadModel(getClass().getResource("Seymourplane-141-150-dae/seymourplane-141-im.dae"));
+        loadModel(getClass().getResource("Seymourplane-141-150-dae/seymourplane-141-im.dae"));
     }
 
     private void loadModel(URL url) {
