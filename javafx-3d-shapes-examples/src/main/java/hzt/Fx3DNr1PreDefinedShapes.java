@@ -11,6 +11,7 @@ import javafx.scene.shape.Sphere;
 import javafx.stage.Stage;
 
 public class Fx3DNr1PreDefinedShapes extends Application {
+
     public static void main(String[] args) {
         Application.launch(args);
     }

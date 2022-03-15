@@ -64,21 +64,16 @@ public class FilterListApp extends Application {
         HBox hbox = new HBox();
         hbox.setSpacing(2);
 
-        ToggleGroup filterTG = new ToggleGroup();
+        ToggleGroup toggleGroup = new ToggleGroup();
 
         //
         // The toggleHandler action wills set the filter based on the TB selected
         //
-        EventHandler<ActionEvent> toggleHandler = (event) -> {
-            ToggleButton tb = (ToggleButton) event.getSource();
-            Predicate<Player> filter = (Predicate<Player>) tb.getUserData();
-            filterProperty.set(filter);
-        };
 
         ToggleButton tbShowAll = new ToggleButton("Show All");
         tbShowAll.setSelected(true);
-        tbShowAll.setToggleGroup(filterTG);
-        tbShowAll.setOnAction(toggleHandler);
+        tbShowAll.setToggleGroup(toggleGroup);
+        tbShowAll.setOnAction(event -> toggleButtonAction(event, filterProperty));
         tbShowAll.setUserData((Predicate<Player>) (Player p) -> true);
 
         //
@@ -88,7 +83,7 @@ public class FilterListApp extends Application {
         List<ToggleButton> tbs = Arrays.stream(players)
                 .map(Player::team)
                 .distinct()
-                .map((team) -> getToggleButton(filterTG, toggleHandler, team))
+                .map(team -> getToggleButton(toggleGroup, event -> toggleButtonAction(event, filterProperty), team))
                 .toList();
 
         hbox.getChildren().add(tbShowAll);
@@ -105,17 +100,22 @@ public class FilterListApp extends Application {
         Scene scene = new Scene(vbox);
 
         primaryStage.setScene(scene);
-        primaryStage.setOnShown((evt) -> playersProperty.get().addAll(players));
+        primaryStage.setOnShown(evt -> playersProperty.get().addAll(players));
 
         primaryStage.show();
 
+    }
+
+    private static void toggleButtonAction(ActionEvent event, ObjectProperty<Predicate<? super Player>> filterProperty) {
+        ToggleButton toggleButton = (ToggleButton) event.getSource();
+        filterProperty.set((Predicate<Player>) toggleButton.getUserData());
     }
 
     private static ToggleButton getToggleButton(ToggleGroup filterTG, EventHandler<ActionEvent> toggleHandler, String team) {
         ToggleButton tb = new ToggleButton(team);
         tb.setToggleGroup(filterTG);
         tb.setOnAction(toggleHandler);
-        tb.setUserData((Predicate<Player>) (Player p) -> team.equals(p.team()));
+        tb.setUserData((Predicate<Player>) p -> team.equals(p.team()));
         return tb;
     }
 

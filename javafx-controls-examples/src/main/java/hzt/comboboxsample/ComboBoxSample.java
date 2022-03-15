@@ -88,33 +88,29 @@ public class ComboBoxSample extends Application {
     @NotNull
     private static ComboBox<String> buildPriorityBox() {
         final ComboBox<String> priorityComboBox = new ComboBox<>();
+        priorityComboBox.valueProperty().addListener((o, c, n) -> priorityComboBox.setButtonCell(new ColoredListCell()));
+        priorityComboBox.setCellFactory(listView -> new ColoredListCell());
         priorityComboBox.getItems().addAll(HIGHEST,HIGH, NORMAL, LOW, LOWEST);
         priorityComboBox.setValue(NORMAL);
-        priorityComboBox.valueProperty().addListener((o, c, n) -> priorityComboBox.setButtonCell(buildColoredListCell()));
-        priorityComboBox.setCellFactory(listView -> buildColoredListCell());
         return priorityComboBox;
     }
 
-    private static ListCell<String> buildColoredListCell() {
-        return new ListCell<>() {
+    private static final class ColoredListCell extends ListCell<String> {
 
-            @Override
-            public void updateItem(String text, boolean empty) {
-                super.updateItem(text, empty);
-                if (text != null) {
-                    setText(text);
-                    if (text.contains("High")) {
-                        setTextFill(Color.RED);
-                    } else if (text.contains("Low")) {
-                        setTextFill(Color.GREEN);
-                    } else {
-                        setTextFill(Color.BLACK);
-                    }
+        @Override
+        public void updateItem(String text, boolean empty) {
+            super.updateItem(text, empty);
+            if (text != null) {
+                if (text.contains("High")) {
+                    setTextFill(Color.RED);
+                } else if (text.contains("Low")) {
+                    setTextFill(Color.GREEN);
                 } else {
-                    setText(null);
+                    setTextFill(Color.BLACK);
                 }
             }
-        };
+            setText(text);
+        }
     }
 
     private void sendButtonAction(ComboBox<String> emailComboBox, ComboBox<String> priorityComboBox) {

@@ -1,25 +1,26 @@
 package org.openjfx;
 
 import javafx.application.Application;
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class ComplexGridPaneApp extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
 
         VBox vbox = new VBox();
 
@@ -39,13 +40,21 @@ public class ComplexGridPaneApp extends Application {
         TextField tfContract = new TextField();
 
         Label priorityLabel = new Label("Priority");
-        ComboBox<String> priorityCombobox = new ComboBox<>(FXCollections.observableArrayList("Medium", "High", "Low"));
+        ComboBox<String> priorityCombobox = new ComboBox<>();
+        priorityCombobox.setValue("Medium");
+        priorityCombobox.getItems().addAll(priorityCombobox.getValue(), "High", "Low");
+        priorityCombobox.setCellFactory(l -> new PriorityListCell());
+        priorityCombobox.setOnAction(e -> priorityCombobox.setButtonCell(new PriorityListCell()));
 
         Label severityLabel = new Label("Severity");
-        ComboBox<String> severityCombobox = new ComboBox<>(FXCollections.observableArrayList("Blocker", "Workaround", "N/A"));
+        ComboBox<String> severityCombobox = new ComboBox<>();
+        severityCombobox.setValue("N/A");
+        severityCombobox.getItems().addAll("Blocker", "Workaround", severityCombobox.getValue());
 
         Label categoryLabel = new Label("Category");
-        ComboBox<String> categoryCombobox = new ComboBox<>(FXCollections.observableArrayList("Bug", "Feature"));
+        ComboBox<String> categoryCombobox = new ComboBox<>();
+        categoryCombobox.setValue("Feature");
+        categoryCombobox.getItems().addAll("Bug", categoryCombobox.getValue());
 
         Label lblProblem = new Label("Problem");
         TextField problemTextField = new TextField();
@@ -90,6 +99,8 @@ public class ComplexGridPaneApp extends Application {
 
         buttonBar.getButtons().addAll(saveButton, cancelButton);
 
+        cancelButton.setOnAction(e -> primaryStage.close());
+
         vbox.getChildren().addAll(gridPane, sep, buttonBar);
 
         Scene scene = new Scene(vbox);
@@ -99,6 +110,24 @@ public class ComplexGridPaneApp extends Application {
         primaryStage.setWidth(736);
         primaryStage.setHeight(414);
         primaryStage.show();
+    }
+
+    private static final class PriorityListCell extends ListCell<String> {
+
+        @Override
+        public void updateItem(String text, boolean empty) {
+            super.updateItem(text, empty);
+            if (text != null) {
+                if ("High".equals(text)) {
+                    setTextFill(Color.RED);
+                } else if ("Low".equals(text)) {
+                    setTextFill(Color.DARKGREEN);
+                } else {
+                    setTextFill(Color.BLACK);
+                }
+            }
+            setText(text);
+        }
     }
 
 }

@@ -5,96 +5,98 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import org.dyn4j.dynamics.BodyFixture;
-import org.dyn4j.dynamics.World;
-import org.dyn4j.geometry.Mass;
+import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Rectangle;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.Random;
 
 public class Main extends Application {
 
-    Pane mainPane;
-    World world;
-    Scene scene;
+    private static final double SCENE_WIDTH = 800;
+    private static final double SCENE_HEIGHT = 600;
 
-    Random random = new Random();
+    private static final Random random = new Random();
+    public static final int NR_OF_OBJECTS = 172;
 
-    double rnd(double from, double to) {
+    private static double rnd(double from, double to) {
         return to + (from - to) * random.nextDouble();
     }
 
     @Override
     public void start(Stage primaryStage) {
-
         Group root = new Group();
 
         // the scale and translate mean 0,0 is in the centre of the screen
         // at the bottom with height increasing up the screen
-        mainPane = new Pane();
-        Scale s = new Scale(1, -1);
-        Translate t = new Translate(Settings.SCENE_WIDTH / 2, -Settings.SCENE_HEIGHT);
-        mainPane.getTransforms().addAll(s, t);
+        SimulationPane mainPane = new SimulationPane();
+        Translate translate = new Translate(SCENE_WIDTH / 2, -SCENE_HEIGHT);
+        mainPane.getTransforms().addAll(new Scale(1, -1), translate);
 
         root.getChildren().add(mainPane);
 
-        scene = new Scene(root, Settings.SCENE_WIDTH, Settings.SCENE_HEIGHT);
-        PhysObj.setMainPane(mainPane);
+        Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
 
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        Image img = new Image("file:src/main/resources/img/smile.png");
-
-        world = new World();
+        Image image = Optional.ofNullable(getClass().getResourceAsStream("/img/smile.png"))
+                .map(Image::new)
+                .orElseThrow();
 
         // create the floor
         Rectangle floorRect = new Rectangle(15.0, 1.0);
-        PhysObj floor = new PhysObj(); // invisible no image...
-        floor.addFixture(new BodyFixture(floorRect));
-        floor.setMass(Mass.Type.INFINITE);
-
+        PhysicsImageView floor = new PhysicsImageView(); // invisible no image...
+        final var body = floor.getBody();
+        body.addFixture(new BodyFixture(floorRect));
+        body.setMass(MassType.INFINITE);
         // move the floor down a bit
-        floor.translate(0.0, -1.0);
-        this.world.addBody(floor);
+        body.translate(0.0, -1.0);
+        mainPane.addBody(floor);
 
-        Rectangle rectShape = new Rectangle(1.0, 1.0);
+        Rectangle rectangle = new Rectangle(1.0, 1.0);
 
-        for (int i = 0; i < 72; i++) {
-            PhysObj rectangle = new PhysObj(img);
-            BodyFixture f = new BodyFixture(rectShape);
-            f.setDensity(1.2);
-            f.setFriction(0.8);
-            f.setRestitution(0.4);
-            rectangle.addFixture(f);
-            rectangle.setMass();
-            rectangle.translate(rnd(-3, 3), 9.0 + rnd(-4, 2));
-            rectangle.getTransform().setRotation(rnd(-3.141, 3.141));
-            this.world.addBody(rectangle);
+        for (int i = 0; i < NR_OF_OBJECTS; i++) {
+            final var physicsObject = createImageView(image, rectangle);
+            mainPane.addBody(physicsObject);
         }
-
-        AnimationTimer gameLoop = new AnimationTimer() {
-
-            long last;
-
-            @Override
-            public void handle(long now) { // now is in nanoseconds 
-                float delta = 1f / (1000.0f / ((now - last) / 1000000f));  // seems long winded but avoids precision issues
-                world.updatev(delta);
-                PhysObj.update();
-
-                last = now;
-            }
-
-        };
-        gameLoop.start();
-
+        createGameLoop(mainPane).start();
     }
 
+    @NotNull
+    private static AnimationTimer createGameLoop(SimulationPane mainPane) {
+        return new AnimationTimer() {
+
+            private long last;
+
+            @Override
+            public void handle(long now) { // now is in nanoseconds
+                float delta = 1F / (1000.0F / ((now - last) / 1_000_000F));  // seems long-winded but avoids precision issues
+                mainPane.update(delta);
+                last = now;
+            }
+        };
+    }
+
+    @NotNull
+    private static PhysicsImageView createImageView(Image image, Rectangle rectShape) {
+        PhysicsImageView rectangle = new PhysicsImageView(image);
+        BodyFixture fixture = new BodyFixture(rectShape);
+        fixture.setDensity(1.2);
+        fixture.setFriction(0.8);
+        fixture.setRestitution(0.4);
+        final var body = rectangle.getBody();
+        body.addFixture(fixture);
+        body.setMass(MassType.NORMAL);
+        body.translate(rnd(-3, 3), 9.0 + rnd(-4, 2));
+        body.getTransform().setRotation(rnd(-Math.PI, Math.PI));
+        return rectangle;
+    }
 
     public static void main(String[] args) {
         launch(args);

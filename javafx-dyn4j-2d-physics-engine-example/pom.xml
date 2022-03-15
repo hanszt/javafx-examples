@@ -13,4 +13,16 @@
 
     <artifactId>javafx-dyn4j-2d-physics-engine-example</artifactId>
 
+    <properties>
+        <dyn4j.version>4.2.0</dyn4j.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.dyn4j</groupId>
+            <artifactId>dyn4j</artifactId>
+            <version>${dyn4j.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>

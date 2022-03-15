@@ -5,7 +5,6 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -24,20 +23,15 @@ import java.net.URL;
 
 public class ProgressBarApp extends Application {
 
-    private HBox bottomControls;
-    private ProgressBar pb;
-    private Label messageLabel;
-
-    private TextField urlTextField;
-
-    private TextArea contents;
+    private final HBox bottomControls = new HBox();
+    private final ProgressBar progressBar = new ProgressBar();
+    private final Label messageLabel = new Label();
+    private final TextField urlTextField = new TextField();
+    private final TextArea textArea = new TextArea();
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-
-        Parent p = createMainView();
-
-        Scene scene = new Scene(p);
+    public void start(Stage primaryStage) {
+        Scene scene = new Scene(createMainView());
 
         primaryStage.setTitle("ProgressBarApp");
         primaryStage.setWidth(667);
@@ -46,10 +40,8 @@ public class ProgressBarApp extends Application {
         primaryStage.show();
     }
 
-    private Parent createMainView() {
-
+    private VBox createMainView() {
         Label label = new Label("URL");
-        urlTextField = new TextField();
         HBox.setHgrow(urlTextField, Priority.ALWAYS);
         Button getHtmlButton = new Button("Get HTML");
         getHtmlButton.setOnAction(this::getHTML);
@@ -58,19 +50,15 @@ public class ProgressBarApp extends Application {
         topControls.setAlignment(Pos.CENTER_LEFT);
         topControls.setSpacing(4);
 
-        contents = new TextArea();
-        VBox.setVgrow(contents, Priority.ALWAYS);
+        VBox.setVgrow(textArea, Priority.ALWAYS);
 
-        bottomControls = new HBox();
         bottomControls.setVisible(false);
         bottomControls.setSpacing(4);
         HBox.setMargin(bottomControls, new Insets(4));
 
-        pb = new ProgressBar();
-        messageLabel = new Label("");
-        bottomControls.getChildren().addAll(pb, messageLabel);
+        bottomControls.getChildren().addAll(progressBar, messageLabel);
 
-        VBox vbox = new VBox(topControls, contents, bottomControls);
+        VBox vbox = new VBox(topControls, textArea, bottomControls);
         vbox.setPadding(new Insets(10));
         vbox.setSpacing(10);
         return vbox;
@@ -88,13 +76,13 @@ public class ProgressBarApp extends Application {
                 updateMessage("Getting HTML from " + url);
                 updateProgress(0.5D, 1.0D);
 
-                String retval = "";
+                StringBuilder content = new StringBuilder();
                 HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
-                try (InputStream is  = httpURLConnection.getInputStream()) {
+                try (InputStream is = httpURLConnection.getInputStream()) {
                     updateProgress(0.6D, 1.0D);
                     int ch;
                     while ((ch = is.read()) != -1) {
-                        retval += (char) ch;
+                        content.append((char) ch);
                     }
                 } finally {
                     httpURLConnection.disconnect();
@@ -102,12 +90,12 @@ public class ProgressBarApp extends Application {
 
                 updateMessage("HTML retrieved");
                 updateProgress(1.0D, 1.0D);
-                return retval;
+                return content.toString();
             }
 
             @Override
             protected void succeeded() {
-                contents.setText(getValue());
+                textArea.setText(getValue());
             }
 
             @Override
@@ -119,7 +107,7 @@ public class ProgressBarApp extends Application {
         Task<String> task = new HtmlTask();
 
         bottomControls.visibleProperty().bind(task.runningProperty());
-        pb.progressProperty().bind(task.progressProperty());
+        progressBar.progressProperty().bind(task.progressProperty());
         messageLabel.textProperty().bind(task.messageProperty());
 
         new Thread(task).start();

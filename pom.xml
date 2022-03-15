@@ -42,7 +42,7 @@
         <kotlin.version>1.5.31</kotlin.version>
         <kotlin-maven-plugin.jvmTarget>1.8</kotlin-maven-plugin.jvmTarget>
         <!--        dependencies-->
-        <javafx.version>17.0.0.1</javafx.version>
+        <javafx.version>17.0.2</javafx.version>
         <commons-math3.version>3.6.1</commons-math3.version>
         <commons-javafx.version>1.0-SNAPSHOT</commons-javafx.version>
         <guava.version>29.0-jre</guava.version>
