@@ -25,7 +25,8 @@ public class TitledPaneSample extends Application {
     private final String[] imageNames = {"Apples", "Flowers", "Leaves"};
     private final Label label = new Label("N/A");
 
-    @Override public void start(Stage stage) {
+    @Override
+    public void start(Stage stage) {
         stage.setTitle("TitledPane");
         Scene scene = new Scene(new Group(), 450, 250);
         scene.setFill(Color.GHOSTWHITE);
@@ -39,9 +40,9 @@ public class TitledPaneSample extends Application {
         grid.add(new Label("Cc: "), 0, 1);
         grid.add(new TextField(), 1, 1);
         grid.add(new Label("Subject: "), 0, 2);
-        grid.add(new TextField(), 1, 2);        
+        grid.add(new TextField(), 1, 2);
         grid.add(new Label("Attachment: "), 0, 3);
-        grid.add(label,1, 3);
+        grid.add(label, 1, 3);
         gridTitlePane.setText("Grid");
         gridTitlePane.setContent(grid);
 
@@ -50,14 +51,14 @@ public class TitledPaneSample extends Application {
         accordion.getPanes().addAll(Arrays.stream(imageNames)
                 .map(this::toTitledPane)
                 .toList());
-        
+
         accordion.expandedPaneProperty().addListener((ov, oldVal, newVal) -> setText(accordion, newVal));
-        
+
         HBox hbox = new HBox(10);
         hbox.setPadding(new Insets(20, 0, 0, 20));
         hbox.getChildren().setAll(gridTitlePane, accordion);
 
-        Group root = (Group)scene.getRoot();
+        Group root = (Group) scene.getRoot();
         root.getChildren().add(hbox);
         stage.setScene(scene);
         stage.show();

@@ -21,14 +21,22 @@ import java.math.RoundingMode
 import java.util.*
 import java.util.stream.IntStream
 
-open class GaussianLineChart : Application() {
+open class GaussianLineChart(
+    private val stdDevSlider: Slider = Slider(),
+    private val meanSlider: Slider = Slider(),
+    private val groupingSlider: Slider = Slider(),
+    private val series: XYChart.Series<Number, Number> = XYChart.Series<Number, Number>()
+) : Application() {
 
-    private val stdDevSlider: Slider = Slider().configure(5.0, 20.0)
-    private val meanSlider: Slider = Slider().configure(-100.0, 5.0, 100.0)
-    private val groupingSlider: Slider = Slider().configure(-1.0, 1.0, 1.0)
-    private val series = XYChart.Series<Number, Number>().apply { name = "Gaussian distribution" }
+    private fun configureComponents() {
+        stdDevSlider.configure(5.0, 20.0)
+        meanSlider.configure(-100.0, 5.0, 100.0)
+        groupingSlider.configure(-1.0, 1.0, 1.0)
+        series.apply { name = "Gaussian distribution" }
+    }
 
     override fun start(stage: Stage) {
+        configureComponents()
         val titleLabel = Label("Gaussian Chart").apply { font = Font.font(20.0) }
         val sliderBox = configuredSliderBox()
 

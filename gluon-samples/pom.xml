@@ -38,14 +38,95 @@
     </modules>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javafx.version>17.0.1</javafx.version>
+        <!--dependencies-->
         <charm.version>6.0.6</charm.version>
         <glisten.afterburner.version>2.0.5</glisten.afterburner.version>
-        <attach.version>4.0.13</attach.version>
+        <attach.version>4.0.15</attach.version>
         <connect.version>2.0.1</connect.version>
-        <javafx.maven.plugin.version>0.0.5</javafx.maven.plugin.version>
+        <jaxb-runtime.version>4.0.0</jaxb-runtime.version>
+        <jakarta.json.version>2.0.1</jakarta.json.version>
+        <!--plugins-->
         <client.maven.plugin.version>0.1.35</client.maven.plugin.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.gluonhq</groupId>
+                <artifactId>glisten-afterburner</artifactId>
+                <version>${glisten.afterburner.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.gluonhq</groupId>
+                <artifactId>charm-glisten</artifactId>
+                <version>${charm.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.gluonhq</groupId>
+                <artifactId>charm-cloudlink-client</artifactId>
+                <version>${charm.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.gluonhq.attach</groupId>
+                <artifactId>display</artifactId>
+                <version>${attach.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.gluonhq.attach</groupId>
+                <artifactId>lifecycle</artifactId>
+                <version>${attach.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.gluonhq.attach</groupId>
+                <artifactId>statusbar</artifactId>
+                <version>${attach.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.gluonhq.attach</groupId>
+                <artifactId>storage</artifactId>
+                <version>${attach.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.gluonhq.attach</groupId>
+                <artifactId>util</artifactId>
+                <version>${attach.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.gluonhq.attach</groupId>
+                <artifactId>ble</artifactId>
+                <version>${attach.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>jakarta.json</artifactId>
+                <version>${jakarta.json.version}</version>
+                <classifier>module</classifier>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${jaxb-runtime.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

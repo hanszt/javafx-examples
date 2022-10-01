@@ -10,8 +10,9 @@ module Main.app {
     requires kotlin.stdlib;
 
     opens shapethreedtest to javafx.graphics;
-    opens strechygrid to javafx.graphics;
     opens fx_eight_three_d_features to javafx.graphics;
     opens industrial to javafx.graphics;
     opens dragdrop to javafx.graphics;
+    opens filltransition;
+    opens strechygrid;
 }

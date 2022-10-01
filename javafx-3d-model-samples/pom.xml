@@ -11,7 +11,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>javafx-3dmodel-samples</artifactId>
+    <artifactId>javafx-3d-model-samples</artifactId>
 
     <properties>
         <model-importer3d.version>1.0</model-importer3d.version>
@@ -28,6 +28,7 @@
             <groupId>com.modelimporter</groupId>
             <artifactId>jim3d</artifactId>
             <version>${model-importer3d.version}</version>
+            <!--startIgnoreAll-->
             <scope>system</scope>
             <systemPath>${basedir}/lib/jim3dsModelImporterJFX.jar</systemPath>
         </dependency>

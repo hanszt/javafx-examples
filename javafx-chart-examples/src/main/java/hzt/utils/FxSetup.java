@@ -19,10 +19,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 
 public final class FxSetup {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FxSetup.class);
 
     private static final int DEFAULT_SPACING = 10;
 
@@ -44,7 +48,7 @@ public final class FxSetup {
         if (inputStream != null) {
             stage.getIcons().add(new Image(inputStream));
         } else {
-            System.err.println("Resource at " + location + " not found...");
+            LOGGER.error("Resource at {} not found...", location);
         }
         return stage;
     }

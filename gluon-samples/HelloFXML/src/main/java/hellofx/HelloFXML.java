@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2019 Gluon
  * All rights reserved.
  *
@@ -33,13 +33,17 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class HelloFXML extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        AnchorPane root = FXMLLoader.load(HelloFXML.class.getResource("hello.fxml"),
+        final String NAME = "hello.fxml";
+        final URL resource = Objects.requireNonNull(getClass().getResource(NAME), NAME + " not found!");
+        AnchorPane root = FXMLLoader.load(resource,
                 ResourceBundle.getBundle("hellofx.hello"));
         Scene scene = new Scene(root, 640, 480);
         stage.setScene(scene);

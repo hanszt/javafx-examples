@@ -13,41 +13,32 @@ import javafx.util.Duration;
 public class FillTransition3D {
 
     private static final int DEFAULT_CYCLE_COUNT = 100;
-
-    private int cycleCount = DEFAULT_CYCLE_COUNT;
     private final Timeline timeline = new Timeline();
     private final Shape3D shape3D;
 
-    private ObjectProperty<Color> fromColor = new SimpleObjectProperty<>(Color.WHITE);
-    private ObjectProperty<Color> toColor = new SimpleObjectProperty<>(Color.WHITE);
+    private final ObjectProperty<Color> fromColor = new SimpleObjectProperty<>(Color.WHITE);
+    private final ObjectProperty<Color> toColor = new SimpleObjectProperty<>(Color.WHITE);
 
-    public FillTransition3D(Shape3D shape3D) {
+    private int curCount = 1;
+
+    public FillTransition3D(Shape3D shape3D, Duration duration) {
         this.shape3D = shape3D;
-        timeline.setCycleCount(cycleCount);
-        Duration duration = Duration.millis(5);
-        timeline.getKeyFrames().add(new KeyFrame(duration, "", this::changeColor));
+        timeline.setCycleCount(DEFAULT_CYCLE_COUNT);
+        timeline.getKeyFrames().add(new KeyFrame(duration.divide(DEFAULT_CYCLE_COUNT), "", this::changeColor));
     }
 
-    private int curCount = 0;
-
     private void changeColor(ActionEvent actionEvent) {
-        ((PhongMaterial) shape3D.getMaterial()).setDiffuseColor(interpolatedColor(curCount, cycleCount));
+        ((PhongMaterial) shape3D.getMaterial()).setDiffuseColor(interpolatedColor(curCount));
         curCount++;
     }
 
-    private Color interpolatedColor(int curCount, int cycleCount) {
-        double lerp = (double) curCount / cycleCount;
-        double deltaR = fromColor.get().getRed() - toColor.get().getRed();
-        double deltaG = fromColor.get().getGreen() - toColor.get().getGreen();
-        double deltaB = fromColor.get().getBlue() - toColor.get().getBlue();
-        double curR = fromColor.get().getRed() - deltaR * lerp;
-        double curG = fromColor.get().getGreen() - deltaG * lerp;
-        double curB = fromColor.get().getBlue() - deltaB * lerp;
-        return Color.color(curR, curG, curB);
+    private Color interpolatedColor(final int curCount) {
+        final double lerp = (double) curCount / DEFAULT_CYCLE_COUNT;
+        return fromColor.get().interpolate(toColor.get(), lerp);
     }
 
-    private void play() {
-        curCount = 0;
+    void play() {
+        curCount = 1;
         timeline.play();
     }
 

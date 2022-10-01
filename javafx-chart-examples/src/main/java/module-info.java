@@ -6,7 +6,6 @@ module Main.app {
     requires com.google.common;
     requires kotlin.stdlib;
     requires javafx.utils;
-    requires kotlin.stdlib.jdk8;
     requires org.jetbrains.annotations;
     requires slf4j.api;
 
