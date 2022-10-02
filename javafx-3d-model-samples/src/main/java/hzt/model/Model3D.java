@@ -1,16 +1,18 @@
 package hzt.model;
 
-import fx_customs.MyScene;
 import interfaces.IMouseControlService;
+import interfaces.MouseTarget;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import services.MouseControlService;
 
+import java.util.function.Consumer;
+
 public abstract class Model3D extends Group {
 
-    public void addMouseControl(MyScene scene) {
+    public void addMouseControl() {
         IMouseControlService planeMouseControlService = new MouseControlService();
-        planeMouseControlService.initMouseControl(this, scene);
+        planeMouseControlService.initMouseControl(this, (MouseTarget) getScene());
         planeMouseControlService.setOrientation(20, 20);
     }
 
@@ -19,12 +21,10 @@ public abstract class Model3D extends Group {
         setScaleY(scale);
         setScaleZ(scale);
     }
-    public static boolean nodeIsModel3D(Node n) {
-        return n instanceof Model3D;
-    }
-
-    public static Model3D nodeToModel3D(Node n) {
-        return (Model3D) n;
+    public static void toModel3DIfInstance(Node n, Consumer<Model3D> model3DConsumer) {
+        if (n instanceof Model3D model3D) {
+            model3DConsumer.accept(model3D);
+        }
     }
 
 }

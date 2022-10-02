@@ -9,7 +9,7 @@ public class Pyramid extends Model3D {
 
     public Pyramid() {
         buildMesh();
-        getChildren().add(new MeshView(mesh));
+        super.getChildren().add(new MeshView(mesh));
     }
 
     private void buildMesh() {

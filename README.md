@@ -27,6 +27,12 @@ source: [openjfx Intellij](https://openjfx.io/openjfx-docs/#IDE-Intellij)
 
 ---
 
+### Clearing local mvn repo
+
+`mvn dependency:purge-local-repository -DactTransitively=false -DreResolve=false`
+
+Also see: [Clearing the Maven Cache](https://www.baeldung.com/maven-clear-cache)
+
 ### Source
 
 - [Molecule hzt.sample app](https://docs.oracle.com/javafx/8/3d_graphics/sampleapp.htm#BABCGEAJ)

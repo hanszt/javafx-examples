@@ -21,7 +21,7 @@ public class CylinderHead extends Model3D {
         TriangleMesh mesh = importer.getImport();
         MeshView meshView = new MeshView(mesh);
         meshView.setMaterial(new PhongMaterial(Color.SILVER));
-        getChildren().add(meshView);
+        super.getChildren().add(meshView);
     }
 
 }

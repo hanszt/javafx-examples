@@ -12,7 +12,7 @@ public class TuxRotation extends Model3D {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(this.getClass().getResource("tux-rotation/TuxRotation.fxml"));
             Group group = fxmlLoader.load();
-            getChildren().add(group);
+            super.getChildren().add(group);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }

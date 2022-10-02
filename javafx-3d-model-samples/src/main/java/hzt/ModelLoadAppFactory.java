@@ -4,47 +4,41 @@ import fx_customs.MyScene;
 import hzt.model.CylinderHead;
 import hzt.model.Duck;
 import hzt.model.LunarLander;
+import hzt.model.Model3D;
 import hzt.model.Plane;
 import hzt.model.PropellerAssembly;
 import hzt.model.Pyramid;
 import hzt.model.Scooter;
 import hzt.model.TuxRotation;
-import interfaces.IMouseControlService;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.Sphere;
-import services.MouseControlService;
-import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.control.Slider;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.shape.Box;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
-import javafx.stage.Stage;
+import javafx.scene.shape.Sphere;
 import org.jetbrains.annotations.NotNull;
 import utils.FxUtils;
 
-import java.util.function.Consumer;
-
-import static java.util.function.Predicate.not;
-
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
- *
- *  Run this application via FxLauncher. Then the JavaFX runtime components are missing, and are required to run this application is omitted
- *  @see hzt.FxLauncher#main(String[])
- *  @see <a href="https://stackoverflow.com/questions/61033077/how-do-i-install-and-forget-java-9-modules-on-windows">
- *      How do I install and forget java 9 modules</a>
- *
+ * <p>
+ * Run this application via FxLauncher. Then the JavaFX runtime components are missing, and are required to run this application is omitted
+ * @see hzt.FxLauncher#main(String[])
+ * @see <a href="https://stackoverflow.com/questions/61033077/how-do-i-install-and-forget-java-9-modules-on-windows">
+ * How do I install and forget java 9 modules</a>
  */
-public class ModelLoadApp extends Application {
+public final class ModelLoadAppFactory {
 
-    private static Scene createScene() {
+    private ModelLoadAppFactory() {
+    }
+
+    static Scene createScene() {
         Scooter scooter = getScooter();
         Node plane = scooter.isDisabled() ? getPlane() : new Sphere();
-        Node lunarLander =  scooter.isDisabled() ?  new LunarLander() : new Box();
+        Node lunarLander = scooter.isDisabled() ? new LunarLander() : new Box();
         CylinderHead cylinderHead = getCylinderHead();
         PropellerAssembly propellerAssembly = getPropellerAssembly();
         Duck duck = getDuck();
@@ -57,10 +51,11 @@ public class ModelLoadApp extends Application {
 
     private static MyScene buildScene(Group root) {
         var scene = new MyScene(root, 1280, 720, true);
-        scene.setOnKeyTyped(keyEvent -> keyTypedAction(keyEvent, root));
+        scene.setOnKeyTyped(keyEvent -> viewAsMeshWhenWTyped(keyEvent, root));
+
         root.getChildren().stream()
-                .filter(not(Slider.class::isInstance))
-                .forEach(addMouseControl(scene));
+                .mapMulti(Model3D::toModel3DIfInstance)
+                .forEach(Model3D::addMouseControl);
 
         PerspectiveCamera camera = getPerspectiveCamera();
         camera.setTranslateZ(-300);
@@ -68,20 +63,12 @@ public class ModelLoadApp extends Application {
         return scene;
     }
 
-    private static Consumer<Node> addMouseControl(MyScene scene) {
-        return node -> {
-            IMouseControlService mouseControlService = new MouseControlService();
-            mouseControlService.initMouseControl(node, scene);
-            mouseControlService.setOrientation(20, 20);
-        };
-    }
-
-    private static void keyTypedAction(KeyEvent keyEvent, Group root) {
+    private static void viewAsMeshWhenWTyped(KeyEvent keyEvent, Group root) {
         if ("w".equals(keyEvent.getCharacter())) {
             FxUtils.allDescendents(root).stream()
                     .filter(MeshView.class::isInstance)
                     .map(MeshView.class::cast)
-                    .forEach(ModelLoadApp::setDrawMode);
+                    .forEach(ModelLoadAppFactory::setDrawMode);
         }
     }
 
@@ -152,16 +139,6 @@ public class ModelLoadApp extends Application {
         cylinderHead.setTranslateX(-50);
         cylinderHead.setScale(.2);
         return cylinderHead;
-    }
-
-    @Override
-    public void start(Stage stage) {
-        stage.setScene(createScene());
-        stage.show();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 
 }

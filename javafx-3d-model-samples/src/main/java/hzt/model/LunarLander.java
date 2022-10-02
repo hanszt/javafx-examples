@@ -13,7 +13,7 @@ public class LunarLander extends Model3D {
     private void loadModel(URL url) {
         var importer = new TdsModelImporter();
         importer.read(url);
-        getChildren().addAll(importer.getImport());
+        super.getChildren().addAll(importer.getImport());
     }
 
 }

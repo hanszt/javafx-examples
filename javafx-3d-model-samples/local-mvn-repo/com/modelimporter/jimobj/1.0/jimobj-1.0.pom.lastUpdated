@@ -1,0 +1,6 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Sun Oct 02 13:35:38 CEST 2022
+https\://repo.maven.apache.org/maven2/.lastUpdated=1664710228580
+@default-local-maven-repo-C\:\\_Programming\\Java\\0JavaFX\\javafx-examples\\javafx-3d-model-samples/lib/.lastUpdated=1664710538657
+https\://repo.maven.apache.org/maven2/.error=
+C\:\\_Programming\\Java\\0JavaFX\\javafx-examples\\javafx-3d-model-samples/lib/.error=Could not transfer artifact com.modelimporter\:jimobj\:pom\:1.0 from/to local-maven-repo (C\:\\_Programming\\Java\\0JavaFX\\javafx-examples\\javafx-3d-model-samples/lib)\: Cannot access C\:\\_Programming\\Java\\0JavaFX\\javafx-examples\\javafx-3d-model-samples/lib with type default using the available connector factories\: BasicRepositoryConnectorFactory

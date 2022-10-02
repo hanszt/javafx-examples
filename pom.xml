@@ -34,6 +34,8 @@
         <module>gluon-samples</module>
         <module>examples-open-jfx</module>
         <module>javafx-bindings</module>
+        <module>java-fx-ascii-playground</module>
+        <module>javafx-3d-model-samples</module>
     </modules>
 
     <properties>

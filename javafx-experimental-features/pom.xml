@@ -17,8 +17,6 @@
         <dependency>
             <groupId>org.javafx.examples</groupId>
             <artifactId>javafx-commons</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

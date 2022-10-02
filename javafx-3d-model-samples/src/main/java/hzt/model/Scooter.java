@@ -15,7 +15,10 @@ public class Scooter extends Model3D {
 
     public Scooter() {
         loadModel(getClass().getResource("scooter/Scooter-smgrps.obj"));
-        animateWheels();
+        super.getChildren()
+                .stream()
+                .filter(this::isRim)
+                .forEach(this::animateRim);
     }
 
     private void loadModel(URL url) {
@@ -25,13 +28,6 @@ public class Scooter extends Model3D {
         for (MeshView view : importer.getImport()) {
             getChildren().add(view);
         }
-    }
-
-    private void animateWheels() {
-        getChildren()
-                .stream()
-                .filter(this::isRim)
-                .forEach(this::animateRim);
     }
 
     public boolean isRim(Styleable view) {

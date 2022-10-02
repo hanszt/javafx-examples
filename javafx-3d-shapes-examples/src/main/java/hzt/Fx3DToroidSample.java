@@ -18,16 +18,15 @@ import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.FxUtils;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static java.util.function.Predicate.not;
 
 public class Fx3DToroidSample extends Application {
 
-    private static final Logger LOGGER = Logger.getLogger(Fx3DToroidSample.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(Fx3DToroidSample.class);
 
     private Scene createScene() {
         var toroid = getToroid();
@@ -79,7 +78,7 @@ public class Fx3DToroidSample extends Application {
                     .map(ToroidSliderPane.class::cast)
                     .forEach(ToroidSliderPane::reset);
         } else {
-            LOGGER.log(Level.FINE, "{} is not a registered key", keyEvent.getCharacter());
+            LOGGER.info("{} is not a registered key", keyEvent.getCharacter());
         }
     }
 
@@ -105,7 +104,9 @@ public class Fx3DToroidSample extends Application {
 
     @Override
     public void start(Stage stage) {
+        LOGGER.info("Starting {}...", Fx3DToroidSample.class.getSimpleName());
         stage.setScene(createScene());
         stage.show();
+        LOGGER.info("{} started", Fx3DToroidSample.class.getSimpleName());
     }
 }

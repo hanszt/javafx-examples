@@ -45,7 +45,7 @@ import java.util.Arrays;
 import static java.lang.Math.*;
 
 /**
- * Class to create a Toroid shape, it extends MeshView class so it
+ * Class to create a Toroid shape, it extends MeshView class, so it
  * will work seamlessly with JavaFX.<br>
  *
  * @author Peter Lager (2017-19) refactored by Hans Zuidervaart
@@ -243,6 +243,7 @@ public class Toroid extends MeshView {
         return new Point3D(x, y, 0);
     }
 
+    @SuppressWarnings("squid:S2972")
     private class MeshData {
 
         private static final int NR_OF_POINTS_PER_FACE_PT = 12;
