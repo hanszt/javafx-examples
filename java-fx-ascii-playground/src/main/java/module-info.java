@@ -4,5 +4,5 @@ module java.fx.ascii.playground {
     requires transitive javafx.controls;
     requires javafx.utils;
 
-    opens hzt.animations to javafx.graphics;
+    opens hzt.animations;
 }

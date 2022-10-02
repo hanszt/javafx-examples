@@ -3,7 +3,7 @@ module styled.tableview.expanded {
     requires javafx.fxml;
     requires javafx.utils;
 
-    opens com.edencoding to javafx.fxml;
+    opens com.edencoding;
     opens com.edencoding.controllers to javafx.fxml;
 
     exports com.edencoding;
