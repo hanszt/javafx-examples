@@ -1,6 +1,7 @@
 module wordish {
     requires javafx.controls;
-    requires javafx.fxml; 
+    requires javafx.fxml;
+    requires slf4j.api;
     
     requires org.kordamp.ikonli.core;
     requires org.kordamp.ikonli.javafx;

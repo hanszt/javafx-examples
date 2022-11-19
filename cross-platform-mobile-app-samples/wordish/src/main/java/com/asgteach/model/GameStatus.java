@@ -2,49 +2,51 @@
 package com.asgteach.model;
 
 import com.asgteach.modelview.LetterStyle;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
-public class GameStatus {
-    
-    private static GameStatus instance = null;
-    
-    private List<LetterState>letterState = new ArrayList<>();
+public final class GameStatus {
+
+    private List<LetterState> letterState = new ArrayList<>();
     private Map<String, LetterStyle.DisplayType> keyBoardState = new HashMap<>();
     private final WordStats wordStats = new WordStats();
-    
-    private GameStatus() {}
-    
+
+    private GameStatus() {
+    }
+
+    private static class Holder {
+
+        private static final GameStatus instance = new GameStatus();
+    }
+
     public static GameStatus getInstance() {
-        if (instance == null) {
-            instance = new GameStatus();
-        }
-        return instance;
+        return Holder.instance;
     }
 
     public List<LetterState> getLetterState() {
-        return letterState;
+        return List.copyOf(letterState);
     }
 
     public Map<String, LetterStyle.DisplayType> getKeyBoardState() {
-        return keyBoardState;
+        return Map.copyOf(keyBoardState);
     }
-    
+
     public WordStats getWordStats() {
         return this.wordStats;
     }
 
     public void setLetterState(List<LetterState> letterState) {
-        this.letterState = letterState;
+        this.letterState = List.copyOf(letterState);
     }
 
     public void setKeyBoardState(Map<String, LetterStyle.DisplayType> keyBoardState) {
-        this.keyBoardState = keyBoardState;
+        this.keyBoardState = Map.copyOf(keyBoardState);
     }
-       
+
 }
 
 

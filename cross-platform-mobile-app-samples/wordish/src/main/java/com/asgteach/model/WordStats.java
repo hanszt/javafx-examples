@@ -1,23 +1,27 @@
 package com.asgteach.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
 public class WordStats {
 
+    public static final int MAX_GUESS = 6;
+    private static final Logger LOGGER = LoggerFactory.getLogger(WordStats.class);
+
     private int gamesPlayed = 0;
     private int totalWins = 0;
     private int currentStreak = 0;
     private int maxStreak = 0;
-    public static final int MAX_GUESS = 6;
     private int thisGameGuesses = 0;
 
     private final Map<Integer, Integer> guessDistribution = new HashMap<>();
 
     WordStats() {
-        System.out.println("Initializing guess distribution hashmap");
-        // rangeClosed is (1, 2, 3, 4, 5, 6)
+        LOGGER.info("Initializing guess distribution hashmap...");
         IntStream.rangeClosed(1, MAX_GUESS)
                 .forEach(i -> guessDistribution.put(i, 0));
     }
@@ -70,7 +74,11 @@ public class WordStats {
     }
 
     public Map<Integer, Integer> getGuessDistribution() {
-        return guessDistribution;
+        return Map.copyOf(guessDistribution);
+    }
+
+    public void updateGuessDistribution(int key) {
+        guessDistribution.computeIfPresent(key, (k, value) -> value + 1);
     }
 
 }

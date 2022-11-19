@@ -10,16 +10,24 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.net.URL;
+import java.util.Optional;
 
-public class WordPopup {
-    
-    private static final int POPUP_TIMEOUT = 2500;
+
+public final class WordPopup {
+
+    private static final int POPUP_TIMEOUT = 2_500;
+
+    private WordPopup() {
+    }
 
         private static Popup createPopup(final String message) {
             final Popup popup = new Popup();
             popup.setAutoFix(true);
             Label label = new Label(message);
-            label.getStylesheets().add(WordishApp.class.getResource("style.css").toExternalFo‌​rm());
+            Optional.ofNullable(WordishApp.class.getResource("style.css"))
+                    .map(URL::toExternalForm)
+                    .ifPresent(label.getStylesheets()::add);
             label.getStyleClass().add("popup");
             popup.getContent().add(label);
             return popup;
@@ -28,15 +36,17 @@ public class WordPopup {
         public static void show(final String message, final Control control) {
             Stage stage = (Stage) control.getScene().getWindow();
             final Popup popup = createPopup(message);
-            popup.setOnShown(e -> {
-                popup.setX(stage.getX() + stage.getWidth() / 2 - popup.getWidth() / 2);
-                popup.setY(stage.getY() + stage.getHeight() / 3 - (popup.getHeight()/2) - 10 );
-            });
+            popup.setOnShown(e -> setPosition(stage, popup));
             popup.show(stage);
 
             new Timeline(new KeyFrame(
                     Duration.millis(POPUP_TIMEOUT),
                     ae -> popup.hide())).play();
         }
-    
+
+    private static void setPosition(Stage stage, Popup popup) {
+        popup.setX(stage.getX() + stage.getWidth() / 2 - popup.getWidth() / 2);
+        popup.setY(stage.getY() + stage.getHeight() / 3 - (popup.getHeight()/2) - 10 );
+    }
+
 }

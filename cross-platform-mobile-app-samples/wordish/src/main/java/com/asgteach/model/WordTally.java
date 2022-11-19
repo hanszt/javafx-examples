@@ -10,11 +10,6 @@ public class WordTally {
         this.target = "";
     }
 
-    public WordTally(String guess, String target) {
-        this.guess = guess;
-        this.target = target;
-    }
-
     public String getGuess() {
         return guess;
     }
