@@ -20,7 +20,7 @@ import java.io.InputStream;
 
 import static java.lang.System.err;
 
-public class FxSetup {
+public final class FxSetup {
 
     private static final int DEFAULT_SPACING = 10;
 

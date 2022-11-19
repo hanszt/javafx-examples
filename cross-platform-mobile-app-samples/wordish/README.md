@@ -1,0 +1,53 @@
+# Wordish
+
+Wordish is a JavaFX implementation based on the popular word-guessing game Wordle.
+
+## Build and Run using JVM
+
+Uses the GluonFX maven plugin
+
+```bash
+$ mvn gluonfx:run
+```
+
+## Build and Run using native compile / desktop
+
+Uses the GluonFX maven plugin/GraalVM
+
+```bash
+$ mvn gluonfx:build
+$ mvn gluonfx:package
+$ mvn gluonfx:nativerun
+
+```
+
+## Build and Run on connected ios device
+
+```bash
+$ mvn -Pios gluonfx:build
+$ mvn -Pios gluonfx:package
+$ mvn -Pios gluonfx:install
+$ mvn -Pios gluonfx:nativerun
+```
+
+## Build and Run on connected Android device
+
+[currently you must run Android targets with
+Java 11 -- this means no Records and no
+pattern matching Switch statement]
+
+```bash
+$ mvn -Pandroid gluonfx:build
+$ mvn -Pandroid gluonfx:package
+$ mvn -Pandroid gluonfx:install
+$ mvn -Pandroid gluonfx:nativerun
+```
+
+## License
+
+[GNU General Public License v3.0](https://choosealicense.com/licenses/gpl-3.0/)
+
+## Sources
+
+- [gailasgteach/Wordish](https://github.com/gailasgteach/Wordish)
+- [IntelliJ IDEA Conf 2022 | JavaFX for Mobile Development](https://www.youtube.com/watch?v=VCJtdb28HWE)

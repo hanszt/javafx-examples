@@ -31,16 +31,17 @@ import fx_eight_three_d_features.model.PlaneZMesh;
 import fx_eight_three_d_features.model.WaveMesh;
 import fx_eight_three_d_features.utils.FxSetup;
 import javafx.application.Application;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
@@ -48,6 +49,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
@@ -73,10 +75,13 @@ public final class MeshViewer extends Application {
     private static final int INIT_MES_SIZE_Y = 20;
     private static final int INIT_FREQUENCY = 1;
 
+    private static final Color INIT_BACKGROUND_COLOR = Color.rgb(10, 10, 40);
+    private static final Color INIT_MESH_COLOR = Color.LIGHTGRAY;
+
     private final Group planeMeshContainer = new Group();
 
     private final IMouseControlService mouseControlService = new MouseControlService();
-    private final ComboBox<PlaneMeshPicker> planeZMeshComboBox = new ComboBox<>();
+    private final ComboBox<PlaneMeshOption> planeZMeshComboBox = new ComboBox<>();
     private final Slider dampeningSlider = new Slider(0, 1, INIT_DAMPENING_VALUE);
     private final Slider amplitudeSlider = new Slider(-20, 20, INIT_AMPLITUDE);
     private final Slider resolutionXSlider = new Slider(0, 200, INIT_RESOLUTION_X);
@@ -84,10 +89,17 @@ public final class MeshViewer extends Application {
     private final Slider meshSizeXSlider = new Slider(0, 100, INIT_MESH_SIZE_X);
     private final Slider meshSizeYSlider = new Slider(0, 100, INIT_MES_SIZE_Y);
     private final Slider waveFrequencySlider = new Slider(-3, 3, INIT_FREQUENCY);
+    private final ColorPicker backgroundColorPicker = new ColorPicker(INIT_BACKGROUND_COLOR);
+
+    private final ColorPicker meshColorPicker = new ColorPicker(INIT_MESH_COLOR);
 
     private Scene buildScene() {
         var root = FxSetup.configuredVBox();
-        root.setBackground(new Background(new BackgroundFill(Color.rgb(10, 10, 40), CornerRadii.EMPTY, Insets.EMPTY)));
+
+        root.backgroundProperty().bind(Bindings.createObjectBinding(() -> new Background(
+                        new BackgroundFill(backgroundColorPicker.getValue(), CornerRadii.EMPTY, Insets.EMPTY)),
+                backgroundColorPicker.valueProperty()));
+
         var scene = new Scene(root, 700, 750, true);
 
         var controlsPane = buildControls(scene, new WaveMesh(), new ParabolaMesh(), new DiscreteWaveMesh());
@@ -108,25 +120,30 @@ public final class MeshViewer extends Application {
         return scene;
     }
 
-    private void configurePlaneZMeshes(ObservableList<PlaneMeshPicker> planeZMeshPickers) {
+    private void configurePlaneZMeshes(ObservableList<PlaneMeshOption> planeZMeshPickers) {
         planeZMeshPickers.stream()
-                .map(PlaneMeshPicker::planeZMesh)
+                .map(PlaneMeshOption::planeZMesh)
                 .forEach(this::configureMesh);
     }
 
-    private Parent buildControls(Scene scene, PlaneZMesh waveMesh, PlaneZMesh parabolaMesh, PlaneZMesh mazeMesh) {
-        var waveMeshPicker = new PlaneMeshPicker("Wave mesh", waveMesh);
-        planeZMeshComboBox.getItems().addAll(waveMeshPicker,
-                new PlaneMeshPicker("Parabola mesh", parabolaMesh),
-                new PlaneMeshPicker("Maze mesh", mazeMesh));
-        planeZMeshComboBox.setValue(waveMeshPicker);
-        planeZMeshComboBox.valueProperty().addListener(this::updatePlaneZMeshView);
+    private HBox buildControls(Scene scene, PlaneZMesh waveMesh, PlaneZMesh parabolaMesh, PlaneZMesh mazeMesh) {
+        var waveMeshOption = new PlaneMeshOption("Wave mesh", waveMesh);
+        planeZMeshComboBox.getItems().addAll(waveMeshOption,
+                new PlaneMeshOption("Parabola mesh", parabolaMesh),
+                new PlaneMeshOption("Maze mesh", mazeMesh));
+        planeZMeshComboBox.setValue(waveMeshOption);
+        planeZMeshComboBox.valueProperty().addListener((o, c, n) -> updatePlaneZMeshView(c, n));
         planeZMeshComboBox.prefWidthProperty().bind(scene.widthProperty());
-        var vBox0 = FxSetup.configuredVBox(planeZMeshComboBox);
-        var vBox1 = FxSetup.configuredVBox(dampeningSlider, amplitudeSlider);
-        var vBox2 = FxSetup.configuredVBox(resolutionXSlider, resolutionYSlider);
-        var vBox3 = FxSetup.configuredVBox(meshSizeXSlider, meshSizeYSlider, waveFrequencySlider);
-        var controlsRoot = FxSetup.configuredHBox(vBox0, vBox1, vBox2, vBox3);
+
+        final var colorPickerVBox = FxSetup.configuredVBox(backgroundColorPicker, meshColorPicker);
+        backgroundColorPicker.prefWidthProperty().bind(planeZMeshComboBox.prefWidthProperty());
+        meshColorPicker.prefWidthProperty().bind(planeZMeshComboBox.prefWidthProperty());
+
+        final var vBox0 = FxSetup.configuredVBox(planeZMeshComboBox, colorPickerVBox);
+        final var vBox1 = FxSetup.configuredVBox(dampeningSlider, amplitudeSlider);
+        final var vBox2 = FxSetup.configuredVBox(resolutionXSlider, resolutionYSlider);
+        final var vBox3 = FxSetup.configuredVBox(meshSizeXSlider, meshSizeYSlider, waveFrequencySlider);
+        final var controlsRoot = FxSetup.configuredHBox(vBox0, vBox1, vBox2, vBox3);
 
         FxUtils.allDescendents(controlsRoot).stream()
                 .filter(Slider.class::isInstance)
@@ -138,10 +155,7 @@ public final class MeshViewer extends Application {
     private void keyTypedAction(KeyEvent e, PlaneZMesh meshView) {
         switch (e.getCharacter()) {
             case "i" -> meshView.setDiffuseAndBumpMapMaterial();
-            case "w" -> {
-                boolean wireframe = meshView.getDrawMode() == DrawMode.LINE;
-                meshView.setDrawMode(wireframe ? DrawMode.FILL : DrawMode.LINE);
-            }
+            case "w" -> meshView.setDrawMode(meshView.getDrawMode() == DrawMode.LINE ? DrawMode.FILL : DrawMode.LINE);
             case "r" -> reset(meshView);
             default -> {
                 // nothing to do
@@ -157,6 +171,8 @@ public final class MeshViewer extends Application {
         meshView.setResolutionX(INIT_RESOLUTION_X);
         meshView.setResolutionY(INIT_RESOLUTION_Y);
         meshView.setDampening(INIT_DAMPENING_VALUE);
+        backgroundColorPicker.setValue(INIT_BACKGROUND_COLOR);
+        meshColorPicker.setValue(INIT_MESH_COLOR);
         planeMeshContainer.setTranslateX(0);
         planeMeshContainer.setTranslateY(0);
         planeMeshContainer.setTranslateZ(0);
@@ -186,7 +202,7 @@ public final class MeshViewer extends Application {
     }
 
     private void configureMesh(PlaneZMesh planeZMesh) {
-        setMaterial(planeZMesh);
+        planeZMesh.setMaterial(createMaterial(meshColorPicker.valueProperty()));
         setTexture(planeZMesh);
         planeZMesh.setDrawMode(DrawMode.FILL);
         planeZMesh.setCullFace(CullFace.NONE);
@@ -212,12 +228,12 @@ public final class MeshViewer extends Application {
         }
     }
 
-    private static void setMaterial(PlaneZMesh planeZMesh) {
+    private static PhongMaterial createMaterial(ObjectProperty<Color> diffuseColorProperty) {
         var material = new PhongMaterial();
-        material.setDiffuseColor(Color.LIGHTGRAY);
+        material.diffuseColorProperty().bind(diffuseColorProperty);
         material.setSpecularColor(Color.WHITE);
         material.setSpecularPower(64);
-        planeZMesh.setMaterial(material);
+        return material;
     }
 
     private void bindPropertiesBidirectional(PlaneZMesh planeZMesh) {
@@ -244,13 +260,14 @@ public final class MeshViewer extends Application {
         launch(args);
     }
 
-    private void updatePlaneZMeshView(ObservableValue<? extends PlaneMeshPicker> o,
-                                      PlaneMeshPicker curVal, PlaneMeshPicker newVal) {
-        planeMeshContainer.getChildren().remove(curVal.planeZMesh());
-        planeMeshContainer.getChildren().add(newVal.planeZMesh());
+
+    private void updatePlaneZMeshView(PlaneMeshOption curVal, PlaneMeshOption newVal) {
+        final var children = planeMeshContainer.getChildren();
+        children.remove(curVal.planeZMesh());
+        children.add(newVal.planeZMesh());
     }
 
-    private record PlaneMeshPicker(String displayText, PlaneZMesh planeZMesh) {
+    private record PlaneMeshOption(String displayText, PlaneZMesh planeZMesh) {
 
         @Override
         public String toString() {

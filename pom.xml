@@ -36,6 +36,7 @@
         <module>javafx-bindings</module>
         <module>java-fx-ascii-playground</module>
         <module>javafx-3d-model-samples</module>
+        <module>cross-platform-mobile-app-samples</module>
     </modules>
 
     <properties>
@@ -45,7 +46,6 @@
         <!--        dependencies-->
         <javafx.version>19</javafx.version>
         <commons-math3.version>3.6.1</commons-math3.version>
-        <commons-javafx.version>1.0-SNAPSHOT</commons-javafx.version>
         <guava.version>31.1-jre</guava.version>
         <annotations.version>23.0.0</annotations.version>
         <log4j.version>2.19.0</log4j.version>
@@ -74,7 +74,7 @@
             <dependency>
                 <groupId>org.javafx.examples</groupId>
                 <artifactId>javafx-commons</artifactId>
-                <version>${commons-javafx.version}</version>
+                <version>${project.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>

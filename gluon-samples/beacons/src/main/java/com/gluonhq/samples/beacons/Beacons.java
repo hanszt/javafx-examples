@@ -59,8 +59,8 @@ public class Beacons extends MobileApplication {
                 .ifPresent(stylesheets::add);
 
         final Window window = scene.getWindow();
-        if (window instanceof Stage) {
-            final ObservableList<Image> icons = ((Stage) window).getIcons();
+        if (window instanceof Stage stage) {
+            final ObservableList<Image> icons = stage.getIcons();
 
             Optional.ofNullable(Beacons.class.getResourceAsStream("/icon.png"))
                     .map(Image::new)
