@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.IntStream;
 
 public class WordStats {
@@ -74,7 +75,7 @@ public class WordStats {
     }
 
     public Map<Integer, Integer> getGuessDistribution() {
-        return Map.copyOf(guessDistribution);
+        return new TreeMap<>(guessDistribution);
     }
 
     public void updateGuessDistribution(int key) {
