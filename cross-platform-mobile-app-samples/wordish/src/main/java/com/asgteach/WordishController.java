@@ -8,22 +8,8 @@ import com.asgteach.modelview.KeyButton;
 import com.asgteach.modelview.LetterLabel;
 import com.asgteach.modelview.LetterStyle;
 import com.asgteach.modelview.LetterStyle.DisplayType;
-
-import static com.asgteach.modelview.LetterStyle.DisplayType.MATCHING;
-import static com.asgteach.modelview.LetterStyle.DisplayType.NOMATCH;
-import static com.asgteach.modelview.LetterStyle.DisplayType.PARTIALMATCH;
-
 import com.asgteach.modelview.WordPopup;
 import com.asgteach.service.WordData;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.RotateTransition;
@@ -33,9 +19,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.fxml.FXML;
-
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Labeled;
@@ -47,6 +32,17 @@ import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static com.asgteach.modelview.LetterStyle.DisplayType.MATCHING;
+import static com.asgteach.modelview.LetterStyle.DisplayType.NOMATCH;
+import static com.asgteach.modelview.LetterStyle.DisplayType.PARTIALMATCH;
 
 public class WordishController {
 
@@ -71,7 +67,7 @@ public class WordishController {
 
     private List<LetterLabel> letters;
     private Map<String, KeyButton> keyLetters;
-    private final List<String> messages = Arrays.asList(
+    private final List<String> messages = List.of(
             "W O W . . . Did you cheat?",
             "G E N I U S",
             "I M P R E S S I V E",
