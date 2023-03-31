@@ -2,7 +2,7 @@
 
 ---
 
-This is a JavaFX examples package. It's intended to get familiar with the different components of javaFX.
+This is a JavaFX examples project. It's intended to get familiar with the different components of javaFX.
 
 ---
 
@@ -32,6 +32,8 @@ source: [openjfx Intellij](https://openjfx.io/openjfx-docs/#IDE-Intellij)
 `mvn dependency:purge-local-repository -DactTransitively=false -DreResolve=false`
 
 Also see: [Clearing the Maven Cache](https://www.baeldung.com/maven-clear-cache)
+
+---
 
 ### Source
 

@@ -5,8 +5,6 @@ import com.asgteach.accelerometer.Config;
 import static com.asgteach.accelerometer.Config.BALL_START_X;
 import static com.asgteach.accelerometer.Config.BALL_START_Y;
 import static com.asgteach.accelerometer.Config.TOUCH_SLOP;
-import static com.asgteach.accelerometer.Config.ScaleFactor;
-import static com.asgteach.accelerometer.Config.TranslateYFactor;
 import com.asgteach.accelerometer.model.CircleHole;
 import com.asgteach.accelerometer.model.Maze;
 import com.gluonhq.attach.accelerometer.Acceleration;
@@ -54,9 +52,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Inject;
+import java.util.NoSuchElementException;
 
 public class TiltMazeMainPresenter extends GluonPresenter<TiltMazeLauncher.TiltMaze> {
+
+    private static final int TIMEFACTOR = 25;
+    private static final Logger LOGGER = LoggerFactory.getLogger(TiltMazeMainPresenter.class);
 
     @FXML
     private View tiltmazeView;
@@ -93,7 +98,6 @@ public class TiltMazeMainPresenter extends GluonPresenter<TiltMazeLauncher.TiltM
     private final Text text = new Text("Tilt Maze");
 
     // Implement a timer with a progress bar
-    private static final int TIMEFACTOR = 25;
     private final DoubleProperty startTime
             = new SimpleDoubleProperty(TIMEFACTOR);
 
@@ -101,7 +105,6 @@ public class TiltMazeMainPresenter extends GluonPresenter<TiltMazeLauncher.TiltM
             = new SimpleDoubleProperty(startTime.get());
     private GameTimer gameTimer;
     private AccelerometerService service;
-    private Acceleration acceleration;
     private boolean winner = false;
     private double previousX = 0.0;
     private double previousY = 0.0;
@@ -109,41 +112,27 @@ public class TiltMazeMainPresenter extends GluonPresenter<TiltMazeLauncher.TiltM
     private double currentY = 0.0;
     private boolean startGame = false;
 
+    private double scaleFactor = 1.0;
+
+    private double translateYFactor = 0.0;
+
     private final double screenWidth = Config.SCREEN_BOUNDS.getWidth();
     private final double screenHeight = Config.SCREEN_BOUNDS.getHeight();
     private Path path;
     private double platformAdjust = 1.0;
 
-    public void initialize() {
-        tiltmazeView.showingProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue) {
-                AppBar appBar = getApp().getAppBar();
-                imageView.setFitWidth(50);
-                imageView.setPreserveRatio(true);
-                hbox.setAlignment(Pos.CENTER);
-                hbox.setSpacing(10);
-                text.setFont(Font.font(24));
-                hbox.getChildren().addAll(imageView, text);
-                appBar.setTitle(hbox);
-                imageView.setImage(new Image(getClass().getResource("tiltmaze-logo.png").toExternalForm()));
-            }
-        });
+    public TiltMazeMainPresenter() {
+        super();
+    }
 
-        System.out.println("Screen width = " + screenWidth
-                + " x Screen height = " + screenHeight);
+    public void initialize() {
+        tiltmazeView.showingProperty().addListener((obs, oldValue, newValue) -> showAppBar(newValue));
+
+
+        LOGGER.info("Screen width = {} x Screen height = {}", screenWidth, screenHeight);
         setScaleFactor();
 
-        DisplayService.create().ifPresent(s -> {
-            Dimension2D resolution = s.getScreenResolution();
-            System.out.printf("Screen resolution: %.0fx%.0f\n", resolution.getWidth(), resolution.getHeight());
-            if (s.isDesktop()) {
-                System.out.println("Desktop!");
-            } else if (s.isPhone()) {
-                System.out.println("Phone!");
-            } else if (s.isTablet()) {
-                System.out.println("Tablet!");
-            }
-        });
+        DisplayService.create().ifPresent(TiltMazeMainPresenter::logDisplayDevice);
 
         if (Platform.isAndroid()) {
             platformAdjust = -1.0;
@@ -161,10 +150,8 @@ public class TiltMazeMainPresenter extends GluonPresenter<TiltMazeLauncher.TiltM
         ball.setFill(new RadialGradient(
                 0, 0, .2, .2, .5,
                 true, CycleMethod.NO_CYCLE,
-                new Stop[]{
                     new Stop(0, Color.WHITESMOKE),
-                    new Stop(1, Color.GREY)
-                }));
+                    new Stop(1, Color.GREY)));
         DropShadow d = new DropShadow();
         d.setOffsetX(3.0);
         d.setOffsetY(3.0);
@@ -175,41 +162,25 @@ public class TiltMazeMainPresenter extends GluonPresenter<TiltMazeLauncher.TiltM
         path.setStrokeWidth(4);
         path.setStroke(Color.DODGERBLUE);
 
-        myMaze.getBarriers().forEach(t -> {
-            mazePane.getChildren().add(t);
-        });
+        myMaze.getBarriers().forEach(t -> mazePane.getChildren().add(t));
 
-        myMaze.getHoles().forEach(t -> {
-            mazePane.getChildren().add(t.getHole());
-            Text txt = new Text(t.getHole_number() + "");
-            if (t.isWinner()) {
-                txt.setText("*");
-            }
-            mazePane.getChildren().add(txt);
-            // center text over hole
-            txt.setTranslateX(t.getHole().getCenterX() - txt.getLayoutBounds().getWidth() / 2 - 2);
-            txt.setTranslateY(t.getHole().getCenterY() + txt.getLayoutBounds().getHeight() / 2 - 2);
-            txt.setFill(Color.WHITE);
-        });
+        myMaze.getHoles().forEach(this::addCircleHoles);
         
         mazePane.getChildren().add(path);
 
         // scale    
-        mazePane.setScaleX(ScaleFactor);
-        mazePane.setScaleY(ScaleFactor);
-        mazePane.setTranslateX(-((border.getWidth() - screenWidth) / 2) * ScaleFactor);
-        mazePane.setTranslateY(TranslateYFactor);
+        mazePane.setScaleX(scaleFactor);
+        mazePane.setScaleY(scaleFactor);
+        mazePane.setTranslateX(-((border.getWidth() - screenWidth) / 2) * scaleFactor);
+        mazePane.setTranslateY(translateYFactor);
         ball.toFront();
         // only allow changing speedSlider if game is not running
         speedSlider.disableProperty().bind(gameTimer.running);        
-        myMaze.getBarriers().forEach(t -> {
-            System.out.println("Barrier: (" + t.getX() + "," + t.getY()
-                    + "), width=" + t.getWidth() + ", height=" + t.getHeight());
-        });
-        myMaze.getHoles().forEach(t -> {
-            System.out.println("Hole: (" + t.getHole().getCenterX() + ","
-                    + t.getHole().getCenterY() + ")");
-        });
+        myMaze.getBarriers().forEach(barrier -> LOGGER.debug("Barrier: ({},{}), width={}, height={}",
+                barrier.getX(), barrier.getY(), barrier.getWidth(), barrier.getHeight()));
+        myMaze.getHoles().stream()
+                .map(CircleHole::getHole)
+                .forEach(hole -> LOGGER.debug("Hole: ({},{})", hole.getCenterX(), hole.getCenterY()));
 
         timeSeconds.set(startTime.get());
         // Bind the timerLabel text property to the timeSeconds property
@@ -224,12 +195,12 @@ public class TiltMazeMainPresenter extends GluonPresenter<TiltMazeLauncher.TiltM
         progress.progressProperty().bind(timeSeconds.divide(startTime));
 
         timerLabel.toFront();
-        speedSlider.valueProperty().addListener((o) -> {
+        speedSlider.valueProperty().addListener(o -> {
             startTime.set(TIMEFACTOR / speedSlider.getValue());
             timeSeconds.set(startTime.get());
         });
 
-        speedSlider.setLabelFormatter(new StringConverter<Double>() {
+        speedSlider.setLabelFormatter(new StringConverter<>() {
             @Override
             public String toString(Double n) {
                 if (n <= 0.5) {
@@ -241,84 +212,115 @@ public class TiltMazeMainPresenter extends GluonPresenter<TiltMazeLauncher.TiltM
                 if (n <= 1.5) {
                     return "Advanced";
                 }
-
                 return "Expert";
             }
 
             @Override
             public Double fromString(String s) {
-                switch (s) {
-                    case "Novice":
-                        return 0.5d;
-                    case "Intermediate":
-                        return 1d;
-                    case "Advanced":
-                        return 1.5d;
-                    case "Expert":
-                        return 2d;
-
-                    default:
-                        return 2d;
-                }
+                return switch (s) {
+                    case "Novice" -> 0.5D;
+                    case "Intermediate" -> 1D;
+                    case "Advanced" -> 1.5D;
+                    default -> 2D;
+                };
             }
         });
 
-        accel.setOnAction((t) -> {
-            if (gameTimer.isRunning()) {
-                gameTimer.stop();
-                if (service != null) {
-                    service.stop();
-                }
-            } else {
-                setupGame();
-                accelout.setText("Tilt Maze");
-                if (service != null) {
-                    service.start();
-                }
-                gameTimer.start();
-            }
-        });
+        accel.setOnAction(t -> extracted());
 
         try {
-            service = AccelerometerService.create().get();
-            System.out.println("Got accelerometer service.");
-        } catch (Exception e) {
+            service = AccelerometerService.create().orElseThrow();
+            LOGGER.info("Got accelerometer service.");
+        } catch (NoSuchElementException e) {
             // No accelerometer, using mouse events.
-            System.out.println("No accelerometer service.");
+            LOGGER.warn("No accelerometer service. Using mouse events", e);
             mazePane.setOnMouseMoved(evt -> {
                 currentX = evt.getX();
                 currentY = evt.getY();
             });
-            ball.setOnMousePressed(evt -> {
-                startGame = true;
-            });
+            ball.setOnMousePressed(evt -> startGame = true);
         }
+    }
+
+    private static void logDisplayDevice(DisplayService s) {
+        Dimension2D resolution = s.getScreenResolution();
+        LOGGER.info("Screen resolution: {}x{}\n", resolution.getWidth(), resolution.getHeight());
+        if (s.isDesktop()) {
+            LOGGER.info("Desktop!");
+        }
+        if (s.isPhone()) {
+            LOGGER.info("Phone!");
+        }
+        if (s.isTablet()) {
+           LOGGER.info("Tablet!");
+        }
+    }
+
+    private void showAppBar(boolean newValue) {
+        if (newValue) {
+            AppBar appBar = getApp().getAppBar();
+            imageView.setFitWidth(50);
+            imageView.setPreserveRatio(true);
+            hbox.setAlignment(Pos.CENTER);
+            hbox.setSpacing(10);
+            text.setFont(Font.font(24));
+            hbox.getChildren().addAll(imageView, text);
+            appBar.setTitle(hbox);
+            imageView.setImage(new Image(getClass().getResource("tiltmaze-logo.png").toExternalForm()));
+        }
+    }
+
+    private void extracted() {
+        if (gameTimer.isRunning()) {
+            gameTimer.stop();
+            if (service != null) {
+                service.stop();
+            }
+        } else {
+            setupGame();
+            accelout.setText("Tilt Maze");
+            if (service != null) {
+                service.start();
+            }
+            gameTimer.start();
+        }
+    }
+
+    private void addCircleHoles(CircleHole circleHole) {
+        mazePane.getChildren().add(circleHole.getHole());
+        Text txt = new Text(circleHole.getHole_number() + "");
+        if (circleHole.isWinner()) {
+            txt.setText("*");
+        }
+        mazePane.getChildren().add(txt);
+        // center text over hole
+        txt.setTranslateX(circleHole.getHole().getCenterX() - txt.getLayoutBounds().getWidth() / 2 - 2);
+        txt.setTranslateY(circleHole.getHole().getCenterY() + txt.getLayoutBounds().getHeight() / 2 - 2);
+        txt.setFill(Color.WHITE);
     }
 
     private void setScaleFactor() {
         // set the scale factor based on screen size
         double scaleFactorX = (screenWidth - 10.0) / border.getWidth();
         double scaleFactorY = (screenHeight - 300.0) / border.getHeight();
-        ScaleFactor = Math.min(scaleFactorX, scaleFactorY);
-        ScaleFactor = Math.min(ScaleFactor, 1.5);
-        System.out.println("ScaleFactor = " + ScaleFactor);
-        if (ScaleFactor <= .8) {
-            TranslateYFactor = 0.0;
-        } else if (ScaleFactor <= 1.2) {
-            TranslateYFactor = 40;
-        } else if (ScaleFactor <= 1.5) {
-            TranslateYFactor = 85;
+        scaleFactor = Math.min(scaleFactorX, scaleFactorY);
+        scaleFactor = Math.min(scaleFactor, 1.5);
+        LOGGER.debug("ScaleFactor = {}", scaleFactor);
+        if (scaleFactor <= .8) {
+            translateYFactor = 0.0;
+        } else if (scaleFactor <= 1.2) {
+            translateYFactor = 40;
+        } else if (scaleFactor <= 1.5) {
+            translateYFactor = 85;
         }
-        System.out.println("TranslateYFactor = " + TranslateYFactor);
+        LOGGER.debug("TranslateYFactor = {}", translateYFactor);
     }
 
     private void setupGame() {
         timeSeconds.set(startTime.get());
-        System.out.println("path elements = " + path.getElements().size());
+       LOGGER.info("path elements = {}", path.getElements().size());
         path.getElements().clear();
         mazePane.getChildren().remove(path);
-        path = null;
-        System.gc();
         path = new Path();
         path.setStrokeWidth(4);
         path.setStroke(Color.DODGERBLUE);
@@ -352,14 +354,14 @@ public class TiltMazeMainPresenter extends GluonPresenter<TiltMazeLauncher.TiltM
                 + border.getLayoutY() - border.getStrokeWidth());
     }
 
-    private double fdistance(double x1, double y1, double x2, double y2) {
+    private static double distance(double x1, double y1, double x2, double y2) {
         return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
 
     private boolean fellInHole() {
         for (CircleHole hole : myMaze.getHoles()) {
             Circle c = hole.getHole();
-            var d = fdistance(ball.getTranslateX(),
+            var d = distance(ball.getTranslateX(),
                     ball.getTranslateY(),
                     c.getCenterX(),
                     c.getCenterY());
@@ -399,17 +401,17 @@ public class TiltMazeMainPresenter extends GluonPresenter<TiltMazeLauncher.TiltM
                         new KeyValue(ball.opacityProperty(), 0),
                         new KeyValue(path.opacityProperty(), 0))
         );
-
-        finishTimeLine.setOnFinished(e -> {
-            if (winner) {
-                accelout.setText(String.format("You Won! %4.1f secs", startTime.get() - timeSeconds.get()));
-            } else {
-                accelout.setText("You Lost!");
-            }
-            setupGame();
-
-        });
+        finishTimeLine.setOnFinished(e -> showResultAndReset());
         finishTimeLine.play();
+    }
+
+    private void showResultAndReset() {
+        if (winner) {
+            accelout.setText(String.format("You Won! %4.1f secs", startTime.get() - timeSeconds.get()));
+        } else {
+            accelout.setText("You Lost!");
+        }
+        setupGame();
     }
 
     private void barrierDetection(double xv, double yv) {
@@ -452,32 +454,31 @@ public class TiltMazeMainPresenter extends GluonPresenter<TiltMazeLauncher.TiltM
     }
 
     private void update() {
-        double xfactor;
-        double yfactor;
         int fr = gameTimer.getFrameRate() <= 0 ? 60 : gameTimer.getFrameRate();
         timeSeconds.set(timeSeconds.get() - (1.0 / fr));
         if (timeSeconds.get() <= 0.0) {
             doTimeout();
         } else {
-            try {
-                acceleration = service.getCurrentAcceleration();
-                xfactor = platformAdjust * acceleration.getX() * speedSlider.getValue();
-                yfactor = platformAdjust * acceleration.getY() * speedSlider.getValue() * -1;
-            } catch (Exception e) {
-                // no accelerometer service; use mouse input
+            final double xFactor;
+            final double yFactor;
+            if (service != null) {
+                Acceleration acceleration = service.getCurrentAcceleration();
+                xFactor = platformAdjust * acceleration.getX() * speedSlider.getValue();
+                yFactor = platformAdjust * acceleration.getY() * speedSlider.getValue() * -1;
+            } else {
                 if (startGame) {
-                    xfactor = (currentX - previousX);
+                    xFactor = (currentX - previousX);
                     previousX = currentX;
-                    yfactor = (currentY - previousY);
+                    yFactor = (currentY - previousY);
                     previousY = currentY;
                 } else {
-                    xfactor = 0.0;
-                    yfactor = 0.0;
+                    xFactor = 0.0;
+                    yFactor = 0.0;
                 }
             }
             // Did we fall into a hole? If so, we won't return
             if (!fellInHole()) {
-                barrierDetection(xfactor, yfactor);
+                barrierDetection(xFactor, yFactor);
             }
         }
     }
@@ -501,10 +502,6 @@ public class TiltMazeMainPresenter extends GluonPresenter<TiltMazeLauncher.TiltM
             return frameRate.get();
         }
 
-        public IntegerProperty frameRateProperty() {
-            return frameRate;
-        }
-
         @Override
         public void handle(long currentTimeNano) {
             updateFrameTime(currentTimeNano);
@@ -521,12 +518,8 @@ public class TiltMazeMainPresenter extends GluonPresenter<TiltMazeLauncher.TiltM
             frameRate.set((int) Math.round(getFrameRateHertz()));
         }
 
-        public long getDeltaTimeNano() {
-            return deltaTimeNano;
-        }
-
         public double getFrameRateHertz() {
-            double fr = 1d / deltaTimeNano;
+            double fr = 1.0D / deltaTimeNano;
             return fr * 1e9;
         }
 

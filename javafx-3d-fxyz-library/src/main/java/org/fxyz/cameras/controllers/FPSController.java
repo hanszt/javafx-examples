@@ -11,7 +11,6 @@ import javafx.scene.Node;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import org.fxyz.geometry.Vector3D;
 import org.fxyz.utils.MathUtils;
 
 /**

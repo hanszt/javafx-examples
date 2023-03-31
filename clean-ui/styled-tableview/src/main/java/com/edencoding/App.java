@@ -10,15 +10,15 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.Optional;
 
-public class App extends Application {
+public final class App extends Application {
 
-    private static final Logger LOGGER = LogManager.getLogger(App.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
     private double xOffset;
     private double yOffset;
 
@@ -28,6 +28,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        LOGGER.info("Starting app...");
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/fxml/MainView.fxml")));
 
         root.setOnMousePressed(this::updateOffset);
@@ -44,10 +45,11 @@ public class App extends Application {
         Optional.ofNullable(getClass().getResourceAsStream(iconLocation))
                 .map(Image::new)
                 .ifPresentOrElse(primaryStage.getIcons()::add,
-                        () -> LOGGER.warn(() -> iconLocation + " not found"));
+                        () -> LOGGER.warn("{} not found", iconLocation));
 
         primaryStage.setScene(scene);
         primaryStage.show();
+        LOGGER.info("App started");
     }
 
     private void updatePositionOnScreen(Stage primaryStage, MouseEvent event) {

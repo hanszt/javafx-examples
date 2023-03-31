@@ -6,20 +6,16 @@
 package org.fxyz.extras;
 
 import java.util.ArrayList;
-import java.util.List;
+
 import javafx.scene.AmbientLight;
 import javafx.scene.Group;
-import javafx.scene.PointLight;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
-import org.fxyz.geometry.Point3D;
-import org.fxyz.shapes.composites.PolyLine3D;
 
 /**
  *

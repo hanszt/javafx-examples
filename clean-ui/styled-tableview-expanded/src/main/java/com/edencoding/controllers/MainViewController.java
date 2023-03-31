@@ -6,33 +6,42 @@ import com.edencoding.models.Order;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.*;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
 
+    @FXML
     public TableView<Order> exampleTable;
+    @FXML
     public TableColumn<Order, Integer> orderIdColumn;
+    @FXML
     public TableColumn<Order, Boolean> shipTypeColumn;
+    @FXML
     public TableColumn<Order, Integer> courierColumn;
+    @FXML
     public TableColumn<Order, String> costColumn;
+    @FXML
     public TableColumn<Order, Integer> driverColumn;
 
     private final DecimalFormat currency = new DecimalFormat("$0.00");
@@ -65,15 +74,15 @@ public class MainViewController implements Initializable {
         exampleTable.setItems(FXCollections.observableList(orders));
     }
 
-    private double calculateItemCost(Order order){
+    private double calculateItemCost(Order order) {
         double priorityMultiplier = order.isPriorityShipping() ? 1.1d : 1d;
         return order.getWeight() * priorityMultiplier;
     }
 
-    private Node createPriorityGraphic(Boolean isPriority){
+    private Node createPriorityGraphic(Boolean isPriority) {
         HBox graphicContainer = new HBox();
         graphicContainer.setAlignment(Pos.CENTER);
-        if(isPriority){
+        if (isPriority) {
             ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/img/important.png")));
             imageView.setFitHeight(25);
             imageView.setPreserveRatio(true);

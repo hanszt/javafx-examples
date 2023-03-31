@@ -11,13 +11,12 @@ import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.TriangleMesh;
 import org.fxyz.geometry.Face3;
-import org.fxyz.geometry.Point3D;
 import org.fxyz.shapes.primitives.helper.BezierHelper;
 
 /**
- *  Spring based on this model:  http://en.wikipedia.org/wiki/Trefoil_knot
- *  Wrapped around a torus: http://mathoverflow.net/a/91459
-    *  Using Frenet-Serret trihedron: http://mathematica.stackexchange.com/a/18612
+ *  @see <a href="http://en.wikipedia.org/wiki/Trefoil_knot">Spring based on this model</a>
+ *  @see <a href="http://mathoverflow.net/a/91459">Wrapped around a torus</a>
+ *  @see <a href="http://mathematica.stackexchange.com/a/18612">Using Frenet-Serret trihedron</a>
  */
 public class BezierMesh extends TexturedMesh {
 

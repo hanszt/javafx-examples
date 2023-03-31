@@ -28,44 +28,37 @@ package com.asgteach.accelerometer.views;
 
 import com.gluonhq.charm.glisten.afterburner.AppView;
 import com.gluonhq.charm.glisten.afterburner.AppViewRegistry;
-import com.gluonhq.charm.glisten.afterburner.GluonPresenter;
-import com.gluonhq.charm.glisten.afterburner.Utils;
 import com.gluonhq.charm.glisten.application.MobileApplication;
-import com.gluonhq.charm.glisten.control.Avatar;
-import com.gluonhq.charm.glisten.control.NavigationDrawer;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
-import javafx.scene.image.Image;
 
 import java.util.Locale;
 
 import static com.gluonhq.charm.glisten.afterburner.AppView.Flag.*;
 
-public class AppViewManager {
+public final class AppViewManager {
 
     public static final AppViewRegistry REGISTRY = new AppViewRegistry();
 
-    public static final AppView MAIN_VIEW = view("Home", TiltMazeMainPresenter.class, 
-            MaterialDesignIcon.ADD_LOCATION, SHOW_IN_DRAWER, HOME_VIEW, SKIP_VIEW_STACK);
-    //public static final AppView SETTINGS_VIEW = view("Settings", SettingsPresenter.class, MaterialDesignIcon.SETTINGS);
-
-    private static AppView view(String title, Class<? extends GluonPresenter<?>> presenterClass, MaterialDesignIcon menuIcon, AppView.Flag... flags ) {
-        return REGISTRY.createView(name(presenterClass), title, presenterClass, menuIcon, flags);
+    static {
+        view(SHOW_IN_DRAWER, HOME_VIEW, SKIP_VIEW_STACK);
     }
 
-    private static String name(Class<? extends GluonPresenter<?>> presenterClass) {
-        return presenterClass.getSimpleName().toUpperCase(Locale.ROOT).replace("PRESENTER", "");
+    private AppViewManager() {
     }
-    
+
+    private static void view(AppView.Flag... flags ) {
+        REGISTRY.createView(name(), "Home", TiltMazeMainPresenter.class, MaterialDesignIcon.ADD_LOCATION, flags);
+    }
+
+    private static String name() {
+        return TiltMazeMainPresenter.class.getSimpleName()
+                .toUpperCase(Locale.ROOT)
+                .replace("PRESENTER", "");
+    }
+
     public static void registerViews(MobileApplication app) {
         for (AppView view : REGISTRY.getViews()) {
             view.registerView(app);
         }
     }
-
-//    public static void registerDrawer(MobileApplication app) {
-//        NavigationDrawer.Header header = new NavigationDrawer.Header("Anderson Software Group",
-//                "Accelerometer",
-//                new Avatar(21, new Image(AppViewManager.class.getResourceAsStream("/tiltmaze-logo.png"))));
-//        Utils.buildDrawer(app.getDrawer(), header, REGISTRY.getViews()); 
-//    }
 }

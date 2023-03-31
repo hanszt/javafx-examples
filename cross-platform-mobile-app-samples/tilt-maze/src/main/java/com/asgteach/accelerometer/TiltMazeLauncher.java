@@ -6,6 +6,11 @@ import com.asgteach.accelerometer.views.AppViewManager;
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.visual.Swatch;
 import javafx.scene.Scene;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.util.Optional;
 
 public class TiltMazeLauncher {
 
@@ -15,6 +20,8 @@ public class TiltMazeLauncher {
 
     public static class TiltMaze extends MobileApplication {
 
+        private static final Logger LOGGER = LoggerFactory.getLogger(TiltMaze.class);
+
         @Override
         public void init() {
             System.setProperty(Constants.ATTACH_DEBUG, "true");
@@ -23,12 +30,11 @@ public class TiltMazeLauncher {
 
         @Override
         public void postInit(Scene scene) {
-//        AppViewManager.registerDrawer(this);
             Swatch.YELLOW.assignTo(scene);
-
-            scene.getStylesheets().add(TiltMaze.class.getResource("style.css").toExternalForm());
-            //((Stage) scene.getWindow()).getIcons().add(new Image(TiltMaze.class.getResourceAsStream("/tiltmaze-logo.png")));
-            System.out.println("height=" + scene.getHeight() + ", width=" + scene.getWidth());
+            scene.getStylesheets().add(Optional.ofNullable(TiltMaze.class.getResource("style.css"))
+                    .map(URL::toExternalForm)
+                    .orElseThrow());
+            LOGGER.debug("height={}, width={}", scene.getHeight(), scene.getWidth());
         }
 
         public static void main(String[] args) {

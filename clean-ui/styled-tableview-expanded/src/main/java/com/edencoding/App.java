@@ -1,8 +1,6 @@
 package com.edencoding;
 
-import javafx.animation.PauseTransition;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,12 +9,15 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Duration;
 
-public class App extends Application {
+public final class App extends Application {
 
     private double xOffset;
     private double yOffset;
+
+    public App() {
+        super();
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {

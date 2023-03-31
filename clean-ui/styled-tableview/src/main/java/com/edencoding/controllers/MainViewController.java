@@ -7,32 +7,36 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.function.Predicate;
 
-public class MainViewController implements Initializable {
+public final class MainViewController implements Initializable {
 
-    public TableView<Order> exampleTable;
-    public TableColumn<Order, Integer> orderIdColumn;
-    public TableColumn<Order, String> stateColumn;
-    public TableColumn<Order, String> cityColumn;
-    public TextField searchBox;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainViewController.class);
+
+    @FXML
+    private TableView<Order> exampleTable;
+    @FXML
+    private TableColumn<Order, Integer> orderIdColumn;
+    @FXML
+    private TableColumn<Order, String> stateColumn;
+    @FXML
+    private TableColumn<Order, String> cityColumn;
+
+    public MainViewController() {
+        super();
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -66,9 +70,11 @@ public class MainViewController implements Initializable {
 
     @FXML
     private void handleGitButtonClicked(ActionEvent event) {
+        LOGGER.info("Opening webpage...");
         new Application() {
             @Override
             public void start(Stage stage) {
+                //no actions
             }
         }.getHostServices().showDocument("https://github.com/edencoding/javafx-ui/");
         event.consume();

@@ -6,7 +6,6 @@
 
 package org.fxyz.utils;
 
-import java.util.Random;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;

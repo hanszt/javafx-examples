@@ -8,7 +8,7 @@ package org.fxyz.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.stream.DoubleStream;
+
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;

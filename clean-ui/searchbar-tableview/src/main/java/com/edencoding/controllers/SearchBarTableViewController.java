@@ -39,6 +39,10 @@ public class SearchBarTableViewController implements Initializable {
     @FXML
     private TextField searchBox;
 
+    public SearchBarTableViewController() {
+        super();
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         orderIdColumn.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());

@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class App extends Application {
+public final class App extends Application {
 
     private double xOffset;
     private double yOffset;
