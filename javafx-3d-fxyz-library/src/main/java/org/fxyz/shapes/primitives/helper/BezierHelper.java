@@ -90,9 +90,9 @@ public class BezierHelper {
         // r''[t]
         Point3D ddR = abc.multiply((float) (6d * (1d - t))).add(bcd.multiply((float) (6d * t)));
         // (|| r'[t] ||^2)'[t]
-        float dn = (float) (2 * (6 * bc.x * (1 - 2 * t) - 6 * ab.x * (1 - t) + 6 * cd.x * t) * (3 * ab.x * Math.pow(1 - t, 2) + 6 * bc.x * (1 - t) * t + 3 * cd.x * Math.pow(t, 2)) +
-                2 * (6 * bc.y * (1 - 2 * t) - 6 * ab.y * (1 - t) + 6 * cd.y * t) * (3 * ab.y * Math.pow(1 - t, 2) + 6 * bc.y * (1 - t) * t + 3 * cd.y * Math.pow(t, 2)) +
-                2 * (6 * bc.z * (1 - 2 * t) - 6 * ab.z * (1 - t) + 6 * cd.z * t) * (3 * ab.z * Math.pow(1 - t, 2) + 6 * bc.z * (1 - t) * t + 3 * cd.z * Math.pow(t, 2)));
+        float dn = (float) (2 * (6 * bc.getX() * (1 - 2 * t) - 6 * ab.getX() * (1 - t) + 6 * cd.getX() * t) * (3 * ab.getX() * Math.pow(1 - t, 2) + 6 * bc.getX() * (1 - t) * t + 3 * cd.getX() * Math.pow(t, 2)) +
+                2 * (6 * bc.getY() * (1 - 2 * t) - 6 * ab.getY() * (1 - t) + 6 * cd.getY() * t) * (3 * ab.getY() * Math.pow(1 - t, 2) + 6 * bc.getY() * (1 - t) * t + 3 * cd.getY() * Math.pow(t, 2)) +
+                2 * (6 * bc.getZ() * (1 - 2 * t) - 6 * ab.getZ() * (1 - t) + 6 * cd.getZ() * t) * (3 * ab.getZ() * Math.pow(1 - t, 2) + 6 * bc.getZ() * (1 - t) * t + 3 * cd.getZ() * Math.pow(t, 2)));
         // T'[t]=r''[t]/||r't||-r'[t]*(|| r'[t] ||^2)'[t]/2/|| r'[t] ||^3
         Point3D dT = ddR.multiply(1f / nT).subtract(dR.multiply(dn / ((float) (Math.pow(nT, 3d) * 2d))));
 
@@ -118,7 +118,7 @@ public class BezierHelper {
         Point3D p = trihedron[BezierHelper.R]
                 .add(trihedron[BezierHelper.N].multiply(cu)
                         .add(trihedron[BezierHelper.B].multiply(su)));
-        p.f = ((float) t / (float) subDivLength); // [0-1]
+        p.setF(((float) t / (float) subDivLength)); // [0-1]
         return p;
 
     }
@@ -129,7 +129,7 @@ public class BezierHelper {
         }
         GaussianQuadrature gauss = new GaussianQuadrature(5, 0, 1);
         // || r'[t] ||
-        return gauss.NIntegrate(t -> (double) (ab.multiply((float) (3d * Math.pow(1d - t, 2)))
+        return gauss.nIntegrate(t -> (double) (ab.multiply((float) (3d * Math.pow(1d - t, 2)))
                 .add(bc.multiply((float) (6d * (1d - t) * t))
                         .add(cd.multiply((float) (3d * Math.pow(t, 2)))))
                 .magnitude()));
@@ -176,7 +176,7 @@ public class BezierHelper {
     @Override
     public String toString() {
         var sb = new StringBuilder("{");
-        points.forEach(p -> sb.append("{").append(p.x).append(",").append(p.y).append(",").append(p.z).append("}"));
+        points.forEach(p -> sb.append("{").append(p.getX()).append(",").append(p.getY()).append(",").append(p.getZ()).append("}"));
         return sb.append("}").toString();
     }
 

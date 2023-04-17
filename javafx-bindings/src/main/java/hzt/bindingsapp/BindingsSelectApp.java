@@ -96,9 +96,7 @@ public class BindingsSelectApp extends Application {
 
         initBindings();
 
-        downloadButton.setOnAction( (evt) -> {
-            downloaded.set(true);
-        });
+        downloadButton.setOnAction( (evt) -> downloaded.set(true));
 
         downloaded.addListener( (obs,ov,nv) -> currentTrack.setDownloaded(true));
 

@@ -221,49 +221,49 @@ public class XylophoneOld extends Application {
         bar8Cube.setScaleZ(65.0);
         bar8Cube.setScaleY(barDepth);
 
-        bar1Cube.setOnMousePressed(new EventHandler<MouseEvent>() {
+        bar1Cube.setOnMousePressed(new EventHandler<>() {
             @Override
             public void handle(MouseEvent me) {
                 bar1Note.play();
             }
         });
-        bar2Cube.setOnMousePressed(new EventHandler<MouseEvent>() {
+        bar2Cube.setOnMousePressed(new EventHandler<>() {
             @Override
             public void handle(MouseEvent me) {
                 bar2Note.play();
             }
         });
-        bar3Cube.setOnMousePressed(new EventHandler<MouseEvent>() {
+        bar3Cube.setOnMousePressed(new EventHandler<>() {
             @Override
             public void handle(MouseEvent me) {
                 bar3Note.play();
             }
         });
-        bar4Cube.setOnMousePressed(new EventHandler<MouseEvent>() {
+        bar4Cube.setOnMousePressed(new EventHandler<>() {
             @Override
             public void handle(MouseEvent me) {
                 bar4Note.play();
             }
         });
-        bar5Cube.setOnMousePressed(new EventHandler<MouseEvent>() {
+        bar5Cube.setOnMousePressed(new EventHandler<>() {
             @Override
             public void handle(MouseEvent me) {
                 bar5Note.play();
             }
         });
-        bar6Cube.setOnMousePressed(new EventHandler<MouseEvent>() {
+        bar6Cube.setOnMousePressed(new EventHandler<>() {
             @Override
             public void handle(MouseEvent me) {
                 bar6Note.play();
             }
         });
-        bar7Cube.setOnMousePressed(new EventHandler<MouseEvent>() {
+        bar7Cube.setOnMousePressed(new EventHandler<>() {
             @Override
             public void handle(MouseEvent me) {
                 bar7Note.play();
             }
         });
-        bar8Cube.setOnMousePressed(new EventHandler<MouseEvent>() {
+        bar8Cube.setOnMousePressed(new EventHandler<>() {
             @Override
             public void handle(MouseEvent me) {
                 bar8Note.play();
@@ -281,7 +281,7 @@ public class XylophoneOld extends Application {
 
         frameCam(stage, scene);
 
-        scene.setOnMousePressed(new EventHandler<MouseEvent>() {
+        scene.setOnMousePressed(new EventHandler<>() {
             @Override
             public void handle(MouseEvent me) {
                 mousePosX = me.getX();
@@ -291,7 +291,7 @@ public class XylophoneOld extends Application {
                 //System.out.println("scene.setOnMousePressed " + me);
             }
         });
-        scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
+        scene.setOnMouseDragged(new EventHandler<>() {
             @Override
             public void handle(MouseEvent me) {
                 mouseOldX = mousePosX;
@@ -327,7 +327,7 @@ public class XylophoneOld extends Application {
                 }
             }
         });
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+        scene.setOnKeyPressed(new EventHandler<>() {
             @Override
             public void handle(KeyEvent ke) {
                 if (KeyCode.A.equals(ke.getCode())) {

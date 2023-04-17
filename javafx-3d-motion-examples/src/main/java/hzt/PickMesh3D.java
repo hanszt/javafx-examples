@@ -83,10 +83,10 @@ public class PickMesh3D extends Application {
         final int faceSize = 6;
         int numDivX = subDivX + 1;
         int numVerts = (subDivY + 1) * numDivX;
-        float points[] = new float[numVerts * pointSize];
-        float texCoords[] = new float[numVerts * texCoordSize];
+        float[] points = new float[numVerts * pointSize];
+        float[] texCoords = new float[numVerts * texCoordSize];
         int faceCount = subDivX * subDivY * 2;
-        int faces[] = new int[faceCount * faceSize];
+        int[] faces = new int[faceCount * faceSize];
 
         // Create points and texCoords
         for (int y = 0; y <= subDivY; y++) {
@@ -166,7 +166,7 @@ public class PickMesh3D extends Application {
         root.getChildren().addAll(pickResultPanel, createSubScene(camera));
         Scene scene = new Scene(root, 800, 800);
         scene.setFill(Color.color(0.2, 0.2, 0.2));
-        scene.setOnKeyTyped(new EventHandler<KeyEvent>() {
+        scene.setOnKeyTyped(new EventHandler<>() {
             @Override
             public void handle(KeyEvent e) {
                 switch (e.getCharacter()) {
@@ -209,7 +209,7 @@ public class PickMesh3D extends Application {
 
         shape.setId(name);
 
-        EventHandler<MouseEvent> moveHandler = new EventHandler<MouseEvent>() {
+        EventHandler<MouseEvent> moveHandler = new EventHandler<>() {
             @Override
             public void handle(MouseEvent event) {
                 PickResult res = event.getPickResult();
@@ -221,7 +221,7 @@ public class PickMesh3D extends Application {
         shape.setOnMouseMoved(moveHandler);
         shape.setOnMouseDragOver(moveHandler);
 
-        shape.setOnMouseEntered(new EventHandler<MouseEvent>() {
+        shape.setOnMouseEntered(new EventHandler<>() {
             @Override
             public void handle(MouseEvent event) {
                 PickResult res = event.getPickResult();
@@ -232,7 +232,7 @@ public class PickMesh3D extends Application {
             }
         });
 
-        shape.setOnMouseExited(new EventHandler<MouseEvent>() {
+        shape.setOnMouseExited(new EventHandler<>() {
             @Override
             public void handle(MouseEvent event) {
                 PickResult res = event.getPickResult();

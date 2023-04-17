@@ -54,7 +54,7 @@ public class RestListView extends View {
 
         // create a JavaFX ListView and populate it with the retrieved list
         ListView<Error> lvErrors = new ListView<>(errors);
-        lvErrors.setCellFactory(lv -> new ListCell<Error>() {
+        lvErrors.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(Error item, boolean empty) {
                 super.updateItem(item, empty);

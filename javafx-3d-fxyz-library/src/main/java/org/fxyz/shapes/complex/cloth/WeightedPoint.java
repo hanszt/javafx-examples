@@ -110,17 +110,17 @@ public class WeightedPoint extends Point3D {
                     return;
                 }
                 Point3D vel = new Point3D(
-                        (getX() - oldPosition.x),
-                        (getY() - oldPosition.y),
-                        (getZ() - oldPosition.z)
+                        (getX() - oldPosition.getX()),
+                        (getY() - oldPosition.getY()),
+                        (getZ() - oldPosition.getZ())
                 );
                 float dtSq = (float) (dt * dt);
 
                 // calculate the next position using Verlet Integration
                 Point3D next = new Point3D(
-                        getX() + (vel.x + (((force.x / (float) (mass)) * 0.5f) * dtSq)),
-                        getY() + (vel.y + (((force.y / (float) (mass)) * 0.5f) * dtSq)),
-                        getZ() + (vel.z + (((force.z / (float) (mass)) * 0.5f) * dtSq))
+                        getX() + (vel.getX() + (((force.getX() / (float) (mass)) * 0.5f) * dtSq)),
+                        getY() + (vel.getY() + (((force.getY() / (float) (mass)) * 0.5f) * dtSq)),
+                        getZ() + (vel.getZ() + (((force.getZ() / (float) (mass)) * 0.5f) * dtSq))
                 );
 
                 // reset variables
@@ -145,9 +145,9 @@ public class WeightedPoint extends Point3D {
         }
 
         public void setPosition(Point3D pos) {
-            x = pos.x;
-            y = pos.y;
-            z = pos.z;
+            setX(pos.getX());
+            setY(pos.getY());
+            setZ(pos.getZ());
         }
 
         //==========================================================================
@@ -156,21 +156,21 @@ public class WeightedPoint extends Point3D {
         }
 
         public void setOldPosition(Point3D oldPosition) {
-            this.oldPosition.x = oldPosition.x;
-            this.oldPosition.y = oldPosition.y;
-            this.oldPosition.z = oldPosition.z;
+            this.oldPosition.setX(oldPosition.getX());
+            this.oldPosition.setY(oldPosition.getY());
+            this.oldPosition.setZ(oldPosition.getZ());
         }
 
         public void setOldPosition(float x, float y, float z) {
-            this.oldPosition.x = x;
-            this.oldPosition.y = y;
-            this.oldPosition.z = z;
+            this.oldPosition.setX(x);
+            this.oldPosition.setY(y);
+            this.oldPosition.setZ(z);
         }
 
         public void setOldPosition(double x, double y, double z) {
-            this.oldPosition.x = (float) x;
-            this.oldPosition.y = (float) y;
-            this.oldPosition.z = (float) z;
+            this.oldPosition.setX((float) x);
+            this.oldPosition.setY((float) y);
+            this.oldPosition.setZ((float) z);
         }
 
         //==========================================================================
@@ -208,9 +208,9 @@ public class WeightedPoint extends Point3D {
 
         public void applyForce(Point3D force) {
             if (isForceAffected()) {
-                this.force.x += force.x;
-                this.force.y += force.y;
-                this.force.z += force.z;
+                this.force.setX(this.force.getX() + force.getX());
+                this.force.setY(this.force.getY() + force.getY());
+                this.force.setZ(this.force.getZ() + force.getZ());
             }
         }
 

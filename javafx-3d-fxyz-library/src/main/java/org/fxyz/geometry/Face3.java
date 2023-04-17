@@ -43,10 +43,10 @@ public class Face3 {
         this.p2=p2;
     }
 
-    public IntStream getFace() { return getFace(0); }
-    public IntStream getFace(int t) { return IntStream.of(p0,t,p1,t,p2,t); }
-    public IntStream getFace(int t0, int t1, int t2) { return IntStream.of(p0,t0,p1,t1,p2,t2); }
-    public IntStream getFace(Face3 t) { return IntStream.of(p0,t.p0,p1,t.p1,p2,t.p2); }
+    public IntStream faceAsStream() { return faceAsStream(0); }
+    public IntStream faceAsStream(int t) { return IntStream.of(p0,t,p1,t,p2,t); }
+    public IntStream faceAsStream(int t0, int t1, int t2) { return IntStream.of(p0,t0,p1,t1,p2,t2); }
+    public IntStream faceAsStream(Face3 t) { return IntStream.of(p0,t.p0,p1,t.p1,p2,t.p2); }
     
     @Override
     public String toString() {

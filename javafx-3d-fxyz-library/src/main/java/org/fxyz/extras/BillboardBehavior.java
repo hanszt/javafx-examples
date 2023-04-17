@@ -22,26 +22,26 @@ public interface BillboardBehavior<T extends Node>{
      * Spherical means object will look at other on all axes
      * Cylindrical means object will rotate on Y axis only
      */
-    public enum BillboardMode{
+    enum BillboardMode{
         SPHERICAL, 
         CYLINDRICAL;
     }
     
     
-    static BillboardTimer timer = new BillboardTimer();
+    BillboardTimer timer = new BillboardTimer();
     /**
      * 
      * @return The node to be used for this behavior.
      */
-    public T getBillboardNode();    
+    T getBillboardNode();
     /**
      * 
      * @return The node to look at.
      */
-    public Node getOther();
+    Node getOther();
       
     
-    public Affine affine = new Affine();  
+    Affine affine = new Affine();
     /**
      *  Adds the Affine transform to Node and starts timer.
      */

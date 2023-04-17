@@ -18,18 +18,12 @@
  */
 package org.fxyz.utils;
 
-import java.util.stream.IntStream;
-
 /**
  *
  * @author Jason Pollastrini aka jdub1581
  */
-@FunctionalInterface
 public interface Constraint {
 
     void solve();
     
-    default void solve(int iter){
-        IntStream.range(0, iter).parallel().forEach(i-> solve());
-    }
 }

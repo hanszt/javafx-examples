@@ -18,8 +18,8 @@ import org.fxyz.shapes.primitives.SpheroidMesh;
  *
  * @author jdub1581
  */
-public class Spheroid extends ShapeContainer<SpheroidMesh> {
-    private SpheroidMesh mesh;
+public final class Spheroid extends ShapeContainer<SpheroidMesh> {
+    private final SpheroidMesh mesh;
     public Spheroid() {
         super(new SpheroidMesh());
         mesh = getShape();        
@@ -64,23 +64,23 @@ public class Spheroid extends ShapeContainer<SpheroidMesh> {
         this.setDiffuseColor(c);
     }
 
-    public final void setMajorRadius(double value) {
+    public void setMajorRadius(double value) {
         mesh.setMajorRadius(value);
     }
 
-    public final void setMinorRadius(double value) {
+    public void setMinorRadius(double value) {
         mesh.setMinorRadius(value);
     }
 
-    public final void setDivisions(int value) {
+    public void setDivisions(int value) {
         mesh.setDivisions(value);
     }
 
-    public final void setDrawMode(DrawMode value) {
+    public void setDrawMode(DrawMode value) {
         mesh.setDrawMode(value);
     }
 
-    public final void setCullFace(CullFace value) {
+    public void setCullFace(CullFace value) {
         mesh.setCullFace(value);
     }
 
@@ -96,7 +96,7 @@ public class Spheroid extends ShapeContainer<SpheroidMesh> {
         return mesh.isProlateSpheroid();
     }
 
-    public final double getMajorRadius() {
+    public double getMajorRadius() {
         return mesh.getMajorRadius();
     }
 
@@ -104,7 +104,7 @@ public class Spheroid extends ShapeContainer<SpheroidMesh> {
         return mesh.majorRadiusProperty();
     }
 
-    public final double getMinorRadius() {
+    public double getMinorRadius() {
         return mesh.getMinorRadius();
     }
 
@@ -112,7 +112,7 @@ public class Spheroid extends ShapeContainer<SpheroidMesh> {
         return mesh.minorRadiusProperty();
     }
 
-    public final int getDivisions() {
+    public int getDivisions() {
         return mesh.getDivisions();
     }
 

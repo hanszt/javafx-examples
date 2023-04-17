@@ -12,7 +12,7 @@ import org.fxyz.geometry.Face3;
 import org.fxyz.shapes.primitives.helper.SpringHelper;
 
 /**
- *  Spring based on this model:  http://math.stackexchange.com/a/461637
+ *  Spring based on this model:  <a href="http://math.stackexchange.com/a/461637">Math exchange</a>
  */
 public class SpringMesh extends TexturedMesh {
 

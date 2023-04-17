@@ -27,9 +27,7 @@ import java.util.Optional;
  * @author usuario
  */
 public class SegTorusTest extends Application {
-    private PerspectiveCamera camera;
-    private final double sceneWidth = 600;
-    private final double sceneHeight = 600;
+
     private final CameraTransformer cameraTransform = new CameraTransformer();
     
     private double mousePosX;
@@ -38,12 +36,16 @@ public class SegTorusTest extends Application {
     private double mouseOldY;
     private double mouseDeltaX;
     private double mouseDeltaY;
-    private Rotate rotateY;
-    private SegmentedTorusMesh torus;
-    
+
+
     @Override
     public void start(Stage primaryStage) {
+        SegmentedTorusMesh torus;
+        Rotate rotateY;
+        PerspectiveCamera camera;
         Group sceneRoot = new Group();
+        double sceneWidth = 600;
+        double sceneHeight = 600;
         Scene scene = new Scene(sceneRoot, sceneWidth, sceneHeight, true, SceneAntialiasing.BALANCED);
         scene.setFill(Color.WHITE);
         camera = new PerspectiveCamera(true);        

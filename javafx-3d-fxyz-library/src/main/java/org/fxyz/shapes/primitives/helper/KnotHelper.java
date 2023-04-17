@@ -90,7 +90,7 @@ public class KnotHelper {
         Point3D p = trihedron[KnotHelper.tR]
                         .add(trihedron[KnotHelper.tN].multiply(cu)
                         .add(trihedron[KnotHelper.tB].multiply(su)));
-        p.f=((float)(t*2d*Math.PI)/(float)subDivLength); // [0-2Pi]
+        p.setF(((float)(t*2d*Math.PI)/(float)subDivLength)); // [0-2Pi]
         return p;
         
     }
@@ -98,7 +98,7 @@ public class KnotHelper {
     public double getLength(){ // [0-2Pi]
         GaussianQuadrature gauss = new GaussianQuadrature(5,0,2d*Math.PI);
         // || r'[t] ||
-        return gauss.NIntegrate(t->Math.sqrt((2*q*q*r*r + p*p*(r*r + 2*R*R) + p*p*r*(4*R*Math.cos(q*t) + r*Math.cos(2*q*t)))/2));
+        return gauss.nIntegrate(t->Math.sqrt((2*q*q*r*r + p*p*(r*r + 2*R*R) + p*p*r*(4*R*Math.cos(q*t) + r*Math.cos(2*q*t)))/2));
     }
     
     public Point3D getPositionAt(double t){

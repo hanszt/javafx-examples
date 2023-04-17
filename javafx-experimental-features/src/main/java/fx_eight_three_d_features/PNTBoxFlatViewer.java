@@ -97,7 +97,7 @@ public class PNTBoxFlatViewer extends Application {
 
         root = new Group(grp3 /*, pointLight */);
         Scene scene = new Scene(root, width, height, depthBuffer);
-        scene.setOnKeyTyped(new EventHandler<KeyEvent>() {
+        scene.setOnKeyTyped(new EventHandler<>() {
             @Override
             public void handle(KeyEvent e) {
                 switch (e.getCharacter()) {
@@ -119,8 +119,8 @@ public class PNTBoxFlatViewer extends Application {
                         }
                         break;
                     case "k":
-                         System.err.print("k ");
-                         if ((texture) || (!textureSwitch)) {
+                        System.err.print("k ");
+                        if ((texture) || (!textureSwitch)) {
                             material.setDiffuseMap(diffuseMap);
                             material.setBumpMap(null);
                             material.setDiffuseColor(Color.WHITE);
@@ -138,7 +138,7 @@ public class PNTBoxFlatViewer extends Application {
                             material.setDiffuseMap(null);
                             material.setBumpMap(bumpMap);
                             material.setDiffuseColor(Color.LIGHTGRAY);
-                                                textureSwitch = true;
+                            textureSwitch = true;
                         } else {
                             material.setDiffuseMap(null);
                             material.setBumpMap(null);
@@ -201,7 +201,7 @@ public class PNTBoxFlatViewer extends Application {
         float hh = h / 2f;
         float hd = d / 2f;
 
-        float points[] = {
+        float[] points = {
             -hw, -hh, -hd,
              hw, -hh, -hd,
              hw,  hh, -hd,
@@ -211,7 +211,7 @@ public class PNTBoxFlatViewer extends Application {
              hw,  hh,  hd,
             -hw,  hh,  hd};
 
-        float normals[] = {
+        float[] normals = {
             0, 0, -1,
             1, 0, 0,
             0, 0, 1,
@@ -219,9 +219,9 @@ public class PNTBoxFlatViewer extends Application {
             0, 1, 0,
             0, -1,  0};
 
-        float texCoords[] = {0, 0, 1, 0, 1, 1, 0, 1};
+        float[] texCoords = {0, 0, 1, 0, 1, 1, 0, 1};
 
-        int faces[] = {
+        int[] faces = {
             0, 0, 0, 2, 0, 2, 1, 0, 1,
             2, 0, 2, 0, 0, 0, 3, 0, 3,
             1, 1, 0, 6, 1, 2, 5, 1, 1,

@@ -206,7 +206,9 @@ public class Vec2f {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
+        if (obj == this) {
+            return true;
+        }
         if (obj instanceof Vec2f) {
             Vec2f v = (Vec2f) obj;
             return (x == v.x) && (y == v.y);

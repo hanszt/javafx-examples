@@ -13,12 +13,12 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import org.fxyz.shapes.SphereSegment;
+import org.fxyz.utils.CameraUtils;
 
 /**
  *
@@ -77,11 +77,17 @@ public class SphereSegmentTest extends Application {
 
                     
             double translationX = Math.random()*sceneWidth/2;
-            if(Math.random() >= 0.5) translationX *= -1;
+            if(Math.random() >= 0.5) {
+                translationX *= -1;
+            }
             double translationY = Math.random()*sceneWidth/2;
-            if(Math.random() >= 0.5) translationY *= -1;
+            if(Math.random() >= 0.5) {
+                translationY *= -1;
+            }
             double translationZ = Math.random()*sceneWidth/2;
-            if(Math.random() >= 0.5) translationZ *= -1;
+            if(Math.random() >= 0.5) {
+                translationZ *= -1;
+            }
             Translate translate = new Translate(translationX, translationY, translationZ);
             Rotate rotateX = new Rotate(Math.random()*360, Rotate.X_AXIS);
             Rotate rotateY = new Rotate(Math.random()*360, Rotate.Y_AXIS);
@@ -94,19 +100,7 @@ public class SphereSegmentTest extends Application {
         }
         sceneRoot.getChildren().addAll(sphereGroup);        
 
-        scene.setOnKeyPressed(event -> {
-            double change = 10.0;
-            //Add shift modifier to simulate "Running Speed"
-            if(event.isShiftDown()) { change = 50.0; }
-            //What key did the user press?
-            KeyCode keycode = event.getCode();
-            //Step 2c: Add Zoom controls
-            if(keycode == KeyCode.W) { camera.setTranslateZ(camera.getTranslateZ() + change); }
-            if(keycode == KeyCode.S) { camera.setTranslateZ(camera.getTranslateZ() - change); }
-            //Step 2d:  Add Strafe controls
-            if(keycode == KeyCode.A) { camera.setTranslateX(camera.getTranslateX() - change); }
-            if(keycode == KeyCode.D) { camera.setTranslateX(camera.getTranslateX() + change); }
-        });        
+        scene.setOnKeyPressed(event -> CameraUtils.moveInXZPlane(camera, event));
         
         //Add a Mouse Handler for Rotations
         Rotate xRotate = new Rotate(0, Rotate.X_AXIS);
@@ -133,10 +127,11 @@ public class SphereSegmentTest extends Application {
         });
         //Angle calculation will only change when the button has been pressed
         scene.setOnMouseDragged(event -> {
-            if(event.isMiddleButtonDown()) 
+            if(event.isMiddleButtonDown()) {
                 angleZ.set(fixedZAngle - (scenez - event.getSceneY()));
-            else
+            } else {
                 angleX.set(fixedXAngle - (scenex - event.getSceneY()));
+            }
             angleY.set(fixedYAngle + sceney - event.getSceneX());
         });        
         

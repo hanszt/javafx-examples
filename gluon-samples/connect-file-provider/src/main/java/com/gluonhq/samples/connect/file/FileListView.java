@@ -59,7 +59,7 @@ public class FileListView extends View {
 
         // create a JavaFX ListView and populate it with the retrieved list
         ListView<Language> lvLanguages = new ListView<>(languages);
-        lvLanguages.setCellFactory(lv -> new ListCell<Language>() {
+        lvLanguages.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(Language item, boolean empty) {
                 super.updateItem(item, empty);

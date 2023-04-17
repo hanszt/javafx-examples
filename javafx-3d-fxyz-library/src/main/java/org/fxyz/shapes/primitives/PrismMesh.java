@@ -136,10 +136,10 @@ public class PrismMesh extends TexturedMesh {
     public final IntegerProperty levelProperty() {
         return level;
     }
-    private final ObjectProperty<Point3D> axisOrigin = new SimpleObjectProperty<Point3D>(){
+    private final ObjectProperty<Point3D> axisOrigin = new SimpleObjectProperty<>() {
         @Override
         protected void invalidated() {
-            if(mesh!=null){
+            if (mesh != null) {
                 updateMesh();
             }
         }
@@ -156,10 +156,10 @@ public class PrismMesh extends TexturedMesh {
     public ObjectProperty axisOriginProperty() {
         return axisOrigin;
     }
-    private final ObjectProperty<Point3D> axisEnd = new SimpleObjectProperty<Point3D>(){
+    private final ObjectProperty<Point3D> axisEnd = new SimpleObjectProperty<>() {
         @Override
         protected void invalidated() {
-            if(mesh!=null){
+            if (mesh != null) {
                 updateMesh();
             }
         }
@@ -214,9 +214,9 @@ public class PrismMesh extends TexturedMesh {
             if(getAxisOrigin()!=null && getAxisEnd()!=null){
                 Point3D dir=getAxisEnd().subtract(getAxisOrigin()).crossProduct(new Point3D(0,-1,0));
                 double angle=Math.acos(getAxisEnd().subtract(getAxisOrigin()).normalize().dotProduct(new Point3D(0,-1,0)));
-                a=a.createConcatenation(new Translate(getAxisOrigin().x, getAxisOrigin().y-height/2d, getAxisOrigin().z))
+                a=a.createConcatenation(new Translate(getAxisOrigin().getX(), getAxisOrigin().getY() -height/2d, getAxisOrigin().getZ()))
                    .createConcatenation(new Rotate(-Math.toDegrees(angle), 0d,height/2d,0d,
-                                                   new javafx.geometry.Point3D(dir.x,-dir.y,dir.z)));
+                                                   new javafx.geometry.Point3D(dir.getX(),-dir.getY(), dir.getZ())));
             }
             int nPoints=2*div+2;
             float r=radius;
@@ -227,9 +227,9 @@ public class PrismMesh extends TexturedMesh {
                 double ang=i*2d*Math.PI/div;
                 double pol = polygonalSection(ang);
                 Point3D ta = transform(r*pol*Math.cos(ang),h/2,r*pol*Math.sin(ang));
-                baseVertices[3*i]=ta.x;
-                baseVertices[3*i+1]=ta.y;
-                baseVertices[3*i+2]=ta.z;
+                baseVertices[3*i]= ta.getX();
+                baseVertices[3*i+1]= ta.getY();
+                baseVertices[3*i+2]= ta.getZ();
 //                baseVertices[3*i]=(float)(r*pol*Math.cos(ang));
 //                baseVertices[3*i+1]=h/2;
 //                baseVertices[3*i+2]=(float)(r*pol*Math.sin(ang));
@@ -239,21 +239,21 @@ public class PrismMesh extends TexturedMesh {
                 double ang=i*2d*Math.PI/div;
                 double pol = polygonalSection(ang);
                 Point3D ta = transform(r*pol*Math.cos(ang),-h/2,r*pol*Math.sin(ang));
-                baseVertices[3*i]=ta.x;
-                baseVertices[3*i+1]=ta.y;
-                baseVertices[3*i+2]=ta.z;
+                baseVertices[3*i]= ta.getX();
+                baseVertices[3*i+1]= ta.getY();
+                baseVertices[3*i+2]= ta.getZ();
 //                baseVertices[3*i]=(float)(r*pol*Math.cos(ang));
 //                baseVertices[3*i+1]=-h/2;
 //                baseVertices[3*i+2]=(float)(r*pol*Math.sin(ang));
             }
             Point3D ta = transform(0,h/2,0);
-            baseVertices[6*div]=ta.x;
-            baseVertices[6*div+1]=ta.y;
-            baseVertices[6*div+2]=ta.z;
+            baseVertices[6*div]= ta.getX();
+            baseVertices[6*div+1]= ta.getY();
+            baseVertices[6*div+2]= ta.getZ();
             ta = transform(0,-h/2,0);
-            baseVertices[6*div+3]=ta.x;
-            baseVertices[6*div+4]=ta.y;
-            baseVertices[6*div+5]=ta.z;
+            baseVertices[6*div+3]= ta.getX();
+            baseVertices[6*div+4]= ta.getY();
+            baseVertices[6*div+5]= ta.getZ();
 //            baseVertices[6*div]=0f;
 //            baseVertices[6*div+1]=h/2f;
 //            baseVertices[6*div+2]=0f;
@@ -355,7 +355,7 @@ public class PrismMesh extends TexturedMesh {
                 .mapToObj(i -> {
                     Point3D p=new Point3D(points0[3*i], points0[3*i+1], points0[3*i+2]);
                     // f = h of local cylinder from 0 on top (ini) to 1 on bottom (end)
-                    p.f=(h/2-unTransform(p).y)/h;
+                    p.setF((h/2- unTransform(p).getY())/h);
                     return p;
                 })
                 .collect(Collectors.toList());
@@ -474,15 +474,15 @@ public class PrismMesh extends TexturedMesh {
         if(getSectionType().equals(SectionType.CIRCLE)){
             if(inCircle(p1) && inCircle(p2)){
                 Point3D p4 = unTransform(p3);
-                float fact=(float)(radius.get()/Math.sqrt(p4.x*p4.x+p4.z*p4.z));
-                p3=transform(fact*p4.x,p4.y,fact*p4.z);
+                float fact=(float)(radius.get()/Math.sqrt(p4.getX() * p4.getX() + p4.getZ() * p4.getZ()));
+                p3=transform(fact* p4.getX(), p4.getY(),fact* p4.getZ());
                 if(!inCircle(p3)){
                     System.out.println("p3: "+p3);
                 }
             }
         }
         // f = h of local cylinder from 0 on top (ini) to 1 on bottom (end)
-        p3.f=(float)((height.get()/2d-unTransform(p3).y)/height.get());
+        p3.setF((float)((height.get()/2d- unTransform(p3).getY())/height.get()));
         listVertices.add(p3);
         
         map.put(key,index.get());
@@ -491,7 +491,7 @@ public class PrismMesh extends TexturedMesh {
     
     private boolean inCircle(Point3D p){
         Point3D p2=unTransform(p);
-        return p2.x*p2.x+p2.z*p2.z>0.99*radius.get()*radius.get();
+        return p2.getX() * p2.getX() + p2.getZ() * p2.getZ() >0.99*radius.get()*radius.get();
     }
     
     private int getMiddle(int v1, Point2D p1, int v2, Point2D p2){
@@ -507,7 +507,7 @@ public class PrismMesh extends TexturedMesh {
     }
     
     private Point3D transform(Point3D p){
-        javafx.geometry.Point3D ta = a.transform(p.x,p.y,p.z);
+        javafx.geometry.Point3D ta = a.transform(p.getX(), p.getY(), p.getZ());
         return new Point3D((float)ta.getX(), (float)ta.getY(), (float)ta.getZ());        
     }
     private Point3D transform(double x, double y, double z){
@@ -516,7 +516,7 @@ public class PrismMesh extends TexturedMesh {
     }
     public Point3D unTransform(Point3D p){
         try {
-            javafx.geometry.Point3D ta = a.inverseTransform(p.x,p.y,p.z);
+            javafx.geometry.Point3D ta = a.inverseTransform(p.getX(), p.getY(), p.getZ());
             return new Point3D((float)ta.getX(), (float)ta.getY(), (float)ta.getZ());
         } catch (NonInvertibleTransformException ex) {
             System.out.println("p not invertible "+p);

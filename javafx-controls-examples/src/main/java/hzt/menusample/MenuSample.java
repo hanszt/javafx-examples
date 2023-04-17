@@ -111,7 +111,7 @@ public class MenuSample extends Application {
         Menu menuFile = new Menu("File");
         MenuItem add = new MenuItem("Shuffle",
             new ImageView(new Image("menusample/new.png")));
-        add.setOnAction(new EventHandler<ActionEvent>() {
+        add.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent t) {
                 shuffle();
                 vbox.setVisible(true);
@@ -120,14 +120,14 @@ public class MenuSample extends Application {
 
         MenuItem clear = new MenuItem("Clear");
         clear.setAccelerator(KeyCombination.keyCombination("Ctrl+X"));
-        clear.setOnAction(new EventHandler<ActionEvent>() {
+        clear.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent t) {
                 vbox.setVisible(false);
             }
         });
 
         MenuItem exit = new MenuItem("Exit");
-        exit.setOnAction(new EventHandler<ActionEvent>() {
+        exit.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent t) {
                 System.exit(0);
             }
@@ -149,7 +149,7 @@ public class MenuSample extends Application {
 
         final MenuItem noEffects = new MenuItem("No Effects");
         noEffects.setDisable(true);
-        noEffects.setOnAction(new EventHandler<ActionEvent>() {
+        noEffects.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent t) {
                 pic.setEffect(null);
                 groupEffect.getSelectedToggle().setSelected(false);
@@ -158,19 +158,19 @@ public class MenuSample extends Application {
         });
         
         groupEffect.selectedToggleProperty().addListener(
-            new ChangeListener<Toggle>() {
-            public void changed(ObservableValue<? extends Toggle> ov,
-                Toggle old_toggle, Toggle new_toggle) {
-                    if (groupEffect.getSelectedToggle() != null) {
-                        Effect effect = 
-                            (Effect) groupEffect.getSelectedToggle().getUserData();
+                new ChangeListener<>() {
+                    public void changed(ObservableValue<? extends Toggle> ov,
+                                        Toggle old_toggle, Toggle new_toggle) {
+                        if (groupEffect.getSelectedToggle() != null) {
+                            Effect effect =
+                                    (Effect) groupEffect.getSelectedToggle().getUserData();
                             pic.setEffect(effect);
                             noEffects.setDisable(false);
                         } else {
                             noEffects.setDisable(true);
-                }
-            }
-        });
+                        }
+                    }
+                });
         
         menuEdit.getItems().addAll(menuEffect, noEffects);
 
@@ -190,7 +190,7 @@ public class MenuSample extends Application {
         // --- Context Menu
         final ContextMenu cm = new ContextMenu();
         MenuItem cmItem1 = new MenuItem("Copy Image");
-        cmItem1.setOnAction(new EventHandler<ActionEvent>() {
+        cmItem1.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent e) {
                 Clipboard clipboard = Clipboard.getSystemClipboard();
                 ClipboardContent content = new ClipboardContent();
@@ -201,12 +201,14 @@ public class MenuSample extends Application {
 
         cm.getItems().add(cmItem1);
         pic.addEventHandler(MouseEvent.MOUSE_CLICKED,
-            new EventHandler<MouseEvent>() {
-                @Override public void handle(MouseEvent e) {
-                if (e.getButton() == MouseButton.SECONDARY)
-                        cm.show(pic, e.getScreenX(), e.getScreenY());
-                }
-        });
+                new EventHandler<>() {
+                    @Override
+                    public void handle(MouseEvent e) {
+                        if (e.getButton() == MouseButton.SECONDARY) {
+                            cm.show(pic, e.getScreenX(), e.getScreenY());
+                        }
+                    }
+                });
 
         ((VBox) scene.getRoot()).getChildren().addAll(menuBar, vbox);
 
@@ -229,9 +231,9 @@ public class MenuSample extends Application {
     private static CheckMenuItem createMenuItem (String title, final Node node){
         CheckMenuItem cmi = new CheckMenuItem(title);
         cmi.setSelected(true);
-        cmi.selectedProperty().addListener(new ChangeListener<Boolean>() {
+        cmi.selectedProperty().addListener(new ChangeListener<>() {
             public void changed(ObservableValue ov,
-                    Boolean old_val, Boolean new_val) {
+                                Boolean old_val, Boolean new_val) {
                 node.setVisible(new_val);
             }
         });

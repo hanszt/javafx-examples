@@ -69,10 +69,10 @@ public class SurfacePlotMesh extends TexturedMesh {
         setMesh(mesh);
     }
     
-    private final ObjectProperty<Function<Point2D, Number>> function2D = new SimpleObjectProperty<Function<Point2D, Number>>(DEFAULT_FUNCTION){
+    private final ObjectProperty<Function<Point2D, Number>> function2D = new SimpleObjectProperty<>(DEFAULT_FUNCTION) {
         @Override
         protected void invalidated() {
-            if(mesh!=null){
+            if (mesh != null) {
                 updateMesh();
             }
         }

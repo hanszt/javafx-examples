@@ -25,8 +25,8 @@ import org.fxyz.utils.FloatCollector;
  * @author jpereda
  */
 public class IcosahedronMesh extends TexturedMesh {
-    private final static int DEFAULT_LEVEL = 1;
-    private final static float SPHERE_DIAMETER =  1f;
+    private static final int DEFAULT_LEVEL = 1;
+    private static final float SPHERE_DIAMETER =  1f;
     
     public IcosahedronMesh(){
         this(DEFAULT_LEVEL,SPHERE_DIAMETER);
@@ -133,7 +133,7 @@ public class IcosahedronMesh extends TexturedMesh {
             15,21,16,           8,15,9,             7,8,2,             13,7,6
     };
     
-    private final List<Integer> baseFaces = Arrays.asList(
+    private final List<Integer> baseFaces = List.of(
             0,11,5,             0,5,1,             0,1,7,             0,7,10,
             0,10,11,            1,5,9,             5,11,4,            11,10,2,
             10,7,6,             7,1,8,             3,9,4,             3,4,2,

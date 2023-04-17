@@ -79,7 +79,9 @@ public class Controller implements Initializable {
         ObservableList<WebHistory.Entry> entries = webHistory.getEntries();
         if (!entries.isEmpty()) {
             boolean atOldest = webHistory.getCurrentIndex() == 0;
-            if (!atOldest) webHistory.go(-1);
+            if (!atOldest) {
+                webHistory.go(-1);
+            }
             WebHistory.Entry entry = entries.get(webHistory.getCurrentIndex());
             mainTextField.setText(entry.getUrl());
         }
@@ -90,7 +92,9 @@ public class Controller implements Initializable {
         ObservableList<WebHistory.Entry> entries = webHistory.getEntries();
         if (!entries.isEmpty()) {
             boolean atMostRecent = webHistory.getCurrentIndex() == entries.size() - 1;
-            if (!atMostRecent) webHistory.go(1);
+            if (!atMostRecent) {
+                webHistory.go(1);
+            }
             WebHistory.Entry entry = entries.get(webHistory.getCurrentIndex());
             mainTextField.setText(entry.getUrl());
         }

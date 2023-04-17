@@ -115,7 +115,9 @@ public class DragDropColor extends Application {
     }
 
     private static void onDragDetected(Shape shape, MouseEvent event, TransferMode[] transferModes) {
-        if (shape.getFill().equals(Color.GRAY)) return;
+        if (shape.getFill().equals(Color.GRAY)) {
+            return;
+        }
 
         Dragboard db = shape.startDragAndDrop(transferModes);
         ClipboardContent content = new ClipboardContent();

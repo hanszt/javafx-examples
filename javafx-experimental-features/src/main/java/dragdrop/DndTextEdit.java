@@ -47,7 +47,9 @@ public class DndTextEdit extends SimpleTextEdit {
         requestFocus();
         int pos = getPos(event.getX());
         if (!isInSelection(pos)) {
-            if (pos >= 0) setCaretPos(pos);
+            if (pos >= 0) {
+                setCaretPos(pos);
+            }
             clearSelection();
         }
     }
@@ -63,11 +65,15 @@ public class DndTextEdit extends SimpleTextEdit {
     }
 
     private void skinOnDragEntered(DragEvent event) {
-        if (!isFocused()) showCaret();
+        if (!isFocused()) {
+            showCaret();
+        }
     }
 
     private void skinOnDragExited(DragEvent event) {
-        if (!isFocused()) removeCaret();
+        if (!isFocused()) {
+            removeCaret();
+        }
     }
 
     private void skinOnDragOver(DragEvent event) {
@@ -89,7 +95,9 @@ public class DndTextEdit extends SimpleTextEdit {
         Dragboard db = event.getDragboard();
         if (db.hasString()) {
             String s = db.getString();
-            if (event.getGestureSource() == skin) removeSelection();
+            if (event.getGestureSource() == skin) {
+                removeSelection();
+            }
             insert(s);
             event.setDropCompleted(true);
             requestFocus();
@@ -99,7 +107,11 @@ public class DndTextEdit extends SimpleTextEdit {
     }
 
     private void skinOnDragDone(DragEvent event) {
-        if (event.getTransferMode() == TransferMode.MOVE) removeSelection();
-        if (event.getTransferMode() != null) clearSelection();
+        if (event.getTransferMode() == TransferMode.MOVE) {
+            removeSelection();
+        }
+        if (event.getTransferMode() != null) {
+            clearSelection();
+        }
     }
 }

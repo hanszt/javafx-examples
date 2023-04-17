@@ -9,12 +9,12 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.SubScene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import org.fxyz.cameras.CameraTransformer;
+import org.fxyz.utils.CameraUtils;
 
 /**
  *  This class is based on "AnotherView.java" provided by: 
@@ -111,19 +111,7 @@ public final class CameraView extends ImageView {
             setMouseTransparent(false);
             
             //First person shooter keyboard movement
-        setOnKeyPressed(event -> {
-            double change = 10.0;
-            //Add shift modifier to simulate "Running Speed"
-            if(event.isShiftDown()) { change = 50.0; }
-            //What key did the user press?
-            KeyCode keycode = event.getCode();
-            //Step 2c: Add Zoom controls
-            if(keycode == KeyCode.W) { camera.setTranslateZ(camera.getTranslateZ() + change); }
-            if(keycode == KeyCode.S) { camera.setTranslateZ(camera.getTranslateZ() - change); }
-            //Step 2d: Add Strafe controls
-            if(keycode == KeyCode.A) { camera.setTranslateX(camera.getTranslateX() - change); }
-            if(keycode == KeyCode.D) { camera.setTranslateX(camera.getTranslateX() + change); }            
-        });
+        setOnKeyPressed(event -> CameraUtils.moveInXZPlane(camera, event));
         
         setOnMousePressed((MouseEvent me) -> {
             mousePosX = me.getSceneX();

@@ -9,5 +9,7 @@ module Main.app {
     requires org.apache.logging.log4j;
 
     opens org.fxyz.tests to javafx.graphics;
+    //necessary for testing
+    opens org.fxyz.utils;
 
 }

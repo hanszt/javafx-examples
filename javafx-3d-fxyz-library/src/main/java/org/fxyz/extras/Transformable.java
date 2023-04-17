@@ -21,7 +21,7 @@ import org.fxyz.geometry.Vector3D;
  */
 public interface Transformable<T extends Node> {
 
-    public enum RotateOrder {
+    enum RotateOrder {
         XYZ,
         XZY,
         YXZ,
@@ -30,54 +30,54 @@ public interface Transformable<T extends Node> {
         ZYX,
         USE_AFFINE;
 
-        private RotateOrder() {
+        RotateOrder() {
         }
     }
 
     // Simple Transforms
     
     //Rotates
-    public Rotate 
+    Rotate
             rotateX = new Rotate(0.0, Rotate.X_AXIS),
             rotateY = new Rotate(0.0, Rotate.Y_AXIS),
             rotateZ = new Rotate(0.0, Rotate.Z_AXIS);
     
-    public default void setRotate(double x, double y, double z) {
+    default void setRotate(double x, double y, double z) {
         rotateX.setAngle(x);
         rotateY.setAngle(y);
         rotateZ.setAngle(z);
     }    
-    public default void setRotateX(double x) { rotateX.setAngle(x); }
-    public default void setRotateY(double y) { rotateY.setAngle(y); }
-    public default void setRotateZ(double z) { rotateZ.setAngle(z); }
+    default void setRotateX(double x) { rotateX.setAngle(x); }
+    default void setRotateY(double y) { rotateY.setAngle(y); }
+    default void setRotateZ(double z) { rotateZ.setAngle(z); }
     
     // Translates
-    public Translate 
+    Translate
             t = new Translate(),
             p = new Translate(),
             ip = new Translate();
     
-    public default void setTx(double x) { t.setX(x); }
-    public default void setTy(double y) { t.setY(y); }
-    public default void setTz(double z) { t.setZ(z); }
-    public default double getTx() { return t.getX(); }
-    public default double getTy() { return t.getY(); }
-    public default double getTz() { return t.getZ(); }
+    default void setTx(double x) { t.setX(x); }
+    default void setTy(double y) { t.setY(y); }
+    default void setTz(double z) { t.setZ(z); }
+    default double getTx() { return t.getX(); }
+    default double getTy() { return t.getY(); }
+    default double getTz() { return t.getZ(); }
     
     // Scale
-    public Scale s = new Scale();
-    public default void setScale(double scaleFactor) {
+    Scale s = new Scale();
+    default void setScale(double scaleFactor) {
         s.setX(scaleFactor);
         s.setY(scaleFactor);
         s.setZ(scaleFactor);
     }
-    public default void setScale(double x, double y, double z) {
+    default void setScale(double x, double y, double z) {
         s.setX(x);
         s.setY(y);
         s.setZ(z);
     }
     // Transform methods
-    public default void setPivot(double x, double y, double z) {
+    default void setPivot(double x, double y, double z) {
         p.setX(x);
         p.setY(y);
         p.setZ(z);
@@ -87,35 +87,21 @@ public interface Transformable<T extends Node> {
     }
     
     //advanced transform
-    public Affine affine = new Affine();
+    Affine affine = new Affine();
     
     //Vectors: fwd, right, up   Point3D: pos
     
     //Forward / look direction    
-    Callback<Transform, Vector3D> forwardDirCallback = (a) -> {
-        return new Vector3D(a.getMzx(), a.getMzy(), a.getMzz());
-    };
-    Callback<Transform, Vector3D> forwardMatrixRowCallback = (a) -> {
-        return new Vector3D(a.getMxz(), a.getMyz(), a.getMzz());
-    };
+    Callback<Transform, Vector3D> forwardDirCallback = (a) -> new Vector3D(a.getMzx(), a.getMzy(), a.getMzz());
+    Callback<Transform, Vector3D> forwardMatrixRowCallback = (a) -> new Vector3D(a.getMxz(), a.getMyz(), a.getMzz());
     // up direction
-    Callback<Transform, Vector3D> upDirCallback = (a) -> {
-        return new Vector3D(a.getMyx(), a.getMyy(), a.getMyz());
-    };
-    Callback<Transform, Vector3D> upMatrixRowCallback = (a) -> {
-        return new Vector3D(a.getMxy(), a.getMyy(), a.getMzy());
-    };
+    Callback<Transform, Vector3D> upDirCallback = (a) -> new Vector3D(a.getMyx(), a.getMyy(), a.getMyz());
+    Callback<Transform, Vector3D> upMatrixRowCallback = (a) -> new Vector3D(a.getMxy(), a.getMyy(), a.getMzy());
     // right direction
-    Callback<Transform, Vector3D> rightDirCallback = (a) -> {
-        return new Vector3D(a.getMxx(), a.getMxy(), a.getMxz());
-    };
-    Callback<Transform, Vector3D> rightMatrixRowCallback = (a) -> {         
-        return new Vector3D(a.getMxx(), a.getMyx(), a.getMzx());
-    };
+    Callback<Transform, Vector3D> rightDirCallback = (a) -> new Vector3D(a.getMxx(), a.getMxy(), a.getMxz());
+    Callback<Transform, Vector3D> rightMatrixRowCallback = (a) -> new Vector3D(a.getMxx(), a.getMyx(), a.getMzx());
     //position
-    Callback<Transform, Point3D> positionCallback = (a) ->{
-        return new Point3D(a.getTx(), a.getTy(), a.getTz());
-    };
+    Callback<Transform, Point3D> positionCallback = (a) -> new Point3D(a.getTx(), a.getTy(), a.getTz());
     
     default Vector3D getForwardDirection(){
         return forwardDirCallback.call(getTransformableNode().getLocalToSceneTransform());
@@ -139,7 +125,7 @@ public interface Transformable<T extends Node> {
         return positionCallback.call(getTransformableNode().getLocalToSceneTransform());
     }
     
-    public default void reset() {
+    default void reset() {
         t.setX(0.0);
         t.setY(0.0);
         t.setZ(0.0);
@@ -169,7 +155,7 @@ public interface Transformable<T extends Node> {
         affine.setMzz(1);
     }
 
-    public default void resetTSP() {
+    default void resetTSP() {
         t.setX(0.0);
         t.setY(0.0);
         t.setZ(0.0);
@@ -184,7 +170,7 @@ public interface Transformable<T extends Node> {
         ip.setZ(0.0);
     }
 
-    public default void debug() {
+    default void debug() {
         System.out.println("t = (" +
                            t.getX() + ", " +
                            t.getY() + ", " +
@@ -249,12 +235,12 @@ public interface Transformable<T extends Node> {
         }
     }
     
-    public default void initialize(){
+    default void initialize(){
         if(getTransformableNode() != null){
             enableTransforms(true);
         }
     }
 
-    public T getTransformableNode();
-    public RotateOrder getRotateOrder();
+    T getTransformableNode();
+    RotateOrder getRotateOrder();
 }

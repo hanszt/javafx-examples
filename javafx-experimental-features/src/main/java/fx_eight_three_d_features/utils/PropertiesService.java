@@ -23,7 +23,9 @@ public class PropertiesService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else err.println("file inputstream was null...");
+        } else {
+            err.println("file inputstream was null...");
+        }
         return properties;
     }
 
@@ -37,8 +39,10 @@ public class PropertiesService {
                 err.printf("Property '%s' with value '%s' could not be parsed to an int... " +
                         "Falling back to default: %d...%n", property, propertyVal, defaultVal);
             }
-        } else err.printf("Property '%s' not found. Falling back to default: %d%n",
-                property, defaultVal);
+        } else {
+            err.printf("Property '%s' not found. Falling back to default: %d%n",
+                    property, defaultVal);
+        }
         return value;
     }
 
@@ -52,8 +56,10 @@ public class PropertiesService {
                 err.printf("Property '%s' with value '%s' could not be parsed to an int... " +
                         "Falling back to default: %f...%n", property, propertyVal, defaultVal);
             }
-        } else err.printf("Property '%s' not found. Falling back to default: %f%n",
-                property, defaultVal);
+        } else {
+            err.printf("Property '%s' not found. Falling back to default: %f%n",
+                    property, defaultVal);
+        }
         return value;
     }
 

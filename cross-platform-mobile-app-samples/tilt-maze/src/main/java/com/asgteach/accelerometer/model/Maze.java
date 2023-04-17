@@ -43,9 +43,7 @@ public class Maze {
         barriers.add(new Rectangle(10, 240, 50, 5));
         barriers.add(new Rectangle(245, 365, 5, 30));
         
-        barriers.forEach((r) -> {
-            r.setFill(Color.BLACK);
-        });
+        barriers.forEach((r) -> r.setFill(Color.BLACK));
         
     }
     

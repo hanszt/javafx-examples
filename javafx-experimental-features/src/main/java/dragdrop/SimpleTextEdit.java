@@ -86,7 +86,9 @@ public class SimpleTextEdit extends Group {
 
     public void setText(String text) {
         length = text.length();
-        if (length > MAX_LENGTH) length = MAX_LENGTH;
+        if (length > MAX_LENGTH) {
+            length = MAX_LENGTH;
+        }
 
         content = text.substring(0, length);
 
@@ -111,10 +113,15 @@ public class SimpleTextEdit extends Group {
 
     public void removeSelection() {
         if (caretPos > selStart) {
-            if (caretPos < selStop) caretPos = selStart;
-            else caretPos -= selStop - selStart;
+            if (caretPos < selStop) {
+                caretPos = selStart;
+            } else {
+                caretPos -= selStop - selStart;
+            }
         }
-        if (selStart >= 0) setText(content.substring(0, selStart) + content.substring(selStop));
+        if (selStart >= 0) {
+            setText(content.substring(0, selStart) + content.substring(selStop));
+        }
         clearSelection();
     }
 
@@ -125,8 +132,12 @@ public class SimpleTextEdit extends Group {
     }
 
     protected void setCaretPos(int pos) {
-        if (pos > length) pos = length;
-        if (pos < 0) pos = 0;
+        if (pos > length) {
+            pos = length;
+        }
+        if (pos < 0) {
+            pos = 0;
+        }
 
         caretPos = pos;
         caret.setStartX(letters[pos].getX() - 2);
@@ -169,7 +180,9 @@ public class SimpleTextEdit extends Group {
         }
 
         setCaretPos(caretPos);
-        if (isFocused()) skin.getChildren().add(caret);
+        if (isFocused()) {
+            skin.getChildren().add(caret);
+        }
         skin.getChildren().add(selection);
     }
 
@@ -187,25 +200,33 @@ public class SimpleTextEdit extends Group {
     private void onMousePressed(MouseEvent event) {
         requestFocus();
         int pos = getPos(event.getX());
-        if (pos >= 0) setCaretPos(pos);
+        if (pos >= 0) {
+            setCaretPos(pos);
+        }
         clearSelection();
     }
 
     private void onMouseReleased(MouseEvent event) {
         if (selPivot >= 0) {
             selPivot = -1;
-            if (selStart == selStop) clearSelection();
+            if (selStart == selStop) {
+                clearSelection();
+            }
         } else {
             clearSelection();
             int pos = getPos(event.getX());
-            if (pos >= 0) setCaretPos(pos);
+            if (pos >= 0) {
+                setCaretPos(pos);
+            }
         }
     }
 
     private void onMouseDragged(MouseEvent event) {
         int pos = getPos(event.getX());
 
-        if (selPivot < 0 && isInSelection(pos)) return;
+        if (selPivot < 0 && isInSelection(pos)) {
+            return;
+        }
 
         setCaretPos(pos);
         if (selStart < 0) {
@@ -223,7 +244,9 @@ public class SimpleTextEdit extends Group {
     }
 
     private void onKeyTyped(KeyEvent event) {
-        if (event.isControlDown() || event.isAltDown()) return;
+        if (event.isControlDown() || event.isAltDown()) {
+            return;
+        }
 
         char c = event.getCharacter().charAt(0);
         if (!Character.isISOControl(c) && length < MAX_LENGTH) {
@@ -259,11 +282,16 @@ public class SimpleTextEdit extends Group {
                 selStop = caretPos;
             }
             if (caretPos > 0) {
-                if (selStart == caretPos) selStart = caretPos - 1;
-                else selStop = caretPos - 1;
+                if (selStart == caretPos) {
+                    selStart = caretPos - 1;
+                } else {
+                    selStop = caretPos - 1;
+                }
             }
             updateSelection();
-        } else clearSelection();
+        } else {
+            clearSelection();
+        }
         setCaretPos(caretPos - 1);
     }
 
@@ -274,19 +302,25 @@ public class SimpleTextEdit extends Group {
                 selStop = caretPos;
             }
             if (caretPos < length) {
-                if (selStart < caretPos || selStart == selStop) selStop = caretPos + 1;
-                else selStart = caretPos + 1;
+                if (selStart < caretPos || selStart == selStop) {
+                    selStop = caretPos + 1;
+                } else {
+                    selStart = caretPos + 1;
+                }
             }
             updateSelection();
-        } else clearSelection();
+        } else {
+            clearSelection();
+        }
 
         setCaretPos(caretPos + 1);
     }
 
     private void backSpacePressed() {
         if (caretPos > 0 || selStart >= 0) {
-            if (selStart >= 0) removeSelection();
-            else {
+            if (selStart >= 0) {
+                removeSelection();
+            } else {
                 setCaretPos(caretPos - 1);
                 setText(content.substring(0, caretPos) +
                         content.substring(caretPos + 1));
@@ -296,8 +330,11 @@ public class SimpleTextEdit extends Group {
 
     private void deleteKeyPressed() {
         if (caretPos < length || selStart >= 0) {
-            if (selStart >= 0) removeSelection();
-            else setText(content.substring(0, caretPos) + content.substring(caretPos + 1));
+            if (selStart >= 0) {
+                removeSelection();
+            } else {
+                setText(content.substring(0, caretPos) + content.substring(caretPos + 1));
+            }
         }
     }
 

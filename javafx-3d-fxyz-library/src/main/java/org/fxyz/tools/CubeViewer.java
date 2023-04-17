@@ -486,12 +486,15 @@ public class CubeViewer extends Group {
             xy1GridLinesGroup.setVisible(false);
             xx1GridLinesGroup.setVisible(false);
         } else {
-            if(showx1AxisRectangle)
+            if(showx1AxisRectangle) {
                 x1AxisRectangle.setVisible(true);
-            if(showxy1GridLinesGroup)
+            }
+            if(showxy1GridLinesGroup) {
                 xy1GridLinesGroup.setVisible(true);
-            if(showxx1GridLinesGroup)
+            }
+            if(showxx1GridLinesGroup) {
                 xx1GridLinesGroup.setVisible(true);
+            }
         }
         if ((95 < ry && ry < 180) || (-180 < ry && ry < -95)) {
             x2AxisRectangle.setVisible(false);
@@ -499,12 +502,15 @@ public class CubeViewer extends Group {
             xx2GridLinesGroup.setVisible(false);
 
         } else {
-            if(showx1AxisRectangle)
+            if(showx1AxisRectangle) {
                 x2AxisRectangle.setVisible(true);
-            if(showxy2GridLinesGroup)
+            }
+            if(showxy2GridLinesGroup) {
                 xy2GridLinesGroup.setVisible(true);
-            if(showxx2GridLinesGroup)
+            }
+            if(showxx2GridLinesGroup) {
                 xx2GridLinesGroup.setVisible(true);
+            }
         }
 
         if (5 < ry && ry < 175) {
@@ -512,24 +518,30 @@ public class CubeViewer extends Group {
             yy1GridLinesGroup.setVisible(false);
             yx1GridLinesGroup.setVisible(false);
         } else {
-            if(showy1AxisRectangle)            
+            if(showy1AxisRectangle) {
                 y1AxisRectangle.setVisible(true);
-            if(showyy1GridLinesGroup)
+            }
+            if(showyy1GridLinesGroup) {
                 yy1GridLinesGroup.setVisible(true);
-            if(showyx1GridLinesGroup)
+            }
+            if(showyx1GridLinesGroup) {
                 yx1GridLinesGroup.setVisible(true);
+            }
         }
         if (-175 < ry && ry < -5) {
             y2AxisRectangle.setVisible(false);
             yy2GridLinesGroup.setVisible(false);
             yx2GridLinesGroup.setVisible(false);
         } else {
-            if(showy2AxisRectangle)
+            if(showy2AxisRectangle) {
                 y2AxisRectangle.setVisible(true);
-            if(showyy2GridLinesGroup)
+            }
+            if(showyy2GridLinesGroup) {
                 yy2GridLinesGroup.setVisible(true);
-            if(showyx2GridLinesGroup)
+            }
+            if(showyx2GridLinesGroup) {
                 yx2GridLinesGroup.setVisible(true);
+            }
         }
 
         if (rx > 0) {
@@ -537,24 +549,30 @@ public class CubeViewer extends Group {
             zy1GridLinesGroup.setVisible(false);
             zx1GridLinesGroup.setVisible(false);
         } else {
-            if(showz1AxisRectangle)
+            if(showz1AxisRectangle) {
                 z1AxisRectangle.setVisible(true);
-            if(showzy1GridLinesGroup)
+            }
+            if(showzy1GridLinesGroup) {
                 zy1GridLinesGroup.setVisible(true);
-            if(showzx1GridLinesGroup)
+            }
+            if(showzx1GridLinesGroup) {
                 zx1GridLinesGroup.setVisible(true);
+            }
         }
         if (rx < 0) {
             z2AxisRectangle.setVisible(false);
             zy2GridLinesGroup.setVisible(false);
             zx2GridLinesGroup.setVisible(false);
         } else {
-            if(showz2AxisRectangle)
+            if(showz2AxisRectangle) {
                 z2AxisRectangle.setVisible(true);
-            if(showzy2GridLinesGroup)
+            }
+            if(showzy2GridLinesGroup) {
                 zy2GridLinesGroup.setVisible(true);
-            if(showzx2GridLinesGroup)
+            }
+            if(showzx2GridLinesGroup) {
                 zx2GridLinesGroup.setVisible(true);
+            }
         }
     }
 
@@ -642,10 +660,12 @@ public class CubeViewer extends Group {
 //            final Box dataSphere = new Box(getScatterRadius(), getScatterRadius(), getScatterRadius());
             double translateY = 0.0;
             double translateZ = 0.0;
-            if(!yAxisData.isEmpty() && yAxisData.size() > i)
+            if(!yAxisData.isEmpty() && yAxisData.size() > i) {
                 translateY = yAxisData.get(i);
-            if(!zAxisData.isEmpty() && zAxisData.size() > i)
+            }
+            if(!zAxisData.isEmpty() && zAxisData.size() > i) {
                 translateZ = zAxisData.get(i);
+            }
             dataSphere.setTranslateX(xAxisData.get(i));
             dataSphere.setTranslateY(translateY);
             dataSphere.setTranslateZ(translateZ);
@@ -671,10 +691,12 @@ public class CubeViewer extends Group {
 //            final Box dataSphere = new Box(getScatterRadius(), getScatterRadius(), getScatterRadius());
             double translateX = 0.0;
             double translateZ = 0.0;
-            if(!xAxisData.isEmpty() && xAxisData.size() > i)
+            if(!xAxisData.isEmpty() && xAxisData.size() > i) {
                 translateX = xAxisData.get(i);
-            if(!zAxisData.isEmpty() && zAxisData.size() > i)
+            }
+            if(!zAxisData.isEmpty() && zAxisData.size() > i) {
                 translateZ = zAxisData.get(i);
+            }
             dataSphere.setTranslateX(translateX);
             dataSphere.setTranslateY(yAxisData.get(i));
             dataSphere.setTranslateZ(translateZ);
@@ -701,10 +723,12 @@ public class CubeViewer extends Group {
         
             double translateX = 0.0;
             double translateY = 0.0;
-            if(!xAxisData.isEmpty() && xAxisData.size() > i)
+            if(!xAxisData.isEmpty() && xAxisData.size() > i) {
                 translateX = xAxisData.get(i);
-            if(!yAxisData.isEmpty() && yAxisData.size() > i)
+            }
+            if(!yAxisData.isEmpty() && yAxisData.size() > i) {
                 translateY = yAxisData.get(i);
+            }
             dataSphere.setTranslateX(translateX);
             dataSphere.setTranslateY(translateY);
             dataSphere.setTranslateZ(zAxisData.get(i));

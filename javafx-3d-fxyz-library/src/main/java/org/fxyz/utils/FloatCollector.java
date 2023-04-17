@@ -33,6 +33,7 @@ public class FloatCollector {
             curr=Arrays.copyOf(curr, initialSize);
         }
     }
+
     public void add(double d) {
         if(curr.length==size){
             curr=Arrays.copyOf(curr, size*2);

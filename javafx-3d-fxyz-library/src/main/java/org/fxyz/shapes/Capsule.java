@@ -17,8 +17,8 @@ import org.fxyz.shapes.primitives.CapsuleMesh;
  *
  * @author Dub
  */
-public class Capsule extends ShapeContainer<CapsuleMesh>{
-    private CapsuleMesh mesh;
+public final class Capsule extends ShapeContainer<CapsuleMesh> {
+    private final CapsuleMesh mesh;
     
     public Capsule() {
         super(new CapsuleMesh());
@@ -41,27 +41,27 @@ public class Capsule extends ShapeContainer<CapsuleMesh>{
         this.setDiffuseColor(c);
     }
 
-    public final void setRadius(double value) {
+    public void setRadius(double value) {
         mesh.setRadius(value);
     }
 
-    public final void setHeight(double value) {
+    public void setHeight(double value) {
         mesh.setHeight(value);
     }
 
-    public final void setMaterial(Material value) {
+    public void setMaterial(Material value) {
         mesh.setMaterial(value);
     }
 
-    public final void setDrawMode(DrawMode value) {
+    public void setDrawMode(DrawMode value) {
         mesh.setDrawMode(value);
     }
 
-    public final void setCullFace(CullFace value) {
+    public void setCullFace(CullFace value) {
         mesh.setCullFace(value);
     }
 
-    public final double getRadius() {
+    public double getRadius() {
         return mesh.getRadius();
     }
 
@@ -70,7 +70,7 @@ public class Capsule extends ShapeContainer<CapsuleMesh>{
         return mesh.radiusProperty();
     }
 
-    public final double getHeight() {
+    public double getHeight() {
         return mesh.getHeight();
     }
 

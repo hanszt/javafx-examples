@@ -56,9 +56,9 @@ public class CapsuleMesh extends MeshView{
 
         
 
-        float points[] = new float[numPoints * m.getPointElementSize()];
-        float texCoords[] = new float[numTexCoords * m.getTexCoordElementSize()];
-        int faces[] = new int[numFaces * m.getFaceElementSize()];
+        float[] points = new float[numPoints * m.getPointElementSize()];
+        float[] texCoords = new float[numTexCoords * m.getTexCoordElementSize()];
+        int[] faces = new int[numFaces * m.getFaceElementSize()];
 
         int pointIndex = 0, texIndex = 0;
         float x, y, z;

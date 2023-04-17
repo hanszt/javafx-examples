@@ -1,6 +1,8 @@
 package org.fxyz.tests;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.ToDoubleFunction;
+
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -10,7 +12,6 @@ import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
@@ -20,7 +21,7 @@ import javafx.util.Duration;
 import org.fxyz.cameras.CameraTransformer;
 import org.fxyz.geometry.Point3D;
 import org.fxyz.shapes.primitives.IcosahedronMesh;
-import org.fxyz.utils.DensityFunction;
+import org.fxyz.utils.CameraUtils;
 
 /**
  *
@@ -41,7 +42,7 @@ public class IcosahedronTest extends Application {
     private IcosahedronMesh ico;
     private Rotate rotateY;
     
-    private DensityFunction<Point3D> dens = p-> (double)p.x*p.y*p.z;
+    private ToDoubleFunction<Point3D> dens = p-> (double) p.getX() * p.getY() * p.getZ();
 //                (float)(3d*Math.pow(Math.sin(p.phi),2)*Math.pow(Math.abs(Math.cos(p.theta)),0.1)+
 //                Math.pow(Math.cos(p.phi),2)*Math.pow(Math.abs(Math.sin(p.theta)),0.1));
 //    private Density dens = p->p.x*p.y*p.z;
@@ -94,19 +95,7 @@ public class IcosahedronTest extends Application {
         sceneRoot.getChildren().addAll(group);        
         
         //First person shooter keyboard movement 
-        scene.setOnKeyPressed(event -> {
-            double change = 10.0;
-            //Add shift modifier to simulate "Running Speed"
-            if(event.isShiftDown()) { change = 50.0; }
-            //What key did the user press?
-            KeyCode keycode = event.getCode();
-            //Step 2c: Add Zoom controls
-            if(keycode == KeyCode.W) { camera.setTranslateZ(camera.getTranslateZ() + change); }
-            if(keycode == KeyCode.S) { camera.setTranslateZ(camera.getTranslateZ() - change); }
-            //Step 2d:  Add Strafe controls
-            if(keycode == KeyCode.A) { camera.setTranslateX(camera.getTranslateX() - change); }
-            if(keycode == KeyCode.D) { camera.setTranslateX(camera.getTranslateX() + change); }
-        });        
+        scene.setOnKeyPressed(event -> CameraUtils.moveInXZPlane(camera, event));
         
         scene.setOnMousePressed((MouseEvent me) -> {
             mousePosX = me.getSceneX();
@@ -157,7 +146,7 @@ public class IcosahedronTest extends Application {
 //                            Math.pow(Math.cos(p.phi),2)*Math.pow(Math.abs(Math.sin(p.theta)),cont2));
                     //dens = p->10*cont1*Math.pow(Math.abs(p.x),cont1)*Math.pow(Math.abs(p.y),cont2)*Math.pow(p.z,2);
                     double t=count.getAndIncrement()%10;
-                    dens = p->(double)(p.x+t)*(p.y+t)*(p.z+t);
+                    dens = p->(double)(p.getX() +t)*(p.getY() +t)*(p.getZ() +t);
                     ico.setDensity(dens);
 //                    ico.setColors((int)Math.pow(2,count.get()%16));
 //                    ico.setLevel(count.get()%8);

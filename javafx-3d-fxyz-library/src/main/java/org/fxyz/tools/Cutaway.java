@@ -11,7 +11,6 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.SubScene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Background;
@@ -31,6 +30,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import org.fxyz.cameras.CameraTransformer;
 import org.fxyz.events.CloseCutawayEvent;
+import org.fxyz.utils.CameraUtils;
 
 /**
  * Builds upon base CameraView class but provides event handling for 
@@ -89,9 +89,7 @@ public final class Cutaway extends VBox {
                              )));
         
         Rectangle closeSquare = new Rectangle(controlSize, controlSize, Color.LIGHTCORAL);
-        closeSquare.setOnMouseClicked((MouseEvent me) -> {
-            this.fireEvent(new CloseCutawayEvent(this));
-        });
+        closeSquare.setOnMouseClicked((MouseEvent me) -> this.fireEvent(new CloseCutawayEvent(this)));
         Circle dragCircle = new Circle(controlSize/2, Color.STEELBLUE);        
 
         HBox top = new HBox(20,closeSquare,dragCircle);
@@ -146,9 +144,7 @@ public final class Cutaway extends VBox {
                 redraw();
             }
         };
-        setOnMouseEntered(e->{
-            requestFocus();
-        });        
+        setOnMouseEntered(e-> requestFocus());
     }
     
     public void startViewing() {
@@ -165,19 +161,7 @@ public final class Cutaway extends VBox {
             setMouseTransparent(false);
             
             //First person shooter keyboard movement
-        imageView.setOnKeyPressed(event -> {
-            double change = 10.0;
-            //Add shift modifier to simulate "Running Speed"
-            if(event.isShiftDown()) { change = 50.0; }
-            //What key did the user press?
-            KeyCode keycode = event.getCode();
-            //Step 2c: Add Zoom controls
-            if(keycode == KeyCode.W) { camera.setTranslateZ(camera.getTranslateZ() + change); }
-            if(keycode == KeyCode.S) { camera.setTranslateZ(camera.getTranslateZ() - change); }
-            //Step 2d: Add Strafe controls
-            if(keycode == KeyCode.A) { camera.setTranslateX(camera.getTranslateX() - change); }
-            if(keycode == KeyCode.D) { camera.setTranslateX(camera.getTranslateX() + change); }            
-        });
+        imageView.setOnKeyPressed(event -> CameraUtils.moveInXZPlane(camera, event));
         imageView.setOnScroll((ScrollEvent event) -> {
             event.consume();
             if (event.getDeltaY() == 0) {

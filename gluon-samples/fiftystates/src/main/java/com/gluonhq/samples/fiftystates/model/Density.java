@@ -45,7 +45,7 @@ public class Density {
         final double ini;
         final double end;
 
-        private DENSITY(double ini, double end){
+        DENSITY(double ini, double end){
             this.ini = ini;
             this.end = end;
         }

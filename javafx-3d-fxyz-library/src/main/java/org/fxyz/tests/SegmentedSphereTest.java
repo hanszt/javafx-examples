@@ -3,6 +3,7 @@ package org.fxyz.tests;
 import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.ToDoubleFunction;
 
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
@@ -24,7 +25,7 @@ import javafx.util.Duration;
 import org.fxyz.cameras.CameraTransformer;
 import org.fxyz.geometry.Point3D;
 import org.fxyz.shapes.primitives.SegmentedSphereMesh;
-import org.fxyz.utils.DensityFunction;
+import org.fxyz.utils.CameraUtils;
 
 /**
  *
@@ -44,7 +45,7 @@ public class SegmentedSphereTest extends Application {
     private double mouseDeltaY;
     private Rotate rotateY;
     private SegmentedSphereMesh torus;
-    private DensityFunction<Point3D> dens = p->(double)p.x;
+    private ToDoubleFunction<Point3D> dens = p->(double) p.getX();
     private long lastEffect;
     
     @Override
@@ -102,17 +103,12 @@ public class SegmentedSphereTest extends Application {
         
         //First person shooter keyboard movement 
         scene.setOnKeyPressed(event -> {
-            double change = 10.0;
-            //Add shift modifier to simulate "Running Speed"
-            if(event.isShiftDown()) { change = 50.0; }
-            //What key did the user press?
+            CameraUtils.moveInXZPlane(camera, event);
             KeyCode keycode = event.getCode();
-            //Step 2c: Add Zoom controls
-            if(keycode == KeyCode.W) { camera.setTranslateZ(camera.getTranslateZ() + change); }
-            if(keycode == KeyCode.S) { camera.setTranslateZ(camera.getTranslateZ() - change); }
-            //Step 2d:  Add Strafe controls
-            if(keycode == KeyCode.A) { camera.setTranslateX(camera.getTranslateX() - change); }
-            if(keycode == KeyCode.D) { camera.setTranslateX(camera.getTranslateX() + change); }
+            double change = 10.0;
+            if (event.isShiftDown()) {
+                change = 50.0;
+            }
             if(keycode == KeyCode.L) { camera.setTranslateY(camera.getTranslateY() - change); }
             if(keycode == KeyCode.R) { camera.setTranslateY(camera.getTranslateY() + change); }
         });        

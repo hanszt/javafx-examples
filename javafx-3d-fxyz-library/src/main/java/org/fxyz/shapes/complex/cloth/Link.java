@@ -54,13 +54,13 @@ public class Link implements Constraint {
         float scalarP2 = (float) (stiffness - scalarP1);
 
         synchronized (this) {
-            p1.x += ((float)(diff.x * scalarP1 * difference));
-            p1.y += ((float)(diff.y * scalarP1 * difference));
-            p1.z += ((float)(diff.z * scalarP1 * difference));
+            p1.setX(p1.getX() + ((float)(diff.getX() * scalarP1 * difference)));
+            p1.setY(p1.getY() + ((float)(diff.getY() * scalarP1 * difference)));
+            p1.setZ(p1.getZ() + ((float)(diff.getZ() * scalarP1 * difference)));
 
-            p2.x -= ((float)(diff.x * scalarP2 * difference));
-            p2.y -= ((float)(diff.y * scalarP2 * difference));
-            p2.z -= ((float)(diff.z * scalarP2 * difference));
+            p2.setX(p2.getX() - ((float)(diff.getX() * scalarP2 * difference)));
+            p2.setY(p2.getY() - ((float)(diff.getY() * scalarP2 * difference)));
+            p2.setZ(p2.getZ() - ((float)(diff.getZ() * scalarP2 * difference)));
         }
             
     }
