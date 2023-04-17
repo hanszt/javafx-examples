@@ -67,9 +67,10 @@ public class BezierMesh extends TexturedMesh {
         setMesh(mesh);
     }
     
-    private final ObjectProperty<BezierHelper> spline = new SimpleObjectProperty<BezierHelper>(){
-        @Override protected void invalidated() {
-            if(mesh!=null){
+    private final ObjectProperty<BezierHelper> spline = new SimpleObjectProperty<>() {
+        @Override
+        protected void invalidated() {
+            if (mesh != null) {
                 updateMesh();
             }
         }

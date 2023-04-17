@@ -63,13 +63,16 @@ class Triangle extends ArraySet<Pnt> {
     public Triangle (Collection<? extends Pnt> collection) {
         super(collection);
         idNumber = idGenerator++;
-        if (this.size() != 3)
+        if (this.size() != 3) {
             throw new IllegalArgumentException("Triangle must have 3 vertices");
+        }
     }
 
     @Override
     public String toString () {
-        if (!moreInfo) return "Triangle" + idNumber;
+        if (!moreInfo) {
+            return "Triangle" + idNumber;
+        }
         return "Triangle" + idNumber + super.toString();
     }
 
@@ -81,7 +84,11 @@ class Triangle extends ArraySet<Pnt> {
      */
     public Pnt getVertexButNot (Pnt... badVertices) {
         Collection<Pnt> bad = Arrays.asList(badVertices);
-        for (Pnt v: this) if (!bad.contains(v)) return v;
+        for (Pnt v: this) {
+            if (!bad.contains(v)) {
+                return v;
+            }
+        }
         throw new NoSuchElementException("No vertex found");
     }
 
@@ -93,8 +100,11 @@ class Triangle extends ArraySet<Pnt> {
      */
     public boolean isNeighbor (Triangle triangle) {
         int count = 0;
-        for (Pnt vertex: this)
-            if (!triangle.contains(vertex)) count++;
+        for (Pnt vertex: this) {
+            if (!triangle.contains(vertex)) {
+                count++;
+            }
+        }
         return count == 1;
     }
 
@@ -106,8 +116,9 @@ class Triangle extends ArraySet<Pnt> {
      */
     public ArraySet<Pnt> facetOpposite (Pnt vertex) {
         ArraySet<Pnt> facet = new ArraySet<>(this);
-        if (!facet.remove(vertex))
+        if (!facet.remove(vertex)) {
             throw new IllegalArgumentException("Vertex not in triangle");
+        }
         return facet;
     }
 
@@ -115,8 +126,9 @@ class Triangle extends ArraySet<Pnt> {
      * @return the triangle's circumcenter
      */
     public Pnt getCircumCenter() {
-        if (circumcenter == null)
+        if (circumcenter == null) {
             circumcenter = Pnt.circumCenter(this.toArray(new Pnt[0]));
+        }
         return circumcenter;
     }
 
@@ -129,14 +141,23 @@ class Triangle extends ArraySet<Pnt> {
 
     @Override
     public Iterator<Pnt> iterator () {
-        return new Iterator<Pnt>() {
+        return new Iterator<>() {
             private final Iterator<Pnt> it = Triangle.super.iterator();
+
             @Override
-            public boolean hasNext() {return it.hasNext();}
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
             @Override
-            public Pnt next() {return it.next();}
+            public Pnt next() {
+                return it.next();
+            }
+
             @Override
-            public void remove() {throw new UnsupportedOperationException();}
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
         };
     }
 

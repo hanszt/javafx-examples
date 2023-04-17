@@ -109,7 +109,7 @@ public class OBJWriter {
             writer.write("# Vertices (" + points1.size() + ")" + newline);
             points1.forEach(p -> {
                 try {
-                    writer.write("v " + p.x + " " + p.y + " " + p.z + "" + newline);
+                    writer.write("v " + p.getX() + " " + p.getY() + " " + p.getZ() + "" + newline);
                 } catch (IOException ex) {
                     out.println("Error writting vertex " + ex);
                 }

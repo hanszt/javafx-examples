@@ -112,12 +112,8 @@ open class XYChartSample : Application() {
                 return minTemp + difference * Math.random()
             }
 
-        fun formattedName(): String {
-            return month.name[0].toString() + month.name.substring(1).lowercase(Locale.getDefault())
-        }
+        fun formattedName(): String = month.name[0].toString() + month.name.substring(1).lowercase(Locale.getDefault())
 
-        override fun toString(): String {
-            return formattedName()
-        }
+        override fun toString(): String = formattedName()
     }
 }

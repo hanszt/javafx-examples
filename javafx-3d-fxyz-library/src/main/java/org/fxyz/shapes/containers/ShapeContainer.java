@@ -10,13 +10,18 @@ import javafx.scene.Group;
 import javafx.scene.PointLight;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
+import org.fxyz.shapes.Capsule;
+import org.fxyz.shapes.Cone;
+import org.fxyz.shapes.Spheroid;
+import org.fxyz.shapes.Torus;
 
 /**
  *
  * @author Dub
  * @param <T>
  */
-public class ShapeContainer<T extends MeshView> extends Group implements ShapeContainerBase<T> {
+public sealed class ShapeContainer<T extends MeshView> extends Group implements ShapeContainerBase<T>
+        permits Capsule, Cone, Spheroid, Torus {
     
     private final T shape;
     private final PhongMaterial material;
@@ -33,8 +38,16 @@ public class ShapeContainer<T extends MeshView> extends Group implements ShapeCo
         initialize();
     }
 
+    /**
+     * A final version to insure no more overriding of this method is done
+     */
     @Override
-    public T getShape() {
+    public final void initialize() {
+        ShapeContainerBase.super.initialize();
+    }
+
+    @Override
+    public final T getShape() {
         return shape;
     }
 

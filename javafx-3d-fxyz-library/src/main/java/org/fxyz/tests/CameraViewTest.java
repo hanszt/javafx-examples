@@ -14,7 +14,6 @@ import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -25,6 +24,7 @@ import javafx.util.Duration;
 import org.fxyz.cameras.CameraTransformer;
 import org.fxyz.shapes.primitives.TorusMesh;
 import org.fxyz.tools.CameraView;
+import org.fxyz.utils.CameraUtils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -65,7 +65,7 @@ public class CameraViewTest extends Application {
         var subScene = new SubScene(worldRoot, 800, 600, true, SceneAntialiasing.BALANCED);
         subScene.setFill(Color.DARKSLATEGRAY);
         subScene.setCamera(camera);
-        subScene.setOnKeyPressed(event -> onKeyPressed(camera, event));
+        subScene.setOnKeyPressed(event -> CameraUtils.moveInXZPlane(camera, event));
         subScene.setOnMousePressed(this::onMousePressed);
         subScene.setOnMouseDragged(me -> onMouseDragged(camera, me, cameraTransformer));
         return subScene;
@@ -132,30 +132,6 @@ public class CameraViewTest extends Application {
             cameraTransform.translate.setX(cameraTransform.translate.getX() + mouseDeltaX * modifierFactor * modifier * 0.3); // -
             cameraTransform.translate.setY(cameraTransform.translate.getY() + mouseDeltaY * modifierFactor * modifier * 0.3); // -
 
-        }
-    }
-
-    private static void onKeyPressed(PerspectiveCamera camera, javafx.scene.input.KeyEvent event) {
-        double change = 10.0;
-        //Add shift modifier to simulate "Running Speed"
-        if (event.isShiftDown()) {
-            change = 50.0;
-        }
-        //What key did the user press?
-        KeyCode keycode = event.getCode();
-        //Step 2c: Add Zoom controls
-        if (keycode == KeyCode.W) {
-            camera.setTranslateZ(camera.getTranslateZ() + change);
-        }
-        if (keycode == KeyCode.S) {
-            camera.setTranslateZ(camera.getTranslateZ() - change);
-        }
-        //Step 2d: Add Strafe controls
-        if (keycode == KeyCode.A) {
-            camera.setTranslateX(camera.getTranslateX() - change);
-        }
-        if (keycode == KeyCode.D) {
-            camera.setTranslateX(camera.getTranslateX() + change);
         }
     }
 

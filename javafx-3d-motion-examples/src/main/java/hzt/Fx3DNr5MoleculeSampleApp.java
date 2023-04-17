@@ -216,16 +216,18 @@ public class Fx3DNr5MoleculeSampleApp extends Application {
     double mouseDeltaY;
 
     private void handleMouse(Scene scene, final Node root) {
-        scene.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent me) {
+        scene.setOnMousePressed(new EventHandler<>() {
+            @Override
+            public void handle(MouseEvent me) {
                 mousePosX = me.getSceneX();
                 mousePosY = me.getSceneY();
                 mouseOldX = me.getSceneX();
                 mouseOldY = me.getSceneY();
             }
         });
-        scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent me) {
+        scene.setOnMouseDragged(new EventHandler<>() {
+            @Override
+            public void handle(MouseEvent me) {
                 mouseOldX = mousePosX;
                 mouseOldY = mousePosY;
                 mousePosX = me.getSceneX();
@@ -243,17 +245,15 @@ public class Fx3DNr5MoleculeSampleApp extends Application {
                     modifier = 10.0;
                 }
                 if (me.isPrimaryButtonDown()) {
-                    cameraXform.ry.setAngle(cameraXform.ry.getAngle() - mouseDeltaX*modifierFactor*modifier*2.0);  // +
-                    cameraXform.rx.setAngle(cameraXform.rx.getAngle() + mouseDeltaY*modifierFactor*modifier*2.0);  // -
-                }
-                else if (me.isSecondaryButtonDown()) {
+                    cameraXform.ry.setAngle(cameraXform.ry.getAngle() - mouseDeltaX * modifierFactor * modifier * 2.0);  // +
+                    cameraXform.rx.setAngle(cameraXform.rx.getAngle() + mouseDeltaY * modifierFactor * modifier * 2.0);  // -
+                } else if (me.isSecondaryButtonDown()) {
                     double z = camera.getTranslateZ();
-                    double newZ = z + mouseDeltaX*modifierFactor*modifier;
+                    double newZ = z + mouseDeltaX * modifierFactor * modifier;
                     camera.setTranslateZ(newZ);
-                }
-                else if (me.isMiddleButtonDown()) {
-                    cameraXform2.t.setX(cameraXform2.t.getX() + mouseDeltaX*modifierFactor*modifier*0.3);  // -
-                    cameraXform2.t.setY(cameraXform2.t.getY() + mouseDeltaY*modifierFactor*modifier*0.3);  // -
+                } else if (me.isMiddleButtonDown()) {
+                    cameraXform2.t.setX(cameraXform2.t.getX() + mouseDeltaX * modifierFactor * modifier * 0.3);  // -
+                    cameraXform2.t.setY(cameraXform2.t.getY() + mouseDeltaY * modifierFactor * modifier * 0.3);  // -
                 }
             }
         });
@@ -261,7 +261,7 @@ public class Fx3DNr5MoleculeSampleApp extends Application {
 
     private void handleKeyboard(Scene scene, final Node root) {
         final boolean moveCamera = true;
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+        scene.setOnKeyPressed(new EventHandler<>() {
             @Override
             public void handle(KeyEvent event) {
                 Duration currentTime;
@@ -280,8 +280,7 @@ public class Fx3DNr5MoleculeSampleApp extends Application {
                             if (axisGroup.isVisible()) {
                                 System.out.println("setVisible(false)");
                                 axisGroup.setVisible(false);
-                            }
-                            else {
+                            } else {
                                 System.out.println("setVisible(true)");
                                 axisGroup.setVisible(true);
                             }
@@ -291,8 +290,7 @@ public class Fx3DNr5MoleculeSampleApp extends Application {
                         if (event.isControlDown()) {
                             if (moleculeGroup.isVisible()) {
                                 moleculeGroup.setVisible(false);
-                            }
-                            else {
+                            } else {
                                 moleculeGroup.setVisible(true);
                             }
                         }
@@ -301,76 +299,61 @@ public class Fx3DNr5MoleculeSampleApp extends Application {
                         if (timelinePlaying) {
                             timeline.pause();
                             timelinePlaying = false;
-                        }
-                        else {
+                        } else {
                             timeline.play();
                             timelinePlaying = true;
                         }
                         break;
                     case UP:
                         if (event.isControlDown() && event.isShiftDown()) {
-                            cameraXform2.t.setY(cameraXform2.t.getY() - 10.0*CONTROL_MULTIPLIER);
-                        }
-                        else if (event.isAltDown() && event.isShiftDown()) {
-                            cameraXform.rx.setAngle(cameraXform.rx.getAngle() - 10.0*ALT_MULTIPLIER);
-                        }
-                        else if (event.isControlDown()) {
-                            cameraXform2.t.setY(cameraXform2.t.getY() - 1.0*CONTROL_MULTIPLIER);
-                        }
-                        else if (event.isAltDown()) {
-                            cameraXform.rx.setAngle(cameraXform.rx.getAngle() - 2.0*ALT_MULTIPLIER);
-                        }
-                        else if (event.isShiftDown()) {
+                            cameraXform2.t.setY(cameraXform2.t.getY() - 10.0 * CONTROL_MULTIPLIER);
+                        } else if (event.isAltDown() && event.isShiftDown()) {
+                            cameraXform.rx.setAngle(cameraXform.rx.getAngle() - 10.0 * ALT_MULTIPLIER);
+                        } else if (event.isControlDown()) {
+                            cameraXform2.t.setY(cameraXform2.t.getY() - 1.0 * CONTROL_MULTIPLIER);
+                        } else if (event.isAltDown()) {
+                            cameraXform.rx.setAngle(cameraXform.rx.getAngle() - 2.0 * ALT_MULTIPLIER);
+                        } else if (event.isShiftDown()) {
                             double z = camera.getTranslateZ();
-                            double newZ = z + 5.0*SHIFT_MULTIPLIER;
+                            double newZ = z + 5.0 * SHIFT_MULTIPLIER;
                             camera.setTranslateZ(newZ);
                         }
                         break;
                     case DOWN:
                         if (event.isControlDown() && event.isShiftDown()) {
-                            cameraXform2.t.setY(cameraXform2.t.getY() + 10.0*CONTROL_MULTIPLIER);
-                        }
-                        else if (event.isAltDown() && event.isShiftDown()) {
-                            cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 10.0*ALT_MULTIPLIER);
-                        }
-                        else if (event.isControlDown()) {
-                            cameraXform2.t.setY(cameraXform2.t.getY() + 1.0*CONTROL_MULTIPLIER);
-                        }
-                        else if (event.isAltDown()) {
-                            cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 2.0*ALT_MULTIPLIER);
-                        }
-                        else if (event.isShiftDown()) {
+                            cameraXform2.t.setY(cameraXform2.t.getY() + 10.0 * CONTROL_MULTIPLIER);
+                        } else if (event.isAltDown() && event.isShiftDown()) {
+                            cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 10.0 * ALT_MULTIPLIER);
+                        } else if (event.isControlDown()) {
+                            cameraXform2.t.setY(cameraXform2.t.getY() + 1.0 * CONTROL_MULTIPLIER);
+                        } else if (event.isAltDown()) {
+                            cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 2.0 * ALT_MULTIPLIER);
+                        } else if (event.isShiftDown()) {
                             double z = camera.getTranslateZ();
-                            double newZ = z - 5.0*SHIFT_MULTIPLIER;
+                            double newZ = z - 5.0 * SHIFT_MULTIPLIER;
                             camera.setTranslateZ(newZ);
                         }
                         break;
                     case RIGHT:
                         if (event.isControlDown() && event.isShiftDown()) {
-                            cameraXform2.t.setX(cameraXform2.t.getX() + 10.0*CONTROL_MULTIPLIER);
-                        }
-                        else if (event.isAltDown() && event.isShiftDown()) {
-                            cameraXform.ry.setAngle(cameraXform.ry.getAngle() - 10.0*ALT_MULTIPLIER);
-                        }
-                        else if (event.isControlDown()) {
-                            cameraXform2.t.setX(cameraXform2.t.getX() + 1.0*CONTROL_MULTIPLIER);
-                        }
-                        else if (event.isAltDown()) {
-                            cameraXform.ry.setAngle(cameraXform.ry.getAngle() - 2.0*ALT_MULTIPLIER);
+                            cameraXform2.t.setX(cameraXform2.t.getX() + 10.0 * CONTROL_MULTIPLIER);
+                        } else if (event.isAltDown() && event.isShiftDown()) {
+                            cameraXform.ry.setAngle(cameraXform.ry.getAngle() - 10.0 * ALT_MULTIPLIER);
+                        } else if (event.isControlDown()) {
+                            cameraXform2.t.setX(cameraXform2.t.getX() + 1.0 * CONTROL_MULTIPLIER);
+                        } else if (event.isAltDown()) {
+                            cameraXform.ry.setAngle(cameraXform.ry.getAngle() - 2.0 * ALT_MULTIPLIER);
                         }
                         break;
                     case LEFT:
                         if (event.isControlDown() && event.isShiftDown()) {
-                            cameraXform2.t.setX(cameraXform2.t.getX() - 10.0*CONTROL_MULTIPLIER);
-                        }
-                        else if (event.isAltDown() && event.isShiftDown()) {
-                            cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 10.0*ALT_MULTIPLIER);  // -
-                        }
-                        else if (event.isControlDown()) {
-                            cameraXform2.t.setX(cameraXform2.t.getX() - 1.0*CONTROL_MULTIPLIER);
-                        }
-                        else if (event.isAltDown()) {
-                            cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 2.0*ALT_MULTIPLIER);  // -
+                            cameraXform2.t.setX(cameraXform2.t.getX() - 10.0 * CONTROL_MULTIPLIER);
+                        } else if (event.isAltDown() && event.isShiftDown()) {
+                            cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 10.0 * ALT_MULTIPLIER);  // -
+                        } else if (event.isControlDown()) {
+                            cameraXform2.t.setX(cameraXform2.t.getX() - 1.0 * CONTROL_MULTIPLIER);
+                        } else if (event.isAltDown()) {
+                            cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 2.0 * ALT_MULTIPLIER);  // -
                         }
                         break;
                 }

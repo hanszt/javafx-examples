@@ -8,7 +8,6 @@ package org.fxyz.tests;
 
 import javafx.application.Application;
 import javafx.scene.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -18,6 +17,7 @@ import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import org.fxyz.cameras.CameraTransformer;
 import org.fxyz.shapes.Spheroid;
+import org.fxyz.utils.CameraUtils;
 
 import java.util.Random;
 
@@ -109,20 +109,7 @@ public class SpheroidTest extends Application {
     private void initFirstPersonControls(Scene scene){
         
         //First person shooter keyboard movement
-        scene.setOnKeyPressed(event -> {
-            double change = 10.0;
-            //Add shift modifier to simulate "Running Speed"
-            if(event.isShiftDown()) { change = 50.0; }
-            //What key did the user press?
-            KeyCode keycode = event.getCode();
-            //Step 2c: Add Zoom controls
-            if(keycode == KeyCode.W) { camera.setTranslateZ(camera.getTranslateZ() + change); }
-            if(keycode == KeyCode.S) { camera.setTranslateZ(camera.getTranslateZ() - change); }
-            //Step 2d: Add Strafe controls
-            if(keycode == KeyCode.A) { camera.setTranslateX(camera.getTranslateX() - change); }
-            if(keycode == KeyCode.D) { camera.setTranslateX(camera.getTranslateX() + change); }
-           
-        });
+        scene.setOnKeyPressed(event -> CameraUtils.moveInXZPlane(camera, event));
         
         scene.setOnMousePressed((MouseEvent me) -> {            
             mousePosX = me.getSceneX();

@@ -33,11 +33,10 @@ import org.fxyz.utils.FloatCollector;
  */
 public class CuboidMesh extends TexturedMesh {
 
-    private final static double DEFAULT_WIDTH = 10;
-    private final static double DEFAULT_HEIGHT = 10;
-    private final static double DEFAULT_DEPTH = 10;
-    
-    private final static int DEFAULT_LEVEL = 1;
+    private static final double DEFAULT_WIDTH = 10;
+    private static final double DEFAULT_HEIGHT = 10;
+    private static final double DEFAULT_DEPTH = 10;
+    private static final int DEFAULT_LEVEL = 1;
     
     
     public CuboidMesh(){

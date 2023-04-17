@@ -70,16 +70,16 @@ public class InterpolateBezier {
                 double[] cr=new double[numSplines];
                 cb[0] = 2d; 
                 cc[0] = 1d; 
-                cr[0] = i==0?knots.get(0).x + 2d*knots.get(1).x:i==1?knots.get(0).y + 2d*knots.get(1).y:knots.get(0).z + 2d*knots.get(1).z;
+                cr[0] = i==0? knots.get(0).getX() + 2d* knots.get(1).getX() :i==1? knots.get(0).getY() + 2d* knots.get(1).getY() : knots.get(0).getZ() + 2d* knots.get(1).getZ();
                 for(int j=1; j<numSplines-1; j++){
                     ca[j]=1d;
                     cb[j]=4d;
                     cc[j]=1d;
-                    cr[j]=i==0?4d*knots.get(j).x + 2d*knots.get(j+1).x:i==1?4d*knots.get(j).y + 2d*knots.get(j+1).y:4d*knots.get(j).z + 2d*knots.get(j+1).z;
+                    cr[j]=i==0?4d* knots.get(j).getX() + 2d* knots.get(j + 1).getX() :i==1?4d* knots.get(j).getY() + 2d* knots.get(j + 1).getY() :4d* knots.get(j).getZ() + 2d* knots.get(j + 1).getZ();
                 }
                 ca[numSplines-1]=2d;
                 cb[numSplines-1]=7d;
-                cr[numSplines-1]=i==0?8d*knots.get(numSplines-1).x + knots.get(numSplines).x:i==1?8d*knots.get(numSplines-1).y + knots.get(numSplines).y:8d*knots.get(numSplines-1).z + knots.get(numSplines).z;
+                cr[numSplines-1]=i==0?8d* knots.get(numSplines - 1).getX() + knots.get(numSplines).getX() :i==1?8d* knots.get(numSplines - 1).getY() + knots.get(numSplines).getY() :8d* knots.get(numSplines - 1).getZ() + knots.get(numSplines).getZ();
 
                 for(int j = 1; j<numSplines; j++){
                     double m=ca[j]/cb[j-1];
@@ -91,21 +91,21 @@ public class InterpolateBezier {
                     p1[j] = (cr[j]-cc[j]*p1[j+1])/cb[j];
                 }
                 for(int j=0; j<numSplines-1; j++){
-                    p2[j]=(i==0?2d*knots.get(j+1).x:i==1?2d*knots.get(j+1).y:2d*knots.get(j+1).z)-p1[j+1];
+                    p2[j]=(i==0?2d* knots.get(j + 1).getX() :i==1?2d* knots.get(j + 1).getY() :2d* knots.get(j + 1).getZ())-p1[j+1];
                 }
-                p2[numSplines-1]=((i==0?knots.get(numSplines).x:i==1?knots.get(numSplines).y:knots.get(numSplines).z)+p1[numSplines-1])/2d;
+                p2[numSplines-1]=((i==0? knots.get(numSplines).getX() :i==1? knots.get(numSplines).getY() : knots.get(numSplines).getZ())+p1[numSplines-1])/2d;
 
                 for(int j=0; j<numSplines; j++){
                     BezierHelper bez = splines.get(j);
                     if(i==0){
-                        bez.getPoints().get(1).x=(float)p1[j];
-                        bez.getPoints().get(2).x=(float)p2[j];
+                        bez.getPoints().get(1).setX((float)p1[j]);
+                        bez.getPoints().get(2).setX((float)p2[j]);
                     } else if(i==1){
-                        bez.getPoints().get(1).y=(float)p1[j];
-                        bez.getPoints().get(2).y=(float)p2[j];
+                        bez.getPoints().get(1).setY((float)p1[j]);
+                        bez.getPoints().get(2).setY((float)p2[j]);
                     } else if(i==2){
-                        bez.getPoints().get(1).z=(float)p1[j];
-                        bez.getPoints().get(2).z=(float)p2[j];
+                        bez.getPoints().get(1).setZ((float)p1[j]);
+                        bez.getPoints().get(2).setZ((float)p2[j]);
                     } 
                     splines.set(j,bez);
                 }

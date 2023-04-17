@@ -67,8 +67,8 @@ public class PolyLine3D extends Group {
         //add each point. For each point add another point shifted on Z axis by width
         //This extra point allows us to build triangles later
         for (Point3D point : points) {
-            mesh.getPoints().addAll(point.x, point.y, point.z);
-            mesh.getPoints().addAll(point.x, point.y, point.z + width);
+            mesh.getPoints().addAll(point.getX(), point.getY(), point.getZ());
+            mesh.getPoints().addAll(point.getX(), point.getY(), point.getZ() + width);
         }
     }
 }

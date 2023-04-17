@@ -191,8 +191,12 @@ public class ClothMesh extends MeshView {
      * @param stretchStr strength of stretch links
      */
     public ClothMesh(int divsX, int divsY, double width, double height, double bendStr, double shearStr, double stretchStr) {
-        if (divsX >= DIVS_BOUNDARY) setDivisionsX(divsX);
-        if (divsY >= DIVS_BOUNDARY) setDivisionsY(divsY);
+        if (divsX >= DIVS_BOUNDARY) {
+            setDivisionsX(divsX);
+        }
+        if (divsY >= DIVS_BOUNDARY) {
+            setDivisionsY(divsY);
+        }
 
         this.setWidth(width);
         this.setHeight(height);
@@ -294,7 +298,7 @@ public class ClothMesh extends MeshView {
                 stabilizeLinks(divsX, xDist, yDist, Y, X, point);
 
                 points.add(point);
-                mesh.getPoints().addAll(point.getPosition().x, point.getPosition().y, point.getPosition().z);
+                mesh.getPoints().addAll(point.getPosition().getX(), point.getPosition().getY(), point.getPosition().getZ());
                 mesh.getTexCoords().addAll(currX, currY);
             }
         }

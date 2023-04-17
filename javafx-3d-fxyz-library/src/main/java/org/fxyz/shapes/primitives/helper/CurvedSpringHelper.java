@@ -91,7 +91,7 @@ public class CurvedSpringHelper {
         Point3D p = trihedron[CurvedSpringHelper.tR]
                         .add(trihedron[CurvedSpringHelper.tN].multiply(cu)
                         .add(trihedron[CurvedSpringHelper.tB].multiply(su)));
-        p.f=((float)(t*arc)/(float)subDivLength); // [0-<=2Pi]
+        p.setF(((float)(t*arc)/(float)subDivLength)); // [0-<=2Pi]
         return p;
         
     }
@@ -99,7 +99,7 @@ public class CurvedSpringHelper {
     public double getLength(double arc){ // [0-<=2Pi]
         GaussianQuadrature gauss = new GaussianQuadrature(5,0,arc);
         // || r'[t] ||
-        return gauss.NIntegrate(t->Math.sqrt(r*r+2d*h*h*r*r+2d*R*R+4d*r*R*Math.cos(h*t)+r*r*Math.cos(2d*h*t))/Math.sqrt(2d));
+        return gauss.nIntegrate(t->Math.sqrt(r*r+2d*h*h*r*r+2d*R*R+4d*r*R*Math.cos(h*t)+r*r*Math.cos(2d*h*t))/Math.sqrt(2d));
     }
     
     public double getKappa(double t){

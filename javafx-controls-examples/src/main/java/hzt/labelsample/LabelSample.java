@@ -33,7 +33,9 @@ public class LabelSample extends Application {
         if (inputStream != null) {
             Image image = new Image(inputStream);
             imageView.setImage(image);
-        } else err.println("inputstream was null");
+        } else {
+            err.println("inputstream was null");
+        }
 
         Label label1 = new Label("Search");
         label1.setGraphic(imageView);

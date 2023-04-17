@@ -60,7 +60,7 @@ public class BasicListView extends View {
 
         // create a JavaFX ListView and populate it with the retrieved list
         ListView<Language> lvProgrammingLanguages = new ListView<>(programmingLanguages);
-        lvProgrammingLanguages.setCellFactory(lv -> new ListCell<Language>() {
+        lvProgrammingLanguages.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(Language item, boolean empty) {
                 super.updateItem(item, empty);

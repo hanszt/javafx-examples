@@ -28,6 +28,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.fxyz.cameras.CameraTransformer;
 import org.fxyz.geometry.Ray;
+import org.fxyz.utils.CameraUtils;
 
 /**
  * A simple app Showing the newly added Ray class.
@@ -105,30 +106,10 @@ public class SimpleRayTest extends Application {
 
         //First person shooter keyboard movement
         scene.setOnKeyPressed(ke -> {
-            double change = 10.0;
-            //Add shift modifier to simulate "Running Speed"
-            if (ke.isShiftDown()) {
-                change = 50.0;
-            }
-            //What key did the user press?
-            KeyCode keycode = ke.getCode();
-            //Step 2c: Add Zoom controls
-            if (keycode == KeyCode.W) {
-                camera.setTranslateZ(camera.getTranslateZ() + change);
-            }
-            if (keycode == KeyCode.S) {
-                camera.setTranslateZ(camera.getTranslateZ() - change);
-            }
-            //Step 2d: Add Strafe controls
-            if (keycode == KeyCode.A) {
-                camera.setTranslateX(camera.getTranslateX() - change);
-            }
-            if (keycode == KeyCode.D) {
-                camera.setTranslateX(camera.getTranslateX() + change);
-            }
+            CameraUtils.moveInXZPlane(camera, ke);
 
             // add a flag so we can still move the camera
-            if (keycode == KeyCode.CONTROL) {
+            if (ke.getCode() == KeyCode.CONTROL) {
                 fireRay = false;
             }
 

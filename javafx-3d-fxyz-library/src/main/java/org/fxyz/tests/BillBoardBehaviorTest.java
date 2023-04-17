@@ -22,7 +22,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -36,6 +35,7 @@ import org.fxyz.shapes.primitives.TorusMesh;
 import org.fxyz.extras.BillboardBehavior;
 import org.fxyz.tools.CameraView;
 import org.fxyz.extras.Skybox;
+import org.fxyz.utils.CameraUtils;
 
 /**
  *
@@ -217,24 +217,9 @@ public class BillBoardBehaviorTest extends Application {
     
     private void initFirstPersonControls(SubScene scene){
         //make sure Subscene handles KeyEvents
-        scene.setOnMouseEntered(e->{
-            scene.requestFocus();
-        });
+        scene.setOnMouseEntered(e-> scene.requestFocus());
         //First person shooter keyboard movement
-        scene.setOnKeyPressed(event -> {
-            double change = 10.0;
-            //Add shift modifier to simulate "Running Speed"
-            if(event.isShiftDown()) { change = 50.0; }
-            //What key did the user press?
-            KeyCode keycode = event.getCode();
-            //Step 2c: Add Zoom controls
-            if(keycode == KeyCode.W) { camera.setTranslateZ(camera.getTranslateZ() + change); }
-            if(keycode == KeyCode.S) { camera.setTranslateZ(camera.getTranslateZ() - change); }
-            //Step 2d: Add Strafe controls
-            if(keycode == KeyCode.A) { camera.setTranslateX(camera.getTranslateX() - change); }
-            if(keycode == KeyCode.D) { camera.setTranslateX(camera.getTranslateX() + change); }
-           
-        });
+        scene.setOnKeyPressed(event -> CameraUtils.moveInXZPlane(camera, event));
         
         scene.setOnMousePressed((MouseEvent me) -> {
             if(!scene.isFocused()){

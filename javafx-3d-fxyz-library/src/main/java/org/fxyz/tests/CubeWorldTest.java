@@ -11,12 +11,12 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.fxyz.cameras.CameraTransformer;
 import org.fxyz.extras.CubeWorld;
+import org.fxyz.utils.CameraUtils;
 
 /**
  *
@@ -25,11 +25,8 @@ import org.fxyz.extras.CubeWorld;
 public class CubeWorldTest extends Application {
 
     private PerspectiveCamera camera;
-    private final double sceneWidth = 600;
-    private final double sceneHeight = 600;
-    private double cameraDistance = 5000;
     private CubeWorld cubeWorld;
-    private CameraTransformer cameraTransform = new CameraTransformer();
+    private final CameraTransformer cameraTransform = new CameraTransformer();
 
     private double mousePosX;
     private double mousePosY;
@@ -41,6 +38,8 @@ public class CubeWorldTest extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Group sceneRoot = new Group();
+        double sceneWidth = 600;
+        double sceneHeight = 600;
         Scene scene = new Scene(sceneRoot, sceneWidth, sceneHeight, true, SceneAntialiasing.BALANCED);
         scene.setFill(Color.BLACK);
         //Setup camera and scatterplot cubeviewer
@@ -65,29 +64,7 @@ public class CubeWorldTest extends Application {
         scene.setCamera(camera);
 
         //First person shooter keyboard movement 
-        scene.setOnKeyPressed(event -> {
-            double change = 10.0;
-            //Add shift modifier to simulate "Running Speed"
-            if (event.isShiftDown()) {
-                change = 50.0;
-            }
-            //What key did the user press?
-            KeyCode keycode = event.getCode();
-            //Step 2c: Add Zoom controls
-            if (keycode == KeyCode.W) {
-                camera.setTranslateZ(camera.getTranslateZ() + change);
-            }
-            if (keycode == KeyCode.S) {
-                camera.setTranslateZ(camera.getTranslateZ() - change);
-            }
-            //Step 2d:  Add Strafe controls
-            if (keycode == KeyCode.A) {
-                camera.setTranslateX(camera.getTranslateX() - change);
-            }
-            if (keycode == KeyCode.D) {
-                camera.setTranslateX(camera.getTranslateX() + change);
-            }
-        });
+        scene.setOnKeyPressed(event -> CameraUtils.moveInXZPlane(camera, event));
 
         scene.setOnMousePressed((MouseEvent me) -> {
             mousePosX = me.getSceneX();

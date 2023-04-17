@@ -20,7 +20,7 @@ import javafx.scene.shape.TriangleMesh;
  *
  * @author Sean
  */
-public class SphereSegment extends Group {
+public final class SphereSegment extends Group {
 
     public boolean selfLightEnabled = true;
     public AmbientLight selfLight = new AmbientLight(Color.WHITE);

@@ -87,9 +87,9 @@ public class SpheroidMesh extends MeshView{
 
         final float divf = 1.f / divs;
 
-        float points[] = new float[numPoints * m.getPointElementSize()];
-        float tPoints[] = new float[numTexCoords * m.getTexCoordElementSize()];
-        int faces[] = new int[numFaces * m.getFaceElementSize()];
+        float[] points = new float[numPoints * m.getPointElementSize()];
+        float[] tPoints = new float[numTexCoords * m.getTexCoordElementSize()];
+        int[] faces = new int[numFaces * m.getFaceElementSize()];
 
         int pPos = 0, tPos = 0;
 

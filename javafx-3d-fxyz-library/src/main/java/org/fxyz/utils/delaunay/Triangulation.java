@@ -98,10 +98,13 @@ public class Triangulation extends AbstractSet<Triangle> {
      * @throws IllegalArgumentException if site is not in this triangle
      */
     public Triangle neighborOpposite (Pnt site, Triangle triangle) {
-        if (!triangle.contains(site))
+        if (!triangle.contains(site)) {
             throw new IllegalArgumentException("Bad vertex; not in triangle");
+        }
         for (Triangle neighbor: triGraph.neighbors(triangle)) {
-            if (!neighbor.contains(site)) return neighbor;
+            if (!neighbor.contains(site)) {
+                return neighbor;
+            }
         }
         return null;
     }
@@ -123,8 +126,9 @@ public class Triangulation extends AbstractSet<Triangle> {
      * @throws IllegalArgumentException if site is not in triangle
      */
     public List<Triangle> surroundingTriangles (Pnt site, Triangle triangle) {
-        if (!triangle.contains(site))
+        if (!triangle.contains(site)) {
             throw new IllegalArgumentException("Site not in triangle");
+        }
         List<Triangle> list = new ArrayList<>();
         Triangle start = triangle;
         Pnt guide = triangle.getVertexButNot(site);        // Affects cw or ccw
@@ -133,7 +137,9 @@ public class Triangulation extends AbstractSet<Triangle> {
             Triangle previous = triangle;
             triangle = this.neighborOpposite(guide, triangle); // Next triangle
             guide = previous.getVertexButNot(site, guide);     // Update guide
-            if (triangle == start) break;
+            if (triangle == start) {
+                break;
+            }
         }
         return list;
     }
@@ -145,7 +151,9 @@ public class Triangulation extends AbstractSet<Triangle> {
      */
     public Triangle locate (Pnt point) {
         Triangle triangle = mostRecent;
-        if (!this.contains(triangle)) triangle = null;
+        if (!this.contains(triangle)) {
+            triangle = null;
+        }
 
         // Try a directed walk (this works fine in 2D, but can fail in 3D)
         Set<Triangle> visited = new HashSet<>();
@@ -157,13 +165,17 @@ public class Triangulation extends AbstractSet<Triangle> {
             visited.add(triangle);
             // Corner opposite point
             Pnt corner = point.isOutside(triangle.toArray(new Pnt[0]));
-            if (corner == null) return triangle;
+            if (corner == null) {
+                return triangle;
+            }
             triangle = this.neighborOpposite(corner, triangle);
         }
         // No luck; try brute force
         System.out.println("Warning: Checking all triangles for " + point);
         for (Triangle tri: this) {
-            if (point.isOutside(tri.toArray(new Pnt[0])) == null) return tri;
+            if (point.isOutside(tri.toArray(new Pnt[0])) == null) {
+                return tri;
+            }
         }
         // No such triangle
         System.out.println("Warning: No triangle holds " + point);
@@ -182,9 +194,12 @@ public class Triangulation extends AbstractSet<Triangle> {
         // Locate containing triangle
         Triangle triangle = locate(site);
         // Give up if no containing triangle or if site is already in DT
-        if (triangle == null)
+        if (triangle == null) {
             throw new IllegalArgumentException("No containing triangle");
-        if (triangle.contains(site)) return;
+        }
+        if (triangle.contains(site)) {
+            return;
+        }
 
         // Determine the cavity and update the triangulation
         Set<Triangle> cavity = getCavity(site, triangle);
@@ -205,12 +220,15 @@ public class Triangulation extends AbstractSet<Triangle> {
         marked.add(triangle);
         while (!toBeChecked.isEmpty()) {
             triangle = toBeChecked.remove();
-            if (site.vsCircumcircle(triangle.toArray(new Pnt[0])) == 1)
+            if (site.vsCircumcircle(triangle.toArray(new Pnt[0])) == 1) {
                 continue; // Site outside triangle => triangle not in cavity
+            }
             encroached.add(triangle);
             // Check the neighbors
             for (Triangle neighbor: triGraph.neighbors(triangle)){
-                if (marked.contains(neighbor)) continue;
+                if (marked.contains(neighbor)) {
+                    continue;
+                }
                 marked.add(neighbor);
                 toBeChecked.add(neighbor);
             }
@@ -234,14 +252,19 @@ public class Triangulation extends AbstractSet<Triangle> {
             theTriangles.addAll(neighbors(triangle));
             for (Pnt vertex: triangle) {
                 Set<Pnt> facet = triangle.facetOpposite(vertex);
-                if (boundary.contains(facet)) boundary.remove(facet);
-                else boundary.add(facet);
+                if (boundary.contains(facet)) {
+                    boundary.remove(facet);
+                } else {
+                    boundary.add(facet);
+                }
             }
         }
         theTriangles.removeAll(cavity);        // Adj triangles only
 
         // Remove the cavity triangles from the triangulation
-        for (Triangle triangle: cavity) triGraph.remove(triangle);
+        for (Triangle triangle: cavity) {
+            triGraph.remove(triangle);
+        }
 
         // Build each new triangle and add it to the triangulation
         Set<Triangle> newTriangles = new HashSet<>();
@@ -254,10 +277,13 @@ public class Triangulation extends AbstractSet<Triangle> {
 
         // Update the graph links for each new triangle
         theTriangles.addAll(newTriangles);    // Adj triangle + new triangles
-        for (Triangle triangle: newTriangles)
-            for (Triangle other: theTriangles)
-                if (triangle.isNeighbor(other))
+        for (Triangle triangle: newTriangles) {
+            for (Triangle other: theTriangles) {
+                if (triangle.isNeighbor(other)) {
                     triGraph.add(triangle, other);
+                }
+            }
+        }
 
         // Return one of the new triangles
         return newTriangles.iterator().next();

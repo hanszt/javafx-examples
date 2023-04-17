@@ -57,11 +57,12 @@ public class SurfacePlot extends Group {
         int total = arrayY.length * arrayY.length;
         int nextRow = arrayY.length;
         //Add the faces "winding" the points generally counter clock wise
+        final var faces = mesh.getFaces();
         for (int i = 0; i < total - nextRow -1; i++) {
             //Top upper left triangle
-            mesh.getFaces().addAll(i,0,i+nextRow,0,i+1,0);
+            faces.addAll(i,0,i+nextRow,0,i+1,0);
             //Top lower right triangle
-            mesh.getFaces().addAll(i+nextRow,0,i+nextRow + 1,0,i+1,0);
+            faces.addAll(i+nextRow,0,i+nextRow + 1,0,i+1,0);
             
             //Bottom            
         }
@@ -76,14 +77,17 @@ public class SurfacePlot extends Group {
         }
         meshView.setCullFace(CullFace.BACK); //Removing culling to show back lines
 
-        getChildren().add(meshView);
+        final var children = getChildren();
+        children.add(meshView);
         meshView.setMaterial(material);
         if (ambient) {
             selfLight.getScope().add(meshView);
-            if(!getChildren().contains(selfLight))
-                getChildren().add(selfLight);
+            if(!children.contains(selfLight)) {
+                children.add(selfLight);
+            }
+        } else {
+            children.remove(selfLight);
         }
-        else getChildren().remove(selfLight);
         setDepthTest(DepthTest.ENABLE);
     }
 }

@@ -207,13 +207,9 @@ public abstract class CameraController implements Transformable {
         switch (animPref) {
             case TIMELINE:
                 timeline.getKeyFrames().addAll(
-                        new KeyFrame(Duration.millis(15), e -> {
-                            new Timeline(new KeyFrame[]{
-                                new KeyFrame(Duration.ONE, ev ->{
-                                    update();
-                                })
-                            }).play();
-                        })
+                        new KeyFrame(Duration.millis(15), e -> new Timeline(new KeyFrame[]{
+                            new KeyFrame(Duration.ONE, ev -> update())
+                        }).play())
                 );
                 timeline.play();                
                 break;

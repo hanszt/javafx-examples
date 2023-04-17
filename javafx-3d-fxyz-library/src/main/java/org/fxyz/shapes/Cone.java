@@ -21,7 +21,7 @@ import org.fxyz.shapes.primitives.ConeMesh;
  * @adapted Dub's Capsule class served as an example framework to adapt 
  * my existing Cone code.
  */
-public class Cone extends ShapeContainer<ConeMesh>{
+public final class Cone extends ShapeContainer<ConeMesh>{
      private ConeMesh mesh;
     
     public Cone() {
@@ -44,37 +44,37 @@ public class Cone extends ShapeContainer<ConeMesh>{
         this.mesh = getShape();
         this.setDiffuseColor(c);
     }
-    public final void setRadius(double value) {
+    public void setRadius(double value) {
         mesh.setRadius(value);
     }
-    public final void setHeight(double value) {
+    public void setHeight(double value) {
         mesh.setHeight(value);
     }
-    public final void setDivisions(int value) {
+    public void setDivisions(int value) {
         mesh.setDivisions(value);
     }
-    public final void setMaterial(Material value) {
+    public void setMaterial(Material value) {
         mesh.setMaterial(value);
     }
-    public final void setDrawMode(DrawMode value) {
+    public void setDrawMode(DrawMode value) {
         mesh.setDrawMode(value);
     }
-    public final void setCullFace(CullFace value) {
+    public void setCullFace(CullFace value) {
         mesh.setCullFace(value);
     }
-    public final double getRadius() {
+    public double getRadius() {
         return mesh.getRadius();
     }
     public DoubleProperty radiusProperty() {
         return mesh.radiusProperty();
     }
-    public final double getHeight() {
+    public double getHeight() {
         return mesh.getHeight();
     }
     public DoubleProperty heightProperty() {
         return mesh.heightProperty();
     }
-    public final int getDivisions() {
+    public int getDivisions() {
         return mesh.getDivisions();
     }
     public IntegerProperty divisionsProperty() {

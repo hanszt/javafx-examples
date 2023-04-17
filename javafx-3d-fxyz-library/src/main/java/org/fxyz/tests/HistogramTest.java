@@ -12,12 +12,12 @@ import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.fxyz.shapes.composites.Histogram;
+import org.fxyz.utils.CameraUtils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -43,7 +43,7 @@ public class HistogramTest extends Application {
         double sceneHeight = 600;
         Scene scene = new Scene(sceneRoot, sceneWidth, sceneHeight, true, SceneAntialiasing.BALANCED);
         scene.setFill(Color.BLACK);
-        PerspectiveCamera camera = getPerspectiveCamera();
+        PerspectiveCamera camera = buildPerspectiveCamera();
         scene.setCamera(camera);
 
         Histogram histogram = new Histogram(true);
@@ -51,7 +51,7 @@ public class HistogramTest extends Application {
 
         float[][] arrayY = calculateHistogramData();
         histogram.setHeightData(arrayY, 1, 4, Color.SKYBLUE, false, true);
-        scene.setOnKeyPressed(event -> keyPressedAction(camera, event));
+        scene.setOnKeyPressed(event -> CameraUtils.moveInXZPlane(camera, event));
 
         addMouseRotationAndZoomHandler(scene, histogram);
         primaryStage.setTitle("F(X)yz HistogramTest");
@@ -94,32 +94,12 @@ public class HistogramTest extends Application {
     }
 
     @NotNull
-    private PerspectiveCamera getPerspectiveCamera() {
+    private static PerspectiveCamera buildPerspectiveCamera() {
         var camera = new PerspectiveCamera(true);
         camera.setNearClip(0.1);
         camera.setFarClip(10000.0);
         camera.setTranslateZ(-1000);
         return camera;
-    }
-
-    private void keyPressedAction(PerspectiveCamera camera, javafx.scene.input.KeyEvent event) {
-        double change = 10.0;
-        if (event.isShiftDown()) {
-            change = 50.0;
-        }
-        KeyCode keycode = event.getCode();
-        if (keycode == KeyCode.W) {
-            camera.setTranslateZ(camera.getTranslateZ() + change);
-        }
-        if (keycode == KeyCode.S) {
-            camera.setTranslateZ(camera.getTranslateZ() - change);
-        }
-        if (keycode == KeyCode.A) {
-            camera.setTranslateX(camera.getTranslateX() - change);
-        }
-        if (keycode == KeyCode.D) {
-            camera.setTranslateX(camera.getTranslateX() + change);
-        }
     }
 
     /**

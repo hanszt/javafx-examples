@@ -54,7 +54,7 @@ public class CheckerMeshViewer extends Application {
     int divX = 100;
     int divY = 100;
     boolean smooth = false;
-    int smoothGroups[];
+    int[] smoothGroups;
     float translateValue = 0.0f;
     float rotateAngle = 0.0f;
     float funcValue = 0.0f;
@@ -110,10 +110,10 @@ public class CheckerMeshViewer extends Application {
         final int faceSize = 6; // 3 point indices and 3 texCoord indices per triangle
         int numDivX = subDivX + 1;
         int numVerts = (subDivY + 1) * numDivX;
-        float points[] = new float[numVerts * pointSize];
-        float texCoords[] = new float[numVerts * texCoordSize];
+        float[] points = new float[numVerts * pointSize];
+        float[] texCoords = new float[numVerts * texCoordSize];
         int faceCount = subDivX * subDivY * 2;
-        int faces[] = new int[ faceCount * faceSize];
+        int[] faces = new int[ faceCount * faceSize];
 
         // Create points and texCoords
         for (int y = 0; y <= subDivY; y++) {

@@ -61,9 +61,7 @@ public class ArraySet<E> extends AbstractSet<E> {
      */
     public ArraySet (Collection<? extends E> collection) {
         items = new ArrayList<>(collection.size());
-        collection.stream().filter((item) -> (!items.contains(item))).forEach((item) -> {
-            items.add(item);
-        });
+        collection.stream().filter((item) -> (!items.contains(item))).forEach((item) -> items.add(item));
     }
 
     /**
@@ -87,7 +85,9 @@ public class ArraySet<E> extends AbstractSet<E> {
 
     @Override
     public boolean add(E item) {
-        if (items.contains(item)) return false;
+        if (items.contains(item)) {
+            return false;
+        }
         return items.add(item);
     }
 

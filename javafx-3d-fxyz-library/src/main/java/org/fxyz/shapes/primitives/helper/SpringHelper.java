@@ -90,7 +90,7 @@ public class SpringHelper {
         Point3D p = trihedron[SpringHelper.tR]
                         .add(trihedron[SpringHelper.tN].multiply(cu)
                         .add(trihedron[SpringHelper.tB].multiply(su)));
-        p.f=((float)(t*arc)/(float)subDivLength); // [0-<=2Pi]
+        p.setF(((float)(t*arc)/(float)subDivLength)); // [0-<=2Pi]
         return p;
         
     }
@@ -98,7 +98,7 @@ public class SpringHelper {
     public double getLength(double arc){ // [0-<=2Pi]
         GaussianQuadrature gauss = new GaussianQuadrature(5,0,arc);
         // || r'[t] ||
-        return gauss.NIntegrate(t->Math.sqrt(R*R+h*h));
+        return gauss.nIntegrate(t->Math.sqrt(R*R+h*h));
     }
     
     public double getKappa(double t){

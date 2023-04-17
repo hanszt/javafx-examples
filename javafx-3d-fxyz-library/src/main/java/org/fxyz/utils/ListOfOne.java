@@ -50,8 +50,8 @@ public class ListOfOne<E> implements List<E> {
 
     @Override
     public Iterator<E> iterator() {
-        return new Iterator<E>() {
-            
+        return new Iterator<>() {
+
             private int n = 0;
 
             @Override
@@ -67,7 +67,7 @@ public class ListOfOne<E> implements List<E> {
                 n++;
                 return element;
             }
-            
+
         };
     }
 
@@ -178,8 +178,8 @@ public class ListOfOne<E> implements List<E> {
 
     @Override
     public ListIterator<E> listIterator(int index) {
-        return new ListIterator<E>() {
-            
+        return new ListIterator<>() {
+
             private final int s = size - index;
             private int n = 0;
 
@@ -193,8 +193,8 @@ public class ListOfOne<E> implements List<E> {
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
-               n++;
-               return element;
+                n++;
+                return element;
             }
 
             @Override
@@ -223,17 +223,17 @@ public class ListOfOne<E> implements List<E> {
 
             @Override
             public void remove() {
-                throw new UnsupportedOperationException("Not supported yet."); 
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public void set(E e) {
-                throw new UnsupportedOperationException("Not supported yet."); 
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public void add(E e) {
-                throw new UnsupportedOperationException("Not supported yet."); 
+                throw new UnsupportedOperationException("Not supported yet.");
             }
         };
     }

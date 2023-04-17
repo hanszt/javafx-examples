@@ -97,8 +97,10 @@ public class DoodleTrace extends View {
      * Draw connected lines as mouse or touch points are applied.
      */
     PathAction draw = (x, y) -> {
-        if (!animating) drawPath.getElements()
-                                .add(new LineTo(x, y));
+        if (!animating) {
+            drawPath.getElements()
+                                    .add(new LineTo(x, y));
+        }
     };
 
     /**
@@ -114,7 +116,9 @@ public class DoodleTrace extends View {
 
         // obtain numPts
         int numPts = drawPath.getElements().size();
-        if (numPts == 0) return;
+        if (numPts == 0) {
+            return;
+        }
 
         // Hide the drawn path
         drawPath.setVisible(false);

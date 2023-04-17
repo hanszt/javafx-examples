@@ -68,10 +68,12 @@ public class ScatterPlotMesh extends Group {
             //some safety checks for array sizes
             double translateY = 0.0;
             double translateZ = 0.0;            
-            if(!yAxisData.isEmpty() && yAxisData.size() > i)
+            if(!yAxisData.isEmpty() && yAxisData.size() > i) {
                 translateY = yAxisData.get(i);
-            if(!zAxisData.isEmpty() && zAxisData.size() > i)
+            }
+            if(!zAxisData.isEmpty() && zAxisData.size() > i) {
                 translateZ = zAxisData.get(i);
+            }
             setTranslateX(xAxisData.get(i));
             //Convert to Floats and build list of adjusted points
             point3DList.add(new Point3D(new Float(xAxisData.get(i)), new Float(translateY), new Float(translateZ)));
@@ -83,22 +85,22 @@ public class ScatterPlotMesh extends Group {
             for(Point3D point: point3DList) {
                 //Rear points
                 //top right rear point
-                mesh.getPoints().addAll(point.x+width,point.y+width,point.z+width);
+                mesh.getPoints().addAll(point.getX() +width, point.getY() +width, point.getZ() +width);
                 //top left rear point
-                mesh.getPoints().addAll(point.x-width,point.y+width,point.z+width);
+                mesh.getPoints().addAll(point.getX() -width, point.getY() +width, point.getZ() +width);
                 //bottom right rear point
-                mesh.getPoints().addAll(point.x+width,point.y-width,point.z+width);
+                mesh.getPoints().addAll(point.getX() +width, point.getY() -width, point.getZ() +width);
                 //bottom left rear point
-                mesh.getPoints().addAll(point.x-width,point.y-width,point.z+width);
+                mesh.getPoints().addAll(point.getX() -width, point.getY() -width, point.getZ() +width);
                 //Front points
                 //top right front point
-                mesh.getPoints().addAll(point.x+width,point.y+width,point.z-width);
+                mesh.getPoints().addAll(point.getX() +width, point.getY() +width, point.getZ() -width);
                 //top left front point
-                mesh.getPoints().addAll(point.x-width,point.y+width,point.z-width);
+                mesh.getPoints().addAll(point.getX() -width, point.getY() +width, point.getZ() -width);
                 //bottom right front point
-                mesh.getPoints().addAll(point.x+width,point.y-width,point.z-width);
+                mesh.getPoints().addAll(point.getX() +width, point.getY() -width, point.getZ() -width);
                 //bottom left front point
-                mesh.getPoints().addAll(point.x-width,point.y-width,point.z-width);
+                mesh.getPoints().addAll(point.getX() -width, point.getY() -width, point.getZ() -width);
             }
             //add dummy Texture Coordinate
             mesh.getTexCoords().addAll(0,0);

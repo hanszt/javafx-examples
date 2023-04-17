@@ -110,7 +110,7 @@ public class Camera3D extends PerspectiveCamera {
         updateLookup();
     }
 
-    private final Vec3f tm[] = new Vec3f[]{new Vec3f(),new Vec3f(),new Vec3f(),};
+    private final Vec3f[] tm = new Vec3f[]{new Vec3f(),new Vec3f(),new Vec3f(),};
 
     private void updateLookup() {
         Vec3f pos = new Vec3f((float)getPosX(), (float)getPosY(), (float)getPosZ());

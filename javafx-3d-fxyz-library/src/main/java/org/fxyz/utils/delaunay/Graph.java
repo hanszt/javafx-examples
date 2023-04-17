@@ -47,7 +47,9 @@ public class Graph<N> {
      * @param node the node to add
      */
     public void add (N node) {
-        if (theNeighbors.containsKey(node)) return;
+        if (theNeighbors.containsKey(node)) {
+            return;
+        }
         theNeighbors.put(node, new ArraySet<>());
      }
 
@@ -68,7 +70,9 @@ public class Graph<N> {
      * @param node the node to remove.
      */
     public void remove (N node) {
-        if (!theNeighbors.containsKey(node)) return;
+        if (!theNeighbors.containsKey(node)) {
+            return;
+        }
         theNeighbors.get(node).stream().forEach((neighbor) -> {
             theNeighbors.get(neighbor).remove(node);    // Remove "to" links
         });

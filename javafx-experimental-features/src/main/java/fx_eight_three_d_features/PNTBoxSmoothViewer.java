@@ -95,7 +95,7 @@ public class PNTBoxSmoothViewer extends Application {
 
         root = new Group(grp3 /*, pointLight */);
         Scene scene = new Scene(root, width, height, depthBuffer);
-        scene.setOnKeyTyped(new EventHandler<KeyEvent>() {
+        scene.setOnKeyTyped(new EventHandler<>() {
             @Override
             public void handle(KeyEvent e) {
                 switch (e.getCharacter()) {
@@ -201,7 +201,7 @@ public class PNTBoxSmoothViewer extends Application {
         float hh = h / 2f;
         float hd = d / 2f;
 
-        float points[] = {
+        float[] points = {
                 -hw, -hh, -hd,
                 hw, -hh, -hd,
                 hw, hh, -hd,
@@ -211,7 +211,7 @@ public class PNTBoxSmoothViewer extends Application {
                 hw, hh, hd,
                 -hw, hh, hd};
 
-        float normals[] = {
+        float[] normals = {
                 -hw, -hh, -hd,
                 hw, -hh, -hd,
                 hw, hh, -hd,
@@ -221,9 +221,9 @@ public class PNTBoxSmoothViewer extends Application {
                 hw, hh, hd,
                 -hw, hh, hd};
 
-        float texCoords[] = {0, 0, 1, 0, 1, 1, 0, 1};
+        float[] texCoords = {0, 0, 1, 0, 1, 1, 0, 1};
 
-        int faces[] = {
+        int[] faces = {
                 0, 0, 0, 2, 2, 2, 1, 1, 1,
                 2, 2, 2, 0, 0, 0, 3, 3, 3,
                 1, 1, 0, 6, 6, 2, 5, 5, 1,

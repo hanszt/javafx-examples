@@ -40,11 +40,11 @@ public class PaginationSample extends Application {
         
         pagination = new Pagination(fonts.length/itemsPerPage(), 0);
         pagination.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
-        pagination.setPageFactory(new Callback<Integer, Node>() {
- 
+        pagination.setPageFactory(new Callback<>() {
+
             @Override
-            public Node call(Integer pageIndex) {          
-                return createPage(pageIndex);               
+            public Node call(Integer pageIndex) {
+                return createPage(pageIndex);
             }
         });
  

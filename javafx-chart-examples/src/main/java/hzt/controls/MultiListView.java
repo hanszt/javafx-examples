@@ -98,7 +98,9 @@ public class MultiListView<T> extends VBox {
         to.getSelectionModel().clearSelection();
         ObservableList<T> selectedItems = from.getSelectionModel().getSelectedItems();
         to.getItems().addAll(selectedItems);
-        if (sorting.get()) to.getItems().sort(comparator);
+        if (sorting.get()) {
+            to.getItems().sort(comparator);
+        }
         selectedItems.forEach(i -> to.getSelectionModel().select(i));
         from.getItems().removeAll(selectedItems);
     }

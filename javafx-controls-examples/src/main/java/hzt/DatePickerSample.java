@@ -18,6 +18,7 @@ public class DatePickerSample extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
+        LOGGER.info("Starting {}...", DatePickerSample.class.getSimpleName());
         Label label = new Label();
         DatePicker datePicker = new DatePicker();
         datePicker.setOnAction(actionEvent -> displayPickedDate(label, datePicker));

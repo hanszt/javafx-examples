@@ -46,7 +46,8 @@ public class Histogram extends Group {
 
     public void setHeightData(float[][] arrayY, int barSize, int spacing,
             Color color, boolean ambient, boolean fill) {
-        histogramDataGroup.getChildren().clear();
+        final var children = histogramDataGroup.getChildren();
+        children.clear();
         PhongMaterial phong = new PhongMaterial();
         phong.setSpecularColor(color);
         phong.setDiffuseColor(color);
@@ -73,61 +74,45 @@ public class Histogram extends Group {
                 if (ySize < 0) {
                     ySize *= -1;
                 }
-                Node bar = createDefaultNode(barSize, ySize);
-                bar.setTranslateX(x * spacing);
-                bar.setTranslateY(-arrayY[x][z]);
-                bar.setTranslateZ(z * spacing);
+                Node node = createDefaultNode(barSize, ySize);
+                node.setTranslateX(x * spacing);
+                node.setTranslateY(-arrayY[x][z]);
+                node.setTranslateZ(z * spacing);
                 //Apply normalized color scale
                 double normalizedColor = (arrayY[x][z] - min) / range;
-                if (arrayY[x][z] < range / 2) //if it is in the lower half of the range
-                {
-                    phong = new PhongMaterial(new Color(0.25, 0, normalizedColor, 1));
-                } else //if it is in the upper half of the range
-                {
-                    phong = new PhongMaterial(new Color(normalizedColor, 0, 0.25, 1));
+                //if it is in the lower half of the range
+                //if it is in the upper half of the range
+                phong = arrayY[x][z] < range / 2 ?
+                        new PhongMaterial(new Color(0.25, 0, normalizedColor, 1)) :
+                        new PhongMaterial(new Color(normalizedColor, 0, 0.25, 1));
+                if (node instanceof Cylinder cylinder) {
+                    cylinder.setMaterial(phong);
+                    cylinder.setCullFace(CullFace.BACK);
+                    //show lines only by default
+                    cylinder.setDrawMode(fill ? DrawMode.FILL : DrawMode.LINE);
                 }
-                switch (getDefaultNodeType()) {
-                    case CYLINDER: {
-                        ((Cylinder) bar).setMaterial(phong);
-                        ((Cylinder) bar).setCullFace(CullFace.BACK);
-                        if (fill) {
-                            ((Cylinder) bar).setDrawMode(DrawMode.FILL);
-                        } else {
-                            ((Cylinder) bar).setDrawMode(DrawMode.LINE); //show lines only by default
-                        }
-                        break;
-                    }
-                    case CUBE:
-                    default: {
-                        ((Box) bar).setMaterial(phong);
-                        ((Box) bar).setCullFace(CullFace.BACK);
-                        if (fill) {
-                            ((Box) bar).setDrawMode(DrawMode.FILL);
-                        } else {
-                            ((Box) bar).setDrawMode(DrawMode.LINE); //show lines only by default
-                        }
-                    }
+                if (node instanceof Box box) {
+                    box.setMaterial(phong);
+                    box.setCullFace(CullFace.BACK);
+                    //show lines only by default
+                    box.setDrawMode(fill ? DrawMode.FILL : DrawMode.LINE);
                 }
 
                 if (ambient) {
                     AmbientLight light = new AmbientLight(color);
-                    light.getScope().add(bar);
-                    histogramDataGroup.getChildren().add(light);
+                    light.getScope().add(node);
+                    children.add(light);
                 }
-                histogramDataGroup.getChildren().add(bar);
+                children.add(node);
             }
         }
     }
 
     private Node createDefaultNode(double barWidth, double barHeight) {
-        switch (defaultNodeType) {
-            case CYLINDER:
-                return new Cylinder(barWidth / 2, barHeight);
-            case CUBE:
-                return new Box(barWidth, barHeight, barWidth);
-            default:
-                return new Box(barWidth, barHeight, barWidth);
-        }
+        return switch (defaultNodeType) {
+            case CYLINDER -> new Cylinder(barWidth / 2, barHeight);
+            case CUBE -> new Box(barWidth, barHeight, barWidth);
+        };
     }
 
     /**

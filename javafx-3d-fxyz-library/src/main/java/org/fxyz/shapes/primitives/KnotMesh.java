@@ -13,9 +13,9 @@ import org.fxyz.geometry.Point3D;
 import org.fxyz.shapes.primitives.helper.KnotHelper;
 
 /**
- * Spring based on this model:  http://en.wikipedia.org/wiki/Trefoil_knot
- * Wrapped around a torus: http://mathoverflow.net/a/91459
- * Using Frenet-Serret trihedron: http://mathematica.stackexchange.com/a/18612
+ * Spring based on this model:  <a href="http://en.wikipedia.org/wiki/Trefoil_knot">Trefiol knot</a>
+ * Wrapped around a torus: <a href="http://mathoverflow.net/a/91459">mathoverflow</a>
+ * Using Frenet-Serret trihedron: <a href="http://mathematica.stackexchange.com/a/18612">frenet serret</a>
  */
 public class KnotMesh extends TexturedMesh {
 

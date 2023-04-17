@@ -27,6 +27,86 @@ public class TorusMesh extends MeshView {
     private static final double DEFAULT_X_OFFSET = 0.0D;
     private static final double DEFAULT_Y_OFFSET = 0.0D;
     private static final double DEFAULT_Z_OFFSET = 1.0D;
+    private static final float PI = 3.141592653589793F;
+
+    private final DoubleProperty xOffset = new SimpleDoubleProperty(DEFAULT_X_OFFSET) {
+
+        @Override
+        protected void invalidated() {
+            updateMesh();
+        }
+
+    };
+    private final DoubleProperty yOffset = new SimpleDoubleProperty(DEFAULT_Y_OFFSET) {
+
+        @Override
+        protected void invalidated() {
+            updateMesh();
+        }
+
+    };
+
+    private final DoubleProperty zOffset = new SimpleDoubleProperty(DEFAULT_Z_OFFSET) {
+
+        @Override
+        protected void invalidated() {
+            updateMesh();
+        }
+
+    };
+
+    private final IntegerProperty radiusDivisions = new SimpleIntegerProperty(DEFAULT_DIVISIONS) {
+
+        @Override
+        protected void invalidated() {
+            setMesh(createTorus(
+                    getRadiusDivisions(),
+                    getTubeDivisions(),
+                    (float) getRadius(),
+                    (float) getTubeRadius(),
+                    (float) getTubeStartAngleOffset(),
+                    (float)getxOffset(),
+                    (float)getyOffset(),
+                    (float)getzOffset()));
+        }
+
+    };
+
+    private final DoubleProperty radius = new SimpleDoubleProperty(DEFAULT_RADIUS) {
+
+        @Override
+        protected void invalidated() {
+            updateMesh();
+        }
+
+    };
+
+    private final DoubleProperty tubeStartAngleOffset = new SimpleDoubleProperty(DEFAULT_START_ANGLE) {
+
+        @Override
+        protected void invalidated() {
+            updateMesh();
+        }
+
+    };
+
+    private final DoubleProperty tubeRadius = new SimpleDoubleProperty(DEFAULT_T_RADIUS) {
+
+        @Override
+        protected void invalidated() {
+            updateMesh();
+        }
+
+    };
+
+    private final IntegerProperty tubeDivisions = new SimpleIntegerProperty(DEFAULT_T_DIVISIONS) {
+
+        @Override
+        protected void invalidated() {
+            updateMesh();
+        }
+
+    };
 
     public TorusMesh() {
         this(DEFAULT_DIVISIONS, DEFAULT_T_DIVISIONS, DEFAULT_RADIUS, DEFAULT_T_RADIUS);
@@ -77,8 +157,8 @@ public class TorusMesh extends MeshView {
         int pointIndex = 0;
         int texIndex = 0;
         int faceIndex = 0;
-        float tubeFraction = 1.0f / tubeDivisions;
-        float radiusFraction = 1.0f / radiusDivisions;
+        float tubeFraction = 1.0F / tubeDivisions;
+        float radiusFraction = 1.0F / radiusDivisions;
 
         int p0;
         int p1 = 0;
@@ -92,17 +172,17 @@ public class TorusMesh extends MeshView {
         // create points
         for (int tubeIndex = 0; tubeIndex < tubeDivisions; tubeIndex++) {
 
-            float radian = tubeStartAngle + tubeFraction * tubeIndex * 2.0f * 3.141592653589793f;
+            float radian = tubeStartAngle + tubeFraction * tubeIndex * 2.0F * PI;
 
             for (int radiusIndex = 0; radiusIndex < radiusDivisions; radiusIndex++) {
 
-                float localRadian = radiusFraction * (radiusIndex) * 2.0f * 3.141592653589793f;
+                float localRadian = radiusFraction * (radiusIndex) * 2.0F * PI;
 
                 points[pointIndex++] = (radius + tRadius * ((float) Math.cos(radian))) * ((float) Math.cos(localRadian) + xOffset);
                 points[pointIndex++] = (radius + tRadius * ((float) Math.cos(radian))) * ((float) Math.sin(localRadian) + yOffset);
                 points[pointIndex++] = (tRadius * (float) Math.sin(radian) * zOffset);
 
-                float r = radiusIndex < tubeDivisions ? tubeFraction * radiusIndex * 2.0F * 3.141592653589793f : 0.0f;
+                float r = radiusIndex < tubeDivisions ? (tubeFraction * radiusIndex * 2.0F * PI) : 0.0F;
                 texCoords[texIndex++] = (0.5F + (float) (Math.sin(r) * 0.5D));
                 texCoords[texIndex++] = ((float) (Math.cos(r) * 0.5D) + 0.5F);
             }
@@ -156,23 +236,6 @@ public class TorusMesh extends MeshView {
         return localTriangleMesh;
     }
 
-    private final IntegerProperty radiusDivisions = new SimpleIntegerProperty(DEFAULT_DIVISIONS) {
-
-        @Override
-        protected void invalidated() {
-            setMesh(createTorus(
-                getRadiusDivisions(), 
-                getTubeDivisions(), 
-                (float) getRadius(), 
-                (float) getTubeRadius(), 
-                (float) getTubeStartAngleOffset(), 
-                (float)getxOffset(),
-                (float)getyOffset(), 
-                (float)getzOffset()));
-        }
-
-    };
-
     public final int getRadiusDivisions() {
         return radiusDivisions.get();
     }
@@ -184,15 +247,6 @@ public class TorusMesh extends MeshView {
     public IntegerProperty radiusDivisionsProperty() {
         return radiusDivisions;
     }
-
-    private final IntegerProperty tubeDivisions = new SimpleIntegerProperty(DEFAULT_T_DIVISIONS) {
-
-        @Override
-        protected void invalidated() {
-            updateMesh();
-        }
-
-    };
 
     public final int getTubeDivisions() {
         return tubeDivisions.get();
@@ -206,15 +260,6 @@ public class TorusMesh extends MeshView {
         return tubeDivisions;
     }
 
-    private final DoubleProperty radius = new SimpleDoubleProperty(DEFAULT_RADIUS) {
-
-        @Override
-        protected void invalidated() {
-            updateMesh();
-        }
-
-    };
-
     public final double getRadius() {
         return radius.get();
     }
@@ -226,15 +271,6 @@ public class TorusMesh extends MeshView {
     public DoubleProperty radiusProperty() {
         return radius;
     }
-
-    private final DoubleProperty tubeRadius = new SimpleDoubleProperty(DEFAULT_T_RADIUS) {
-
-        @Override
-        protected void invalidated() {
-            updateMesh();
-        }
-
-    };
 
     public final double getTubeRadius() {
         return tubeRadius.get();
@@ -248,15 +284,6 @@ public class TorusMesh extends MeshView {
         return tubeRadius;
     }
 
-    private final DoubleProperty tubeStartAngleOffset = new SimpleDoubleProperty(DEFAULT_START_ANGLE) {
-
-        @Override
-        protected void invalidated() {
-            updateMesh();
-        }
-
-    };
-
     public final double getTubeStartAngleOffset() {
         return tubeStartAngleOffset.get();
     }
@@ -268,14 +295,6 @@ public class TorusMesh extends MeshView {
     public DoubleProperty tubeStartAngleOffsetProperty() {
         return tubeStartAngleOffset;
     }
-    private final DoubleProperty xOffset = new SimpleDoubleProperty(DEFAULT_X_OFFSET) {
-
-        @Override
-        protected void invalidated() {
-            updateMesh();
-        }
-
-    };
 
     public final double getxOffset() {
         return xOffset.get();
@@ -288,14 +307,6 @@ public class TorusMesh extends MeshView {
     public DoubleProperty xOffsetProperty() {
         return xOffset;
     }
-    private final DoubleProperty yOffset = new SimpleDoubleProperty(DEFAULT_Y_OFFSET) {
-
-        @Override
-        protected void invalidated() {
-            updateMesh();
-        }
-
-    };
 
     public final double getyOffset() {
         return yOffset.get();
@@ -308,15 +319,6 @@ public class TorusMesh extends MeshView {
     public DoubleProperty yOffsetProperty() {
         return yOffset;
     }
-    private final DoubleProperty zOffset = new SimpleDoubleProperty(DEFAULT_Z_OFFSET) {
-
-        @Override
-        protected void invalidated() {
-            updateMesh();
-        }
-
-    };
-
     public final double getzOffset() {
         return zOffset.get();
     }

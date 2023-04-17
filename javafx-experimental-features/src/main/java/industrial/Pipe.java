@@ -175,7 +175,7 @@ public class Pipe {
 
     public final ObjectProperty<Paint> fillPipeWallProperty() {
         if (fillPipeWall == null) {
-            fillPipeWall = new ObjectPropertyBase<Paint>(Color.BLACK) {
+            fillPipeWall = new ObjectPropertyBase<>(Color.BLACK) {
 
                 boolean needsListener = false;
 
@@ -202,7 +202,7 @@ public class Pipe {
 
     public final ObjectProperty<Paint> fillPipeFullProperty() {
         if (fillPipeFull == null) {
-            fillPipeFull = new ObjectPropertyBase<Paint>(Color.web("#0000FE")) {
+            fillPipeFull = new ObjectPropertyBase<>(Color.web("#0000FE")) {
 
                 boolean needsListener = false;
 
@@ -228,7 +228,7 @@ public class Pipe {
 
     public final ObjectProperty<Paint> fillPipeFull2Property() {
         if (fillPipeFull2 == null) {
-            fillPipeFull2 = new ObjectPropertyBase<Paint>(Color.web("#0000E0")) {
+            fillPipeFull2 = new ObjectPropertyBase<>(Color.web("#0000E0")) {
 
                 boolean needsListener = false;
 
@@ -254,7 +254,7 @@ public class Pipe {
 
     public final ObjectProperty<Paint> fillPipeEmptyProperty() {
         if (fillPipeEmpty == null) {
-            fillPipeEmpty = new ObjectPropertyBase<Paint>(Color.LIGHTGREY) {
+            fillPipeEmpty = new ObjectPropertyBase<>(Color.LIGHTGREY) {
 
                 boolean needsListener = false;
 

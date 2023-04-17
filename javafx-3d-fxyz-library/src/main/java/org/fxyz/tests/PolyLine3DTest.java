@@ -13,13 +13,13 @@ import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.fxyz.geometry.Point3D;
 import org.fxyz.shapes.composites.PolyLine3D;
+import org.fxyz.utils.CameraUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class PolyLine3DTest extends Application {
         Scene scene = new Scene(sceneRoot, sceneWidth, sceneHeight, true, SceneAntialiasing.BALANCED);
         scene.setFill(Color.BLACK);
         scene.setCamera(camera);
-        scene.setOnKeyPressed(event -> onKeyPressed(camera, event));
+        scene.setOnKeyPressed(event -> CameraUtils.moveInXZPlane(camera, event));
 
         Rotate xRotate = new Rotate(0, Rotate.X_AXIS);
         Rotate yRotate = new Rotate(0, Rotate.Y_AXIS);
@@ -94,30 +94,6 @@ public class PolyLine3DTest extends Application {
         return new PolyLine3D(points, 3, Color.STEELBLUE);
     }
 
-    private void onKeyPressed(PerspectiveCamera camera, javafx.scene.input.KeyEvent event) {
-        double change = 10.0;
-        //Add shift modifier to simulate "Running Speed"
-        if (event.isShiftDown()) {
-            change = 50.0;
-        }
-        //What key did the user press?
-        KeyCode keycode = event.getCode();
-        //Step 2c: Add Zoom controls
-        if (keycode == KeyCode.W) {
-            camera.setTranslateZ(camera.getTranslateZ() + change);
-        }
-        if (keycode == KeyCode.S) {
-            camera.setTranslateZ(camera.getTranslateZ() - change);
-        }
-        //Step 2d:  Add Strafe controls
-        if (keycode == KeyCode.A) {
-            camera.setTranslateX(camera.getTranslateX() - change);
-        }
-        if (keycode == KeyCode.D) {
-            camera.setTranslateX(camera.getTranslateX() + change);
-        }
-    }
-
     private void onMousePressed(MouseEvent event) {
         scenex = event.getSceneX();
         sceney = event.getSceneY();
@@ -131,10 +107,11 @@ public class PolyLine3DTest extends Application {
     }
 
     private void onMouseDragged(MouseEvent event) {
-        if (event.isMiddleButtonDown())
+        if (event.isMiddleButtonDown()) {
             angleZ.set(fixedZAngle - (scenez - event.getSceneY()));
-        else
+        } else {
             angleX.set(fixedXAngle - (scenex - event.getSceneY()));
+        }
         angleY.set(fixedYAngle + sceney - event.getSceneX());
     }
 

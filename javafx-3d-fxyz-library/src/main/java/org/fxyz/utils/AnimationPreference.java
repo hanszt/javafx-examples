@@ -15,5 +15,5 @@ public enum AnimationPreference {
     TRANSITION,
     ANIMATION;
     
-    private AnimationPreference(){}
+    AnimationPreference(){}
 }

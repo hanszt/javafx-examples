@@ -9,11 +9,10 @@ import java.util.stream.DoubleStream;
  */
 public class Point3D {
     
-    public float x;
-    public float y;
-    public float z;
-
-    public float f = 0; // for function evaluation
+    private float x;
+    private float y;
+    private float z;
+    private float f = 0; // for function evaluation
     /* 
     * @param X,Y,Z are all floats to align with TriangleMesh needs 
     */
@@ -28,18 +27,6 @@ public class Point3D {
     
     public Point3D add(Point3D point) {
         return add(point.x, point.y, point.z);
-    }
-
-    public void addInc(float x, float y, float z) {
-        this.x += x;
-        this.y += y;
-        this.z += z;
-    }
-
-    public void subtractInc(float x, float y, float z) {
-        this.x -= x;
-        this.y -= y;
-        this.z -= z;
     }
 
     public Point3D add(float x, float y, float z) {
@@ -60,12 +47,10 @@ public class Point3D {
     
     public Point3D normalize() {
         final float mag = magnitude();
+        return Float.compare(mag, 0.0F) == 0 ?
+                new Point3D(0.0F, 0.0F, 0.0F) :
+                new Point3D(x / mag, y / mag, z / mag);
 
-        if (mag == 0.0) {
-            return new Point3D(0f, 0f, 0f);
-        }
-
-        return new Point3D(x / mag, y / mag, z / mag);
     }
     
     public float magnitude() {
@@ -119,10 +104,7 @@ public class Point3D {
         if (Float.floatToIntBits(this.y) != Float.floatToIntBits(other.y)) {
             return false;
         }
-        if (Float.floatToIntBits(this.z) != Float.floatToIntBits(other.z)) {
-            return false;
-        }
-        return true;
+        return Float.floatToIntBits(this.z) == Float.floatToIntBits(other.z);
     }
 
     public float getX() {
@@ -135,5 +117,25 @@ public class Point3D {
 
     public float getZ() {
         return z;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    public void setZ(float z) {
+        this.z = z;
+    }
+
+    public float getF() {
+        return f;
+    }
+
+    public void setF(float f) {
+        this.f = f;
     }
 }

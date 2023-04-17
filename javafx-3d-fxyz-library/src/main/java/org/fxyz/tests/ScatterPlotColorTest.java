@@ -11,15 +11,16 @@ import java.util.List;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.fxyz.shapes.composites.ScatterPlot;
+import org.fxyz.utils.CameraUtils;
 
 /**
  *
@@ -48,37 +49,21 @@ public class ScatterPlotColorTest extends Application {
         camera.setTranslateZ(-1000);
         scene.setCamera(camera);
         
-        scatterPlot = new ScatterPlot(1000, 1, true);
+        scatterPlot = new ScatterPlot(1, true);
         sceneRoot.getChildren().addAll(scatterPlot);
         
-        List<Double> dataX = new ArrayList<>();
-        List<Double> dataY = new ArrayList<>();
-        List<Double> dataZ = new ArrayList<>();
+        List<Point3D> data = new ArrayList<>();
         List<Color> colors = new ArrayList<>();
         int k = 0;
         for(int i=-250;i<250;i++) {
-            dataX.add(new Double(i));
-            dataY.add(Math.sin(i)*50+i);
-            dataZ.add(Math.cos(i)*50+i);
-            colors.add(new Color(Math.abs(i) / 250D, Math.abs(dataY.get(k)) / 300D, Math.abs(dataZ.get(k) / 300D), 0.25));
+            data.add(new Point3D(i, Math.sin(i)*50+i, Math.cos(i)*50+i));
+            colors.add(new Color(Math.abs(i) / 250D, Math.abs(data.get(k).getY()) / 300D, Math.abs(data.get(k).getZ() / 300D), 0.25));
             k++;
         }
             
-        scatterPlot.setXYZData(dataX, dataY, dataZ, colors);
+        scatterPlot.setXYZData(data, colors);
 
-        scene.setOnKeyPressed(event -> {
-            double change = 10.0;
-            //Add shift modifier to simulate "Running Speed"
-            if(event.isShiftDown()) { change = 50.0; }
-            //What key did the user press?
-            KeyCode keycode = event.getCode();
-            //Step 2c: Add Zoom controls
-            if(keycode == KeyCode.W) { camera.setTranslateZ(camera.getTranslateZ() + change); }
-            if(keycode == KeyCode.S) { camera.setTranslateZ(camera.getTranslateZ() - change); }
-            //Step 2d:  Add Strafe controls
-            if(keycode == KeyCode.A) { camera.setTranslateX(camera.getTranslateX() - change); }
-            if(keycode == KeyCode.D) { camera.setTranslateX(camera.getTranslateX() + change); }
-        });        
+        scene.setOnKeyPressed(event -> CameraUtils.moveInXZPlane(camera, event));
         
         //Add a Mouse Handler for Rotations
         Rotate xRotate = new Rotate(0, Rotate.X_AXIS);
@@ -105,10 +90,11 @@ public class ScatterPlotColorTest extends Application {
         });
         //Angle calculation will only change when the button has been pressed
         scene.setOnMouseDragged(event -> {
-            if(event.isMiddleButtonDown()) 
+            if(event.isMiddleButtonDown()) {
                 angleZ.set(fixedZAngle - (scenez - event.getSceneY()));
-            else
+            } else {
                 angleX.set(fixedXAngle - (scenex - event.getSceneY()));
+            }
                 
             
             angleY.set(fixedYAngle + sceney - event.getSceneX());
