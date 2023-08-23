@@ -18,8 +18,6 @@ import org.apache.logging.log4j.Logger;
 import utils.FxUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
-import java.util.stream.Collectors;
-
 import static hzt.Application3D.HEIGHT;
 import static hzt.Application3D.WIDTH;
 import static hzt.JavaFxResourceUtils.configuredCamera;
@@ -28,7 +26,7 @@ import static hzt.JavaFxResourceUtils.configuredCamera;
  * @author afsal villan
  * @version 1.0
  * <p>
- * http://www.genuinecoder.com
+ * <a href="http://www.genuinecoder.com">JAVA ARTICLES</a>
  */
 public class GalaxyWithSlider extends Application {
 
@@ -68,14 +66,10 @@ public class GalaxyWithSlider extends Application {
         primaryStage.show();
 
         prepareAnimation(earth);
-        LOGGER.info("All descendents from root: {}", getAllDescendentsFromAsString(root));
-    }
-
-    private static String getAllDescendentsFromAsString(Group root) {
-        return FxUtils.allDescendents(root).stream()
+        LOGGER.info("All descendents from root: {}", FxUtils.allDescendents(root).stream()
                 .map(Object::getClass)
                 .map(Class::getSimpleName)
-                .collect(Collectors.joining("\n"));
+                .toList());
     }
 
     private static void prepareAnimation(Sphere sphere) {

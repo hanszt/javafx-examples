@@ -40,14 +40,11 @@ public class Camera3D extends Application {
 
         primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             switch (event.getCode()) {
-                case W:
-                    camera.translateZProperty().set(camera.getTranslateZ() + 100);
-                    break;
-                case S:
-                    camera.translateZProperty().set(camera.getTranslateZ() - 100);
-                    break;
-                default:
-                    break;
+                case W -> camera.translateZProperty().set(camera.getTranslateZ() + 100);
+                case S -> camera.translateZProperty().set(camera.getTranslateZ() - 100);
+                default -> {
+                    // Do nothing
+                }
             }
         });
 

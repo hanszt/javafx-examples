@@ -13,7 +13,7 @@ module Main.app {
 
     exports hzt.htmleditorsample;
 
-    opens hzt to javafx.graphics;
+    opens hzt; // needed for junit and javafx.graphics
     opens hzt.togglebuttonsample to javafx.graphics;
     opens hzt.textfieldsample to javafx.graphics;
     opens hzt.tooltipsample to javafx.graphics;

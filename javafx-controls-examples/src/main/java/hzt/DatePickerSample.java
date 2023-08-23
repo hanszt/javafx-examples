@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.Clock;
 import java.time.format.DateTimeFormatter;
 
 public class DatePickerSample extends Application {
@@ -18,12 +19,13 @@ public class DatePickerSample extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
+        LOGGER.info("Starting {}...", DatePickerSample.class.getSimpleName());
         Label label = new Label();
         DatePicker datePicker = new DatePicker();
         datePicker.setOnAction(actionEvent -> displayPickedDate(label, datePicker));
 
         Label label1 = new Label();
-        DateTimePicker dateTimePicker = new DateTimePicker();
+        DateTimePicker dateTimePicker = new DateTimePicker(Clock.systemDefaultZone());
         dateTimePicker.setOnAction(actionEvent -> displayPickedDateTime(label1, dateTimePicker));
 
         VBox vBox = new VBox();

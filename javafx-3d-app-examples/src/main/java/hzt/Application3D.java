@@ -65,7 +65,9 @@ public class Application3D {
             case E -> group.rotateByX(-10);
             case NUMPAD6 -> group.rotateByY(10);
             case NUMPAD4 -> group.rotateByY(-10);
-            default -> {}
+            default -> {
+                //Do nothing
+            }
         }
     }
 

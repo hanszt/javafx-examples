@@ -8,6 +8,7 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 import static hzt.Application3D.HEIGHT;
@@ -18,7 +19,7 @@ import static hzt.JavaFxResourceUtils.woodenSpecBox;
  * @author afsal villan
  * @version 1.0
  * <p>
- * http://www.genuinecoder.com
+ * <a href="http://www.genuinecoder.com">genuine coder</a>
  */
 public class Reflection extends Application {
 
@@ -39,6 +40,8 @@ public class Reflection extends Application {
         scene.setCamera(camera);
 
         new Application3D().initMouseControl(group, scene);
+        group.setRotationAxis(Rotate.Y_AXIS.add(Rotate.X_AXIS));
+        group.setRotate(45);
 
         primaryStage.setTitle("Genuine Coder");
         primaryStage.setScene(scene);

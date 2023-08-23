@@ -1,6 +1,7 @@
 package hzt
 
 import fxutils.onNewValue
+import java.time.Clock
 import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.control.DatePicker
@@ -16,10 +17,10 @@ import java.time.format.DateTimeFormatter
  * A DateTimePicker with configurable datetime format where both date and time can be changed
  * via the text field and the date can additionally be changed via the JavaFX default date picker.
  */
-class DateTimePicker : DatePicker() {
+class DateTimePicker(private val clock: Clock) : DatePicker() {
 
     private var formatter: DateTimeFormatter? = null
-    private val dateTimeValue: ObjectProperty<LocalDateTime> = SimpleObjectProperty(LocalDateTime.now())
+    private val dateTimeValue: ObjectProperty<LocalDateTime> = SimpleObjectProperty(LocalDateTime.now(clock))
     private val format: ObjectProperty<String> = object : SimpleObjectProperty<String>() {
         override fun set(newValue: String) {
             super.set(newValue)
@@ -47,7 +48,7 @@ class DateTimePicker : DatePicker() {
             dateTimeValue.set(null)
         } else {
             if (dateTimeValue.get() == null) {
-                dateTimeValue.set(LocalDateTime.of(newValue, LocalTime.now()))
+                dateTimeValue.set(LocalDateTime.of(newValue, LocalTime.now(clock)))
             } else {
                 val time = dateTimeValue.get()!!.toLocalTime()
                 dateTimeValue.set(LocalDateTime.of(newValue, time))

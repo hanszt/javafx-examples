@@ -38,14 +38,11 @@ public class Sphere3D extends Application {
 
         primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             switch (event.getCode()) {
-                case W:
-                    sphere.translateZProperty().set(sphere.getTranslateZ() + 100);
-                    break;
-                case S:
-                    sphere.translateZProperty().set(sphere.getTranslateZ() - 100);
-                    break;
-                default:
-                    break;
+                case W -> sphere.translateZProperty().set(sphere.getTranslateZ() + 100);
+                case S -> sphere.translateZProperty().set(sphere.getTranslateZ() - 100);
+                default -> {
+                    // Do nothing
+                }
             }
         });
 
