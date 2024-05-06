@@ -10,9 +10,6 @@ target/
 out/
 *.iml
 
-### Netbeans
-.nb-gradle/
-
 ### macOS
 .DS_Store
 
@@ -29,3 +26,8 @@ gluoncloudlink_config.json
 ### virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 google-services.json
+
+### Generated 3d models
+*.mtl
+*.obj
+

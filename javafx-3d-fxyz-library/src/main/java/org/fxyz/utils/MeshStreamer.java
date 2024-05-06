@@ -25,7 +25,7 @@ import javafx.geometry.Point3D;
 import javafx.scene.shape.TriangleMesh;
 
 /**
- *  Just Testing the viability of creating a stream package for TriangleMeshs
+ *  Just Testing the viability of creating a stream package for TriangleMeshes
  * @author Jason Pollastrini aka jdub1581
  */
 public class MeshStreamer{

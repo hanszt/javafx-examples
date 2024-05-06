@@ -19,7 +19,7 @@ import static hzt.Application3D.WIDTH;
  * @author afsal villan
  * @version 1.0
  * <p>
- * http://www.genuinecoder.com
+ * <a href="http://www.genuinecoder.com">Genuine coder</a>
  */
 public class SphereImage3D extends Application {
 
@@ -30,7 +30,7 @@ public class SphereImage3D extends Application {
         Camera camera = new PerspectiveCamera(true);
         camera.setNearClip(1);
         camera.setFarClip(10_000);
-        camera.setTranslateZ(-1000);
+        camera.setTranslateZ(-1_000);
 
         Group world = new Group();
         world.getChildren().addAll(prepare3DImageViewSphere());

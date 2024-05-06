@@ -10,49 +10,44 @@ import java.util.Arrays;
 
 /**
  * Collector to generate a float[] array from a DoubleStream of floats
- * 
+ * <p>
  * General use:
  * .collect(FloatCollector::new, FloatCollector::add, FloatCollector::join)
  * Known initial size:
  * .collect(()->new FloatCollector(size), FloatCollector::add, FloatCollector::join)
- * 
+ * <p>
  * Generates a FloatCollector, use FloatCollector.toArray() to get the float[]
- * 
+ *
  * @author José Pereda Llamas
  * Created on 19-nov-2014 - 18:51:11
  */
-public class FloatCollector {
+public final class FloatCollector {
 
-    private float[] curr=new float[64];
+    private float[] floats = new float[64];
     private int size;
 
-    public FloatCollector(){}
-    
-    public FloatCollector(int initialSize){
-        if(curr.length<initialSize){
-            curr=Arrays.copyOf(curr, initialSize);
+    public FloatCollector(int initialSize) {
+        if (floats.length < initialSize) {
+            floats = Arrays.copyOf(floats, initialSize);
         }
     }
 
     public void add(double d) {
-        if(curr.length==size){
-            curr=Arrays.copyOf(curr, size*2);
+        if (floats.length == size) {
+            floats = Arrays.copyOf(floats, size * 2);
         }
-        curr[size++]=(float)d;
+        floats[size++] = (float) d;
     }
 
     public void join(FloatCollector other) {
-        if(size+other.size > curr.length) {
-            curr=Arrays.copyOf(curr, size+other.size);
+        if (size + other.size > floats.length) {
+            floats = Arrays.copyOf(floats, size + other.size);
         }
-        System.arraycopy(other.curr, 0, curr, size, other.size);
-        size+=other.size;
+        System.arraycopy(other.floats, 0, floats, size, other.size);
+        size += other.size;
     }
 
     public float[] toArray() {
-        if(size!=curr.length){
-            curr=Arrays.copyOf(curr, size);
-        }
-        return curr;
+        return size == floats.length ? floats : Arrays.copyOf(floats, size);
     }
 }

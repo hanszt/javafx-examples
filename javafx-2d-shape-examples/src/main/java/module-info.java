@@ -5,4 +5,5 @@ module Main.app {
     requires org.jetbrains.annotations;
 
     opens hzt to javafx.graphics;
+    opens hzt.marbeling to javafx.graphics;
 }

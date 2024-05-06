@@ -53,7 +53,7 @@ open class XYChartSample : Application() {
     protected open fun getChart(xAxis: NumberAxis, yAxis: NumberAxis): XYChart<Number, Number> = LineChart(xAxis, yAxis)
 
     private fun MultiListView<TempData>.addInitData(initData: List<TempData>) {
-        for (data in TempData.values()) {
+        for (data in TempData.entries) {
             val series = XYChart.Series<Number, Number>().apply { name = data.formattedName() }
             tempDataSeriesBiMap[data] = series
             if (data in initData) addRightListView(data) else addLeftListView(data)
