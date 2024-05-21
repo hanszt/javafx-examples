@@ -19,10 +19,10 @@ public final class Marbling extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        final var group = new AnchorPane();
-        final var scene = new Scene(group, 600, 800);
+        final var pane = new AnchorPane();
+        final var scene = new Scene(pane, 600, 800);
         stage.setScene(scene);
-        group.setOnMouseClicked(e -> addDrop(e, group));
+        pane.setOnMouseClicked(e -> addDrop(e, pane));
 //        group.setOnMouseDragged(e -> addDrop(e, group, random));
         stage.show();
     }
