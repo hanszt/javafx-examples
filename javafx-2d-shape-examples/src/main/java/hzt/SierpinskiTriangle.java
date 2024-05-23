@@ -37,11 +37,9 @@ public final class SierpinskiTriangle extends Application {
         final var label = new Label(AMOUNT_OF_TRIANGLES + children.size());
         label.setLabelFor(drawPane);
 
-        depthSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue.intValue() != newValue.intValue()) {
-                children.setAll(fractalPolygons(newValue.intValue()).toList());
-                label.setText(AMOUNT_OF_TRIANGLES + children.size());
-            }
+        depthSlider.setOnMouseReleased(e -> {
+            children.setAll(fractalPolygons((int) depthSlider.getValue()).toList());
+            label.setText(AMOUNT_OF_TRIANGLES + children.size());
         });
         final var vBox = new VBox(drawPane, depthSlider, label);
         vBox.setSpacing(20);
