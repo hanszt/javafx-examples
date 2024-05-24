@@ -11,4 +11,5 @@ open module javafx.utils {
     exports services;
     exports fx_customs;
     exports utils.stream;
+    exports hzt.javafx.controls;
 }
