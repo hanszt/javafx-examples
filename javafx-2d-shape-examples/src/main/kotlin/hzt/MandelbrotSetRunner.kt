@@ -20,6 +20,7 @@ import javafx.stage.Stage
 import javafx.util.StringConverter
 import org.apache.commons.math3.complex.Complex
 import kotlin.math.absoluteValue
+import kotlin.math.ln
 import kotlin.math.log
 import kotlin.math.pow
 
@@ -35,7 +36,7 @@ class MandelbrotSetRunner : Application() {
     fun start() = launch()
 
     private val canvasSideLength = 600.0
-    private val maxRgb = 255
+    private val max = 255
 
     override fun start(primaryStage: Stage) {
         val initSize = 2.0
@@ -130,17 +131,23 @@ class MandelbrotSetRunner : Application() {
      * [Mandelbrot set](https://en.wikipedia.org/wiki/Mandelbrot_set)
      *
      * z_{n+1}=z_{n}^{2}+c
+     *
+     * [Adding colors](https://stackoverflow.com/questions/29664389/adding-color-layers-to-the-mandelbrot-set)
      */
-    private fun mand(z0: Complex): Int {
+    private fun mandSmooth(z0: Complex): Double {
         var z = z0
-        for (rgb in 0 until maxRgb) {
-            if (z.abs() > 100.0) {
-                return rgb
+        for (t in 0 until max) {
+            val fAbs = z.abs()
+            if (fAbs > 2.0) {
+                // based on the final value, add a fractional amount based on
+                // how much it escaped by (fAbs will be in the range of 2 to around 4):
+                return (t.toDouble() + (2.0 - (ln(fAbs) / ln(2.0))))
             }
             z = z.multiply(z).add(z0)
         }
-        return maxRgb
+        return max.toDouble()
     }
+
 
     private fun GraphicsContext.plotMandelbrot(xc: Double, yc: Double, size: Double) {
 
@@ -152,11 +159,13 @@ class MandelbrotSetRunner : Application() {
                 val x0 = xc - halfSize + size * x / n
                 val y0 = yc - halfSize + size * y / n
 
-                this.fill = Color.grayRgb(maxRgb - mand(Complex(x0, y0)))
+                val z0 = Complex(x0, y0)
+                val result = mandSmooth(z0)
+                this.fill = Color.hsb(result, 1.0, 1.0)
                 fillRect(x.toDouble(), y.toDouble(), 1.0, 1.0)
                 // Create a point to aim with
                 if (x == n / 2 && y == n / 2) {
-                    this.fill = Color.RED
+                    this.fill = Color.BLACK
                     fillRect(x.toDouble(), y.toDouble(), 1.0, 1.0)
                 }
             }
