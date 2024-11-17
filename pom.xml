@@ -41,8 +41,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>21</java.version>
-        <kotlin.version>2.0.0</kotlin.version>
+        <java.version>22</java.version>
+        <kotlin.version>2.0.21</kotlin.version>
         <!--        dependencies-->
         <javafx.version>21</javafx.version>
         <guava.version>31.1-jre</guava.version>
@@ -51,9 +51,9 @@
         <!--        test-->
         <archunit-junit5.version>0.21.0</archunit-junit5.version>
         <mockito.version>4.8.0</mockito.version>
-        <junit-jupiter.version>5.9.0</junit-jupiter.version>
+        <junit-jupiter.version>5.11.0</junit-jupiter.version>
         <hamcrest.version>2.2</hamcrest.version>
-        <testfx.version>4.0.16-alpha</testfx.version>
+        <testfx.version>4.0.18</testfx.version>
         <!--        plugins-->
         <javafx-maven-plugin.version>0.0.8</javafx-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>

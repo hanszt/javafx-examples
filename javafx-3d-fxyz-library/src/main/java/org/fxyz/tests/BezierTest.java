@@ -33,8 +33,6 @@ import org.fxyz.utils.CameraUtils;
  */
 public class BezierTest extends Application {
     private PerspectiveCamera camera;
-    private final double sceneWidth = 600;
-    private final double sceneHeight = 600;
     private final CameraTransformer cameraTransform = new CameraTransformer();
 
     private double mousePosX;
@@ -45,13 +43,14 @@ public class BezierTest extends Application {
     private double mouseDeltaY;
     private ArrayList<BezierMesh> beziers;
     private Rotate rotateY;
-    private ToDoubleFunction<Point3D> dens = p -> (double) p.getF();
     private ToDoubleFunction<Double> func = t -> (double) t;
     private long lastEffect;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         Group sceneRoot = new Group();
+        double sceneWidth = 600;
+        double sceneHeight = 600;
         Scene scene = new Scene(sceneRoot, sceneWidth, sceneHeight, true, SceneAntialiasing.BALANCED);
         scene.setFill(Color.BLACK);
         camera = new PerspectiveCamera(true);
@@ -91,7 +90,6 @@ public class BezierTest extends Application {
 
         InterpolateBezier interpolate = new InterpolateBezier(knots);
         beziers = new ArrayList<>();
-        AtomicInteger sp = new AtomicInteger();
         if (showKnots || showControlPoints) {
             interpolate.getSplines().forEach(spline -> {
                 Point3D k0 = spline.getPoints().get(0);
@@ -133,7 +131,7 @@ public class BezierTest extends Application {
             });
         }
         long time = System.currentTimeMillis();
-        interpolate.getSplines().stream().forEach(spline -> {
+        interpolate.getSplines().forEach(spline -> {
             BezierMesh bezier = new BezierMesh(spline, 0.1d,
                     300, 20, 0, 0);
 //            bezier.setDrawMode(DrawMode.LINE);
