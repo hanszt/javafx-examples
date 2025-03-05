@@ -38,7 +38,7 @@ import static java.lang.System.*;
  * <p>
  * Modified Novemeber 2007.  Minor clean up.
  */
-public class Pnt {
+public final class Pnt {
 
     private static final String DIMENSION_MISMATCH = "Dimension mismatch";
 

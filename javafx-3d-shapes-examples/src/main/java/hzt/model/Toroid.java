@@ -244,7 +244,7 @@ public class Toroid extends MeshView {
     }
 
     @SuppressWarnings("squid:S2972")
-    private class MeshData {
+    private final class MeshData {
 
         private static final int NR_OF_POINTS_PER_FACE_PT = 12;
         private static final int NR_OF_DIMENSIONS = 3;
@@ -325,7 +325,7 @@ public class Toroid extends MeshView {
             mesh.getFaces().setAll(faces);
         }
 
-        private class Indices {
+        private static class Indices {
 
             private int topLeft;
             private int topRight;

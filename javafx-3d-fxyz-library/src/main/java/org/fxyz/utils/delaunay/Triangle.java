@@ -40,7 +40,7 @@ import java.util.NoSuchElementException;
  * Created December 2007. Replaced general simplices with geometric triangle.
  *
  */
-class Triangle extends ArraySet<Pnt> {
+final class Triangle extends ArraySet<Pnt> {
 
     private int idNumber;                   // The id number
     private Pnt circumcenter = null;        // The triangle's circumcenter

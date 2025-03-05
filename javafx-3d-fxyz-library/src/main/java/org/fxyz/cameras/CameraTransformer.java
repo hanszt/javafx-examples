@@ -15,7 +15,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 
-public class CameraTransformer extends Group {
+public final class CameraTransformer extends Group {
 
     public enum RotateOrder {
         XYZ, XZY, YXZ, YZX, ZXY, ZYX
@@ -29,33 +29,21 @@ public class CameraTransformer extends Group {
     public final Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
     public final Scale scale = new Scale();
 
-    public CameraTransformer() { 
-        super(); 
+    public CameraTransformer() {
+        super();
         getTransforms().addAll(translate, rotateZ, rotateY, rotateX, scale);
     }
 
     public CameraTransformer(RotateOrder rotateOrder) {
-        super(); 
+        super();
         // choose the order of rotations based on the rotateOrder
         switch (rotateOrder) {
-        case XYZ:
-            getTransforms().addAll(translate, pivot, rotateZ, rotateY, rotateX, scale, inversePivot);
-            break;
-        case XZY:
-            getTransforms().addAll(translate, pivot, rotateY, rotateZ, rotateX, scale, inversePivot);
-            break;
-        case YXZ:
-            getTransforms().addAll(translate, pivot, rotateZ, rotateX, rotateY, scale, inversePivot);
-            break;
-        case YZX:
-            getTransforms().addAll(translate, pivot, rotateX, rotateZ, rotateY, scale, inversePivot);  // For Camera
-            break;
-        case ZXY:
-            getTransforms().addAll(translate, pivot, rotateY, rotateX, rotateZ, scale, inversePivot);
-            break;
-        case ZYX:
-            getTransforms().addAll(translate, pivot, rotateX, rotateY, rotateZ, scale, inversePivot);
-            break;
+            case XYZ -> getTransforms().addAll(translate, pivot, rotateZ, rotateY, rotateX, scale, inversePivot);
+            case XZY -> getTransforms().addAll(translate, pivot, rotateY, rotateZ, rotateX, scale, inversePivot);
+            case YXZ -> getTransforms().addAll(translate, pivot, rotateZ, rotateX, rotateY, scale, inversePivot);
+            case YZX -> getTransforms().addAll(translate, pivot, rotateX, rotateZ, rotateY, scale, inversePivot);  // For Camera
+            case ZXY -> getTransforms().addAll(translate, pivot, rotateY, rotateX, rotateZ, scale, inversePivot);
+            case ZYX -> getTransforms().addAll(translate, pivot, rotateX, rotateY, rotateZ, scale, inversePivot);
         }
     }
 

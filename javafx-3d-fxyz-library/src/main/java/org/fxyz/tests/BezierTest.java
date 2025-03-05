@@ -31,8 +31,8 @@ import org.fxyz.utils.CameraUtils;
 /**
  * @author jpereda
  */
-public class BezierTest extends Application {
-    private PerspectiveCamera camera;
+public final class BezierTest extends Application {
+    private final PerspectiveCamera camera = new PerspectiveCamera(true);
     private final CameraTransformer cameraTransform = new CameraTransformer();
 
     private double mousePosX;
@@ -53,7 +53,6 @@ public class BezierTest extends Application {
         double sceneHeight = 600;
         Scene scene = new Scene(sceneRoot, sceneWidth, sceneHeight, true, SceneAntialiasing.BALANCED);
         scene.setFill(Color.BLACK);
-        camera = new PerspectiveCamera(true);
 
         //setup camera transform for rotational support
         cameraTransform.setTranslate(0, 0, 0);

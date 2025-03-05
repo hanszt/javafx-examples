@@ -78,7 +78,7 @@ import java.util.Deque;
 import static hzt.utils.PropertiesService.parsedDoubleAppProp;
 import static hzt.utils.PropertiesService.parsedIntAppProp;
 
-public class Xylophone extends Application {
+public final class Xylophone extends Application {
 
     private static final Logger LOGGER = LogManager.getLogger(Xylophone.class);
 

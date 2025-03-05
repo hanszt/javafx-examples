@@ -20,67 +20,74 @@ package org.fxyz.utils.delaunay;
  * DEALINGS IN THE SOFTWARE.
  */
 
-import java.util.AbstractSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * An ArrayList implementation of Set. An ArraySet is good for small sets; it
  * has less overhead than a HashSet or a TreeSet.
  *
- * @author Paul Chew
- *
- * Created December 2007.  For use with Voronoi/Delaunay applet.
  * @param <E>
- *
+ * @author Paul Chew
+ * <p>
+ * Created December 2007.  For use with Voronoi/Delaunay applet.
  */
-public class ArraySet<E> extends AbstractSet<E> {
+public sealed class ArraySet<E> extends AbstractSet<E> implements SequencedSet<E> permits Triangle {
 
-    private ArrayList<E> items;            // Items of the set
+    private final List<E> items;            // Items of the set
 
     /**
      * Create an empty set (default initial capacity is 3).
      */
-    public ArraySet () {
+    public ArraySet() {
         this(3);
     }
 
     /**
      * Create an empty set with the specified initial capacity.
+     *
      * @param initialCapacity the initial capacity
      */
-    public ArraySet (int initialCapacity) {
-        items  = new ArrayList<>(initialCapacity);
+    public ArraySet(int initialCapacity) {
+        items = new ArrayList<>(initialCapacity);
+    }
+
+    /**
+     * To create the reversed view
+     */
+    private ArraySet(List<E> list) {
+        items = list;
     }
 
     /**
      * Create a set containing the items of the collection.  Any duplicate
      * items are discarded.
+     *
      * @param collection the source for the items of the small set
      */
-    public ArraySet (Collection<? extends E> collection) {
+    public ArraySet(Collection<? extends E> collection) {
         items = new ArrayList<>(collection.size());
         collection.stream().filter((item) -> (!items.contains(item))).forEach((item) -> items.add(item));
     }
 
     /**
      * Get the item at the specified index.
+     *
      * @param index where the item is located in the ListSet
      * @return the item at the specified index
      * @throws IndexOutOfBoundsException if the index is out of bounds
      */
-    public E get (int index) throws IndexOutOfBoundsException {
+    public E get(int index) throws IndexOutOfBoundsException {
         return items.get(index);
     }
 
     /**
-     * True iff any member of the collection is also in the ArraySet.
+     * True if any member of the collection is also in the ArraySet.
+     *
      * @param collection the Collection to check
-     * @return true iff any member of collection appears in this ArraySet
+     * @return true if any member of collection appears in this ArraySet
      */
-    public boolean containsAny (Collection<? extends E> collection) {
-        return collection.stream().anyMatch((item) -> (this.contains(item)));
+    public boolean containsAny(Collection<? extends E> collection) {
+        return collection.stream().anyMatch(this::contains);
     }
 
     @Override
@@ -101,4 +108,8 @@ public class ArraySet<E> extends AbstractSet<E> {
         return items.size();
     }
 
+    @Override
+    public ArraySet<E> reversed() {
+        return new ArraySet<>(items.reversed());
+    }
 }

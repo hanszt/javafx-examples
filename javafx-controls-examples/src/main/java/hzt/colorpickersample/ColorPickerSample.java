@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public class ColorPickerSample extends Application {
+public final class ColorPickerSample extends Application {
 
     private static final Logger LOGGER = LogManager.getLogger(ColorPickerSample.class);
     private static final String RELATIVE_RESOURCES_DIR = "/colorpickersample/";

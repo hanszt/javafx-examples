@@ -6,7 +6,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
 
-public class Fx2D10DrawingTriangleSvgPath extends Application {
+public final class Fx2D10DrawingTriangleSvgPath extends Application {
     public static void main(String[] args) {
         Application.launch(args);
     }
