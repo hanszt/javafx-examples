@@ -13,6 +13,10 @@
 
     <artifactId>javafx-controls-examples</artifactId>
 
+    <properties>
+        <controlsfx.version>11.2.2</controlsfx.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -25,8 +29,13 @@
         <dependency>
             <groupId>org.javafx.examples</groupId>
             <artifactId>javafx-commons</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.controlsfx/controlsfx -->
+        <dependency>
+            <groupId>org.controlsfx</groupId>
+            <artifactId>controlsfx</artifactId>
+            <version>${controlsfx.version}</version>
         </dependency>
     </dependencies>
 

@@ -10,8 +10,11 @@ module Main.app {
     requires org.apache.logging.log4j;
     requires javafx.utils;
     requires kotlin.stdlib;
+    requires org.controlsfx.controls;
+    requires javafx.base;
 
     exports hzt.htmleditorsample;
+    exports hzt.rangeslidersample to javafx.graphics;
 
     opens hzt; // needed for junit and javafx.graphics
     opens hzt.togglebuttonsample to javafx.graphics;
