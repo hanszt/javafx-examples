@@ -16,7 +16,7 @@ public final class ColorSample extends Application {
         content.setPadding(new Insets(20));
         var button = new Button("Hello BootstrapFX");
         button.getStyleClass().setAll("btn","btn-danger");
-        button.setTextFill(Color.hsb());
+        button.setTextFill(Color.hsb(200, 1.0, 1.0));
         content.setCenter(button);
 
         var scene = new Scene(content);

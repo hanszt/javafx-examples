@@ -8,6 +8,7 @@ module Main.app {
     requires org.apache.logging.log4j;
     requires javafx.utils;
     requires kotlin.stdlib;
+    requires org.slf4j;
 
     opens shapethreedtest to javafx.graphics;
     opens fx_eight_three_d_features to javafx.graphics;

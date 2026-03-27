@@ -167,7 +167,7 @@ class DragDropWithControls : Application() {
                 "Label" -> Label(text)
                 "RadioButton" -> RadioButton(text)
                 "ChoiceBox" -> createChoiceBox(text)
-                else -> object : Node() {}
+                else -> error("$newVal not supported")
             }
             sourceControlPane.children.clear()
             sourceControlPane.children.add(control)
@@ -255,7 +255,7 @@ class DragDropWithControls : Application() {
 
     private fun createTMSelect(tms: MutableSet<TransferMode>): Node {
         val box = VBox()
-        for (tm in TransferMode.values()) {
+        for (tm in TransferMode.entries) {
             val cb = CheckBox(tm.toString())
             cb.selectedProperty().onNewValue { onCheckboxChanged(tms, tm, it) }
             if (tm == TransferMode.COPY) {
@@ -272,7 +272,7 @@ class DragDropWithControls : Application() {
 
     private fun createFormatSelect(dataFormats: MutableSet<DataFormat>): Node {
         val box = VBox()
-        val list: MutableList<Pair<DataFormat, String>> = mutableListOf(
+        val list = listOf(
             Pair(DataFormat.PLAIN_TEXT, "PLAIN_TEXT"),
             Pair(DataFormat.HTML, "HTML"),
             Pair(DataFormat.RTF, "RTF"),
@@ -351,7 +351,7 @@ class DragDropWithControls : Application() {
             targetFormats.contains(DataFormat.IMAGE) && dragboard.hasImage()
         )
         conditionalLogAndSetDropCompleted(
-            event, "Dropped files:" + getDroppedFilesAsString(dragboard),
+            event, "Dropped files:" + dragboard.files.joinToString { "   " + it.path },
             targetFormats.contains(DataFormat.FILES) && dragboard.hasFiles()
         )
         conditionalLogAndSetDropCompleted(
@@ -378,12 +378,6 @@ class DragDropWithControls : Application() {
             log(logMessage)
             event.isDropCompleted = true
         }
-    }
-
-    private fun getDroppedFilesAsString(db: Dragboard): String {
-        return db.files.asSequence()
-            .map { "   " + it.path }
-            .joinToString()
     }
 
     companion object {

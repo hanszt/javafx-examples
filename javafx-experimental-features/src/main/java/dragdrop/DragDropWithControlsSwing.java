@@ -75,9 +75,13 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+
+import static org.slf4j.LoggerFactory.*;
 
 public class DragDropWithControlsSwing extends Application {
 
+    private static final Logger LOGGER = getLogger(DragDropWithControlsSwing.class);
     private static final DataFormat CUSTOM_BYTES = new DataFormat("dndwithcontrolsswing.custom.bytes");
     private static final DataFormat CUSTOM_STRING = new DataFormat("dndwithcontrolsswing.custom.string");
 
@@ -175,9 +179,9 @@ public class DragDropWithControlsSwing extends Application {
         final Text fileHdr = new Text("Files to drag (0):");
         final TextField tb = new TextField("Put full path here");
         final Button add = new Button("Add");
-        add.setOnAction(event -> addFile(fileHdr, tb));
+        add.setOnAction(_ -> addFile(fileHdr, tb));
         final Button clear = new Button("Clear");
-        clear.setOnAction(event -> clearFiles(fileHdr));
+        clear.setOnAction(_ -> clearFiles(fileHdr));
 
         HBox btns = new HBox();
         btns.getChildren().add(add);
@@ -236,7 +240,7 @@ public class DragDropWithControlsSwing extends Application {
         cb.getItems().addAll("Rectangle", "Button", "Checkbox", "ChoiceBox", "Hyperlink",
                 "Label", "List", "RadioButton", "Tree");
 
-        cb.getSelectionModel().selectedItemProperty().addListener((ov, t, newValue) ->
+        cb.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) ->
                 choiceBoxSelectionModelChangedAction(sourceControlPane, source, newValue));
 
         cb.getSelectionModel().select(0);
@@ -370,8 +374,7 @@ public class DragDropWithControlsSwing extends Application {
             case "Label" -> new Label(text);
             case "RadioButton" -> new RadioButton(text);
             case "ChoiceBox" -> createChoiceBox(text);
-            default -> new Node() {
-            };
+            default -> throw new IllegalArgumentException(newValue + " not supported");
         };
     }
 
@@ -407,7 +410,7 @@ public class DragDropWithControlsSwing extends Application {
 
         for (final TransferMode tm : TransferMode.values()) {
             CheckBox cb = new CheckBox(tm.toString());
-            cb.selectedProperty().addListener((ov, t, t1) -> updateTransferModeSet(tms, tm, t1));
+            cb.selectedProperty().addListener((_, _, t1) -> updateTransferModeSet(tms, tm, t1));
             if (tm == TransferMode.COPY) {
                 cb.selectedProperty().set(true);
             }
@@ -440,10 +443,10 @@ public class DragDropWithControlsSwing extends Application {
 
         for (final Pair<DataFormat, String> df : list) {
             CheckBox cb = new CheckBox(df.getValue());
-            cb.selectedProperty().addListener((ov, t, t1) -> updateDataFormats(dataFormats, df, t1));
+            cb.selectedProperty().addListener((_, _, t1) -> updateDataFormats(dataFormats, df, t1));
             box.getChildren().add(cb);
         }
-        ((CheckBox) box.getChildren().get(0)).selectedProperty().set(true);
+        ((CheckBox) box.getChildren().getFirst()).selectedProperty().set(true);
 
         return box;
     }
@@ -457,11 +460,11 @@ public class DragDropWithControlsSwing extends Application {
     }
 
     private void log(String text) {
-        System.out.println(text);
+        LOGGER.info(text);
 
         messages.add(text);
         if (messages.size() > 15) {
-            messages.remove(0);
+            messages.removeFirst();
         }
 
         StringBuilder sb = new StringBuilder();

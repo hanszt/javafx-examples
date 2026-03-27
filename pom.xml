@@ -41,13 +41,13 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>22</java.version>
-        <kotlin.version>2.0.21</kotlin.version>
+        <java.version>25</java.version>
+        <kotlin.version>2.3.10</kotlin.version>
         <!--        dependencies-->
-        <javafx.version>21</javafx.version>
+        <javafx.version>25.0.2</javafx.version>
         <guava.version>31.1-jre</guava.version>
         <annotations.version>23.0.0</annotations.version>
-        <log4j.version>2.19.0</log4j.version>
+        <log4j.version>2.25.3</log4j.version>
         <!--        test-->
         <archunit-junit5.version>0.21.0</archunit-junit5.version>
         <mockito.version>4.8.0</mockito.version>
@@ -56,9 +56,9 @@
         <testfx.version>4.0.18</testfx.version>
         <!--        plugins-->
         <javafx-maven-plugin.version>0.0.8</javafx-maven-plugin.version>
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
-        <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
+        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
+        <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <directory-maven-plugin.version>0.3.1</directory-maven-plugin.version>
     </properties>
 

@@ -7,7 +7,7 @@ module Main.app {
     requires kotlin.stdlib;
     requires javafx.utils;
     requires org.jetbrains.annotations;
-    requires slf4j.api;
+    requires org.slf4j;
 
     opens hzt to javafx.graphics;
     opens hzt.fxml.launcher to javafx.graphics;

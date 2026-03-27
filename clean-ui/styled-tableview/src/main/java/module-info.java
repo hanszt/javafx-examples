@@ -2,7 +2,7 @@ module styled.tableview {
 
     requires javafx.controls;
     requires javafx.fxml;
-    requires slf4j.api;
+    requires org.slf4j;
 
     opens com.edencoding to javafx.fxml;
     opens com.edencoding.controllers to javafx.fxml;
