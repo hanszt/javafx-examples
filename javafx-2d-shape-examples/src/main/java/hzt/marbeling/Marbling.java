@@ -15,7 +15,7 @@ import java.util.Random;
  */
 public final class Marbling extends Application {
 
-    private static final Random random = new Random();
+    private final Random random = new Random();
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -23,11 +23,15 @@ public final class Marbling extends Application {
         final var scene = new Scene(pane, 600, 800);
         stage.setScene(scene);
         pane.setOnMouseClicked(e -> addDrop(e, pane));
-//        group.setOnMouseDragged(e -> addDrop(e, group, random));
+        pane.setOnMouseDragged(e -> {
+            if (e.isSecondaryButtonDown()) {
+                addDrop(e, pane);
+            }
+        });
         stage.show();
     }
 
-    private static void addDrop(MouseEvent e, AnchorPane group) {
+    private void addDrop(MouseEvent e, AnchorPane group) {
         final var drop = new Drop(new Point2D(e.getX(), e.getY()), random.nextInt(10, 50));
         for (var other : group.getChildren()) {
             ((Drop) other).marble(drop);

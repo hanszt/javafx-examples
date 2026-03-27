@@ -38,18 +38,16 @@ public final class Drop extends Polygon {
     public void marble(Drop other) {
         final var points = getPoints();
         for (int i = 0; i < points.size(); i += 2) {
-            final var marbled = marble(other, new Point2D(points.get(i), points.get(i + 1)));
+            final var marbled = marble(new Point2D(points.get(i), points.get(i + 1)), other.center, other.radius);
             points.set(i, marbled.getX());
             points.set(i + 1, marbled.getY());
         }
     }
 
-    private static Point2D marble(Drop other, Point2D p) {
-        var c = other.center;
-        var r = other.radius;
-        final var diff = p.subtract(c);
+    private static Point2D marble(Point2D p, final Point2D other, final double radius) {
+        final var diff = p.subtract(other);
         var m = diff.magnitude();
-        var root = Math.sqrt(1 + ((r * r) / (m * m)));
-        return c.add(diff.multiply(root));
+        var root = Math.sqrt(1 + ((radius * radius) / (m * m)));
+        return other.add(diff.multiply(root));
     }
 }
