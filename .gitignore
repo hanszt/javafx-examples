@@ -6,7 +6,8 @@ build/
 target/
 
 ### IntelliJ IDEA
-.idea/
+**/.idea/*
+!/.idea/icon.*
 out/
 *.iml
 
