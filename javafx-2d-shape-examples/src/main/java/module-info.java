@@ -9,4 +9,5 @@ module Main.app {
 
     opens hzt to javafx.graphics;
     opens hzt.marbeling to javafx.graphics;
+    opens hzt.implicit_surfaces to javafx.graphics;
 }
