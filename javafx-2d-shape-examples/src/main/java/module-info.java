@@ -6,6 +6,7 @@ module Main.app {
     requires kotlin.stdlib;
     requires commons.math3;
     requires javafx.utils;
+    requires org.slf4j;
 
     opens hzt to javafx.graphics;
     opens hzt.marbeling to javafx.graphics;
