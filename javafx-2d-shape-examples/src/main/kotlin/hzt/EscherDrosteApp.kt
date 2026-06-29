@@ -1,20 +1,25 @@
 package hzt
 
 import javafx.application.Application
+import javafx.beans.property.DoubleProperty
 import javafx.beans.property.ReadOnlyDoubleProperty
 import javafx.geometry.Insets
 import javafx.scene.Scene
 import javafx.scene.canvas.Canvas
+import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.Slider
 import javafx.scene.image.Image
 import javafx.scene.image.PixelReader
 import javafx.scene.image.PixelWriter
+import javafx.scene.layout.HBox
 import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
+import org.apache.commons.math3.complex.Complex
 import org.slf4j.LoggerFactory
+import java.io.File
 import kotlin.math.*
 
 /**
@@ -38,9 +43,10 @@ class EscherDrosteApp : Application() {
         canvas.widthProperty().bind(canvasWrapper.widthProperty())
         canvas.heightProperty().bind(canvasWrapper.heightProperty())
 
-        val twistSlider = Slider(0.0, 1.0, 0.1)
-        val centerXSlider = Slider(-1.0, 1.0, 0.0)
-        val centerYSlider = Slider(-1.0, 1.0, 0.0)
+        val initialZoom = 1.0 / 128.0
+        val twistSlider = ResettableSlider(0.0, 1.0, initialZoom)
+        val centerXSlider = ResettableSlider( -1.0, 1.0, 0.0)
+        val centerYSlider = ResettableSlider( -1.0, 1.0, 0.0)
         val controlPane = VBox(
             2.0,
             Label("Twist slider"), twistSlider,
@@ -57,19 +63,8 @@ class EscherDrosteApp : Application() {
 
         val scene = Scene(root, windowWidth, windowHeight)
 
-        val image = createDenserGridImage(2000.0, 2000.0)
-        //        val path = "/Users/hans/git/hzt/jvm/javafx-examples/javafx-2d-shape-examples/src/main/resources/img_1.png"
-//        val fileUrl = File(path).toURI().toString()
-//        log.info("Loading image from: $fileUrl")
-//        val backgroundLoading = true
-//        val sourceImage = Image(fileUrl, backgroundLoading)
-//
-//        sourceImage.progressProperty().addListener { _, _, progress ->
-//            log.info("Image loading progress: ${progress.toDouble() * 100.0} %")
-//            if (progress.toDouble() == 1.0) {
-//                renderEscherDroste(canvas, sourceImage)
-//            }
-//        }
+//        val image = createDenserGridImage(900.0, 900.0)
+        val image = loadImage("/Users/hans/git/hzt/jvm/javafx-examples/javafx-2d-shape-examples/src/main/resources/img_1.png")
 
         val drosteRenderer = DrosteRenderer(
             innerFrameRadius = twistSlider.valueProperty(),
@@ -91,6 +86,18 @@ class EscherDrosteApp : Application() {
         stage.show()
     }
 
+    private fun loadImage(path: String): Image {
+        val fileUrl = File(path).toURI().toString()
+        log.info("Loading image from: $fileUrl")
+        val backgroundLoading = false
+        val image = Image(fileUrl, backgroundLoading)
+
+        image.progressProperty().addListener { _, _, progress ->
+            log.info("Image loading progress: ${progress.toDouble() * 100.0} %")
+        }
+        return image
+    }
+
     class DrosteRenderer(
         private val innerFrameRadius: ReadOnlyDoubleProperty,
         private val centerOffsetX: ReadOnlyDoubleProperty,
@@ -106,19 +113,13 @@ class EscherDrosteApp : Application() {
             val r1 = innerFrameRadius.value
             val r2 = 1.0
             val logRatio = ln(r2 / r1)
-            println("logRatio = ${logRatio}")
 
+            // Calculate the twist angle 'alpha' that fixes the diagonal tile alignment
             val alpha = atan(logRatio / (2 * PI))
             val f = cos(alpha)
 
             // Complex scale factor vector 'c' component construction
-            val cReal = f * cos(alpha)
-            val cImag = f * sin(alpha)
-
-            // Inverse matrix coefficients for shifting backwards from screen to source
-            val denom = cReal * cReal + cImag * cImag
-            val invCReal = cReal / denom
-            val invCImag = -cImag / denom
+            val c = Complex(f * cos(alpha), f * sin(alpha))
 
             // Center offsets
             val centerShiftX = centerOffsetX.value
@@ -135,26 +136,22 @@ class EscherDrosteApp : Application() {
                     val nx = (x - outCenterX) / (canvasWidth / 2.0)
                     val ny = (outCenterY - y) / (canvasHeight / 2.0) // Invert Y axis
 
-                    val radius = sqrt(nx * nx + ny * ny)
-                    if (radius < 0.0001) continue // Prevent log(0) errors
-                    val theta = atan2(ny, nx)
+                    val w = Complex(nx, ny)
 
-                    // 2. Forward Logarithmic mapping: ln(w) <- w
-                    val logR = ln(radius)
-
-                    // 3. Untwist: Divide by complex scale factor 'c' to flatten the diagonal grid
-                    var transLogR = logR * invCReal - theta * invCImag
-                    val transLogTheta = logR * invCImag + theta * invCReal
-
-                    // 4. Structural Periodicity: Map the periodic tiles back into the [r1, r2] ring bounds
-                    transLogR = ((transLogR % logRatio) + logRatio) % logRatio + ln(r1)
+                    if (w.abs() < 0.0001) continue // Prevent log(0) errors
+                    // 2 & 3. Forward Logarithmic mapping AND Untwist in one step
+                    // w.log() handles finding the radius and theta automatically
+                    val complex = w.log()
+                    val transformedLog = complex.divide(c)
+                    // 4. Structural Periodicity: Map back into the [r1, r2] ring bounds
+                    val transLogR = ((transformedLog.real % logRatio) + logRatio) % logRatio + ln(r1)
 
                     // 5. Exponential mapping: z -> e^z
                     val finalRadius = exp(transLogR)
 
                     // 6. Convert back to target Cartesian coordinates
-                    val finalX = finalRadius * cos(transLogTheta) + centerShiftX
-                    val finalY = finalRadius * sin(transLogTheta) + centerShiftY
+                    val finalX = finalRadius * cos(transformedLog.imaginary) + centerShiftX
+                    val finalY = finalRadius * sin(transformedLog.imaginary) + centerShiftY
 
                     // 7. Map normalized coordinate scales back to physical source image pixels
                     val srcPixelX = ((finalX + 1.0) * 0.5 * srcW).toInt()
@@ -173,6 +170,23 @@ class EscherDrosteApp : Application() {
         }
     }
 
+    private class ResettableSlider(min: Double, max: Double, value: Double) : HBox(2.0) {
+        private val slider = Slider(min, max, value).also {
+            children.add(it)
+            // Tell the HBox that this slider should take up all extra horizontal space
+            setHgrow(it, Priority.ALWAYS)
+            // Ensure the slider itself is configured to fill its allotted width
+            it.maxWidth = Double.MAX_VALUE
+        }
+        init {
+            Button("Reset").also {
+                children.add(it)
+                it.setOnAction { slider.value = value }
+            }
+        }
+
+        fun valueProperty(): DoubleProperty = slider.valueProperty()
+    }
 }
 
 fun main() {
