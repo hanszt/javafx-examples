@@ -15,6 +15,7 @@
 
     <properties>
         <commons-math3.version>3.6.1</commons-math3.version>
+        <jmathanim-core.version>1.4.2</jmathanim-core.version>
     </properties>
 
     <dependencies>
@@ -35,6 +36,13 @@
         <dependency>
             <groupId>org.javafx.examples</groupId>
             <artifactId>javafx-commons</artifactId>
+        </dependency>
+        <!-- Source: https://mvnrepository.com/artifact/com.github.davidgutierrezrubio/jmathanim-core -->
+        <dependency>
+            <groupId>com.github.davidgutierrezrubio</groupId>
+            <artifactId>jmathanim-core</artifactId>
+            <version>${jmathanim-core.version}</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
