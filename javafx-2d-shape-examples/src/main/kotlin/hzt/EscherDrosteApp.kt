@@ -9,6 +9,7 @@ import javafx.scene.canvas.Canvas
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.Slider
+import javafx.scene.control.TextField
 import javafx.scene.image.Image
 import javafx.scene.image.PixelReader
 import javafx.scene.image.PixelWriter
@@ -17,6 +18,7 @@ import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
+import javafx.util.converter.NumberStringConverter
 import org.apache.commons.math3.complex.Complex
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -45,8 +47,8 @@ class EscherDrosteApp : Application() {
 
         val initialZoom = 1.0 / 128.0
         val twistSlider = ResettableSlider(0.0, 1.0, initialZoom)
-        val centerXSlider = ResettableSlider( -1.0, 1.0, 0.0)
-        val centerYSlider = ResettableSlider( -1.0, 1.0, 0.0)
+        val centerXSlider = ResettableSlider(-1.0, 1.0, 0.0)
+        val centerYSlider = ResettableSlider(-1.0, 1.0, 0.0)
         val controlPane = VBox(
             2.0,
             Label("Twist slider"), twistSlider,
@@ -178,10 +180,15 @@ class EscherDrosteApp : Application() {
             // Ensure the slider itself is configured to fill its allotted width
             it.maxWidth = Double.MAX_VALUE
         }
+
         init {
             Button("Reset").also {
                 children.add(it)
                 it.setOnAction { slider.value = value }
+            }
+            TextField(slider.value.toString()).also {
+                children.add(it)
+                it.textProperty().bindBidirectional(slider.valueProperty(), NumberStringConverter())
             }
         }
 
