@@ -22,6 +22,7 @@ import javafx.util.converter.NumberStringConverter
 import org.apache.commons.math3.complex.Complex
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.net.URI
 import kotlin.math.*
 
 /**
@@ -66,7 +67,7 @@ class EscherDrosteApp : Application() {
         val scene = Scene(root, windowWidth, windowHeight)
 
 //        val image = createDenserGridImage(900.0, 900.0)
-        val image = loadImage("/Users/hans/git/hzt/jvm/javafx-examples/javafx-2d-shape-examples/src/main/resources/img_1.png")
+        val image = loadImage("/img_1.png")
 
         val drosteRenderer = DrosteRenderer(
             innerFrameRadius = twistSlider.valueProperty(),
@@ -89,10 +90,10 @@ class EscherDrosteApp : Application() {
     }
 
     private fun loadImage(path: String): Image {
-        val fileUrl = File(path).toURI().toString()
+        val fileUrl = {}.javaClass.getResource(path)?.toURI() ?: error("Could not find file: $path")
         log.info("Loading image from: $fileUrl")
         val backgroundLoading = false
-        val image = Image(fileUrl, backgroundLoading)
+        val image = Image(fileUrl.toString(), backgroundLoading)
 
         image.progressProperty().addListener { _, _, progress ->
             log.info("Image loading progress: ${progress.toDouble() * 100.0} %")
