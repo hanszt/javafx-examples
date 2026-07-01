@@ -21,8 +21,6 @@ import javafx.stage.Stage
 import javafx.util.converter.NumberStringConverter
 import org.apache.commons.math3.complex.Complex
 import org.slf4j.LoggerFactory
-import java.io.File
-import java.net.URI
 import kotlin.math.*
 
 /**
@@ -66,8 +64,10 @@ class EscherDrosteApp : Application() {
 
         val scene = Scene(root, windowWidth, windowHeight)
 
-//        val image = createDenserGridImage(900.0, 900.0)
-        val image = loadImage("/img_1.png")
+//        val image = createDenserGridImage(2700.0, 2700.0)
+        val image = loadImage("/straight.png").also { println("width: ${it.width}, height: ${it.height}") }
+//        val image = loadImage("/ln_pattern.png").also { println("width: ${it.width}, height: ${it.height}") }
+
 
         val drosteRenderer = DrosteRenderer(
             innerFrameRadius = twistSlider.valueProperty(),
@@ -128,16 +128,16 @@ class EscherDrosteApp : Application() {
             val centerShiftX = centerOffsetX.value
             val centerShiftY = centerOffsetY.value
 
-            val outCenterX = canvasWidth / 2.0
-            val outCenterY = canvasHeight / 2.0
+            val centerY = canvasWidth / 2.0
+            val centerX = canvasHeight / 2.0
 
             // Process every output pixel on the canvas
             for (y in 0 until canvasHeight.toInt()) {
                 for (x in 0 until canvasWidth.toInt()) {
 
                     // 1. Normalize screen position into Complex Plane coordinates [-1.0, 1.0]
-                    val nx = (x - outCenterX) / (canvasWidth / 2.0)
-                    val ny = (outCenterY - y) / (canvasHeight / 2.0) // Invert Y axis
+                    val nx = (x - centerY) / (canvasWidth / 2.0)
+                    val ny = (centerX - y) / (canvasHeight / 2.0) // Invert Y axis
 
                     val w = Complex(nx, ny)
 
@@ -147,7 +147,8 @@ class EscherDrosteApp : Application() {
                     val complex = w.log()
                     val transformedLog = complex.divide(c)
                     // 4. Structural Periodicity: Map back into the [r1, r2] ring bounds
-                    val transLogR = ((transformedLog.real % logRatio) + logRatio) % logRatio + ln(r1)
+                    val d = transformedLog.real % logRatio
+                    val transLogR = (d + logRatio) % logRatio + ln(r1)
 
                     // 5. Exponential mapping: z -> e^z
                     val finalRadius = exp(transLogR)
@@ -167,6 +168,8 @@ class EscherDrosteApp : Application() {
                     if (srcPixelX in 0 until srcW.toInt() && srcPixelY in 0 until srcH.toInt()) {
                         val color = reader.getColor(srcPixelX, srcPixelY)
                         writer.setColor(x, y, color)
+                    } else {
+                        println("$srcPixelX, $srcPixelY outside")
                     }
                 }
             }
