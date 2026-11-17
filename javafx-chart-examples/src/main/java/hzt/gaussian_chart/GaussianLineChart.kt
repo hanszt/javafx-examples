@@ -98,7 +98,7 @@ open class GaussianLineChart(
 
     companion object {
         @JvmStatic
-        fun main(args: Array<String>) = launch(GaussianLineChart::class.java)
+        fun main(args: Array<String>) = launchFXApp<GaussianLineChart>()
         val RANDOM = Random()
     }
 }
